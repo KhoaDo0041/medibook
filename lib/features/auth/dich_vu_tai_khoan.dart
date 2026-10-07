@@ -138,6 +138,42 @@ class DichVuTaiKhoan {
     }
   }
 
+  /// Quên mật khẩu, bước 1: gửi mã đặt lại mật khẩu đến email.
+  /// Supabase không cho biết email có tồn tại hay không (để tránh dò tài khoản).
+  static Future<void> guiMaDatLaiMatKhau(String email) async {
+    try {
+      await supabase.auth.resetPasswordForEmail(email);
+    } on AuthException catch (e) {
+      throw LoiTaiKhoan(_dichLoi(e));
+    } catch (_) {
+      throw const LoiTaiKhoan(
+          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+    }
+  }
+
+  /// Quên mật khẩu, bước 2: kiểm tra mã rồi đặt mật khẩu mới.
+  /// Xong thì đăng xuất để người dùng đăng nhập lại bằng mật khẩu mới.
+  static Future<void> datLaiMatKhau({
+    required String email,
+    required String ma,
+    required String matKhauMoi,
+  }) async {
+    try {
+      await supabase.auth.verifyOTP(
+        email: email,
+        token: ma,
+        type: OtpType.recovery,
+      );
+      await supabase.auth.updateUser(UserAttributes(password: matKhauMoi));
+      await supabase.auth.signOut();
+    } on AuthException catch (e) {
+      throw LoiTaiKhoan(_dichLoi(e));
+    } catch (_) {
+      throw const LoiTaiKhoan(
+          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+    }
+  }
+
   /// Đổi thông báo lỗi tiếng Anh của Supabase sang tiếng Việt.
   static String _dichLoi(AuthException e) {
     final loi = e.message.toLowerCase();
@@ -147,6 +183,9 @@ class DichVuTaiKhoan {
     }
     if (loi.contains('rate limit') || loi.contains('security purposes')) {
       return 'Bạn thao tác quá nhanh. Vui lòng đợi khoảng 1 phút rồi thử lại.';
+    }
+    if (loi.contains('different from the old')) {
+      return 'Mật khẩu mới phải khác mật khẩu cũ';
     }
     if (loi.contains('password')) return 'Mật khẩu chưa đủ mạnh';
     if (loi.contains('sending') && loi.contains('email')) {

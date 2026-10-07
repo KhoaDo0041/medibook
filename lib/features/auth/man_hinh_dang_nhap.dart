@@ -7,6 +7,7 @@ import '../benh_nhan/trang_chu_benh_nhan.dart';
 import 'dich_vu_tai_khoan.dart';
 import 'man_hinh_dang_ky.dart';
 import 'man_hinh_nhap_ma.dart';
+import 'man_hinh_quen_mat_khau.dart';
 
 /// Màn hình đăng nhập, dùng chung cho bệnh nhân và bác sĩ.
 class ManHinhDangNhap extends StatefulWidget {
@@ -146,14 +147,29 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
                   ),
                   validator: KiemTraNhap.matKhauDangNhap,
                 ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ManHinhQuenMatKhau(
+                            emailBanDau: _oEmail.text.trim(),
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Quên mật khẩu?'),
+                  ),
+                ),
                 if (_loi != null) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 4),
                   Text(
                     _loi!,
                     style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                 ],
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
                 FilledButton(
                   onPressed: _dangXuLy ? null : _dangNhap,
                   child: _dangXuLy
