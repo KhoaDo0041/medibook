@@ -6,6 +6,8 @@ import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
+import '../dat_lich/dich_vu_dat_lich.dart';
+import '../dat_lich/man_hinh_chon_benh_vien.dart';
 import 'mo_hinh.dart';
 import 'widgets/o_chuc_nang.dart';
 import 'widgets/the_bac_si_da_kham.dart';
@@ -79,23 +81,55 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
 
 // ============================ TAB TRANG CHỦ ============================
 
-class _TabTrangChu extends StatelessWidget {
+class _TabTrangChu extends StatefulWidget {
   final HoSo hoSo;
   final ValueChanged<int> moTab;
 
   const _TabTrangChu({required this.hoSo, required this.moTab});
 
   @override
+  State<_TabTrangChu> createState() => _TabTrangChuState();
+}
+
+class _TabTrangChuState extends State<_TabTrangChu> {
+  LichKhamSapToi? _lichSapToi;
+
+  @override
+  void initState() {
+    super.initState();
+    _taiLich();
+  }
+
+  Future<void> _taiLich() async {
+    try {
+      final lich = await DichVuDatLich().layLichSapToi();
+      if (mounted) setState(() => _lichSapToi = lich);
+    } on LoiDatLich {
+      // Lỗi mạng: giữ nguyên thẻ hiện tại, kéo xuống để thử lại
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final chu = Theme.of(context).textTheme;
+    final hoSo = widget.hoSo;
+    final moTab = widget.moTab;
 
-    // Chưa có dữ liệu thật: sẽ lấy từ Supabase khi làm phần đặt lịch
-    const LichKhamSapToi? lichSapToi = null;
-    const List<BacSiDaKham> bacSiDaKham = [];
+    final lichSapToi = _lichSapToi;
+    const List<BacSiDaKham> bacSiDaKham = []; // làm ở phần lịch sử khám
 
-    void datLich() => baoSapCo(context, 'Đặt lịch khám');
+    Future<void> datLich() async {
+      final kq = await Navigator.push<String>(
+        context,
+        MaterialPageRoute(builder: (_) => ManHinhChonBenhVien(hoSo: hoSo)),
+      );
+      if (kq == 'mo_ai') moTab(2);
+      _taiLich();
+    }
 
-    return ListView(
+    return RefreshIndicator(
+      onRefresh: _taiLich,
+      child: ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       children: [
         // 1. Lời chào + chuông + ảnh đại diện
@@ -202,7 +236,7 @@ class _TabTrangChu extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: bacSiDaKham.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (_, i) => TheBacSiDaKham(
                 bacSi: bacSiDaKham[i],
                 onDatLai: () => baoSapCo(context, 'Đặt lại với bác sĩ'),
@@ -233,6 +267,7 @@ class _TabTrangChu extends StatelessWidget {
           ),
         ),
       ],
+    ),
     );
   }
 }

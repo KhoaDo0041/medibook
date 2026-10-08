@@ -11,7 +11,7 @@ Future<void> main() async {
   // Kết nối Supabase một lần duy nhất khi mở app
   await Supabase.initialize(
     url: SupabaseConfig.url,
-    anonKey: SupabaseConfig.anonKey,
+    publishableKey: SupabaseConfig.anonKey,
   );
 
   runApp(const MediBookApp());

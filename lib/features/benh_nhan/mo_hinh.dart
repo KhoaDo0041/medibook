@@ -1,5 +1,5 @@
-/// Dữ liệu hiển thị trên dashboard bệnh nhân.
-/// Hiện chưa có dữ liệu thật (sẽ lấy từ Supabase ở nhánh feature/dat-lich).
+// Dữ liệu hiển thị trên dashboard bệnh nhân.
+// Hiện chưa có dữ liệu thật (sẽ lấy từ Supabase ở nhánh feature/dat-lich).
 
 class LichKhamSapToi {
   final String tenBenhVien;

@@ -1,5 +1,5 @@
-/// Dữ liệu hiển thị trên dashboard bác sĩ.
-/// Hiện chưa có dữ liệu thật (sẽ lấy từ Supabase ở nhánh feature/bac-si).
+// Dữ liệu hiển thị trên dashboard bác sĩ.
+// Hiện chưa có dữ liệu thật (sẽ lấy từ Supabase ở nhánh feature/bac-si).
 
 enum TrangThaiLuotKham { choKham, dangKham, daKham, daHuy }
 
