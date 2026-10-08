@@ -14,8 +14,10 @@ class NhanTrangThai extends StatelessWidget {
     return switch (l.trangThai) {
       TrangThaiLuot.choKham => ('Chờ khám', const Color(0xFF475569), const Color(0xFFE2E8F0)),
       TrangThaiLuot.dangKham => ('Đang khám', AppTheme.mauChinh, AppTheme.mauChinhNhat),
+      TrangThaiLuot.tamHoan => ('Tạm hoãn', const Color(0xFFC2410C), const Color(0xFFFFEDD5)),
       TrangThaiLuot.daKham => ('Đã khám', const Color(0xFF15803D), const Color(0xFFDCFCE7)),
       TrangThaiLuot.daHuy => ('Đã huỷ', const Color(0xFFB91C1C), const Color(0xFFFEE2E2)),
+      TrangThaiLuot.vangMat => ('Vắng mặt', AppTheme.mauChuNhat, const Color(0xFFF1F5F9)),
     };
   }
 

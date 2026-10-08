@@ -156,12 +156,14 @@ class LuotKhamMoi {
       );
 }
 
-enum TrangThaiLuot { choKham, dangKham, daKham, daHuy }
+enum TrangThaiLuot { choKham, dangKham, tamHoan, daKham, daHuy, vangMat }
 
 TrangThaiLuot docTrangThai(String? s) => switch (s) {
       'dang_kham' => TrangThaiLuot.dangKham,
+      'tam_hoan' => TrangThaiLuot.tamHoan,
       'da_kham' => TrangThaiLuot.daKham,
       'da_huy' => TrangThaiLuot.daHuy,
+      'vang_mat' => TrangThaiLuot.vangMat,
       _ => TrangThaiLuot.choKham,
     };
 
@@ -193,13 +195,17 @@ class LuotKhamCuaToi {
 
   /// Còn hiệu lực: chưa huỷ, chưa khám xong, ca chưa kết thúc.
   bool get sapToi =>
-      (trangThai == TrangThaiLuot.choKham || trangThai == TrangThaiLuot.dangKham) && !ca.daKetThuc;
+      (trangThai == TrangThaiLuot.choKham ||
+          trangThai == TrangThaiLuot.dangKham ||
+          trangThai == TrangThaiLuot.tamHoan) &&
+      !ca.daKetThuc;
 
   /// Chỉ huỷ được khi đang chờ và ca chưa bắt đầu (giống luật trong database).
   bool get huyDuoc =>
       trangThai == TrangThaiLuot.choKham && DateTime.now().isBefore(ca.thoiDiemBatDau);
 
-  /// Ca đã qua mà không khám, không huỷ.
+  /// Bác sĩ đánh dấu vắng mặt, hoặc ca đã qua mà không khám, không huỷ.
   bool get vangMat =>
-      ca.daKetThuc && (trangThai == TrangThaiLuot.choKham || trangThai == TrangThaiLuot.dangKham);
+      trangThai == TrangThaiLuot.vangMat ||
+      (ca.daKetThuc && (trangThai == TrangThaiLuot.choKham || trangThai == TrangThaiLuot.tamHoan));
 }

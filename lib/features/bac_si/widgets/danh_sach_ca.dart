@@ -48,6 +48,15 @@ class DanhSachCa extends StatelessWidget {
             ),
           ],
         ),
+        if (ca.phong != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 2),
+            child: Row(children: [
+              const Icon(Icons.meeting_room_outlined, size: 16, color: AppTheme.mauChuNhat),
+              const SizedBox(width: 6),
+              Text(ca.phong!, style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+            ]),
+          ),
         const SizedBox(height: 12),
         if (cacLuot.isEmpty)
           Padding(
@@ -78,7 +87,9 @@ class _DongBenhNhan extends StatelessWidget {
     final daHuy = luot.trangThai == TrangThaiLuotKham.daHuy;
 
     return Opacity(
-      opacity: daHuy ? 0.6 : 1,
+      opacity: luot.trangThai == TrangThaiLuotKham.daHuy || luot.trangThai == TrangThaiLuotKham.vangMat
+          ? 0.6
+          : 1,
       child: TheTrang(
         padding: const EdgeInsets.all(14),
         onTap: onTap,
@@ -127,7 +138,12 @@ class _DongBenhNhan extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(luot.trieuChung,
+                  Text(
+                      luot.trangThai == TrangThaiLuotKham.daKham && (luot.chanDoan ?? '').isNotEmpty
+                          ? 'Chẩn đoán: ${luot.chanDoan}'
+                          : luot.trieuChung.isEmpty
+                              ? 'Không khai triệu chứng'
+                              : luot.trieuChung,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
@@ -160,6 +176,12 @@ class _KieuTrangThai {
       case TrangThaiLuotKham.daHuy:
         return const _KieuTrangThai('Đã huỷ', Color(0xFFFEE2E2), Color(0xFFB91C1C),
             Color(0xFFFEE2E2), Color(0xFFB91C1C));
+      case TrangThaiLuotKham.tamHoan:
+        return const _KieuTrangThai('Tạm hoãn', Color(0xFFFFEDD5), Color(0xFFC2410C),
+            Color(0xFFFFEDD5), Color(0xFFC2410C));
+      case TrangThaiLuotKham.vangMat:
+        return const _KieuTrangThai('Vắng mặt', Color(0xFFF1F5F9), AppTheme.mauChuNhat,
+            Color(0xFFE2E8F0), AppTheme.mauChuNhat);
       case TrangThaiLuotKham.choKham:
         return const _KieuTrangThai('Chờ khám', Color(0xFFF1F5F9), AppTheme.mauChuNhat,
             AppTheme.mauChinhNhat, AppTheme.mauChinh);

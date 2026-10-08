@@ -6,6 +6,8 @@ import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
+import 'dich_vu_bac_si.dart';
+import 'man_hinh_kham_benh.dart';
 import 'mo_hinh.dart';
 import 'widgets/danh_sach_ca.dart';
 import 'widgets/o_thong_ke.dart';
@@ -74,10 +76,86 @@ class _TabLichKham extends StatefulWidget {
 }
 
 class _TabLichKhamState extends State<_TabLichKham> {
-  DateTime _ngayDangChon = DateTime.now();
+  final _dichVu = DichVuBacSi();
 
-  // Chưa có dữ liệu thật: sẽ lấy từ Supabase theo bác sĩ + ngày đang chọn
-  List<CaKhamTrongNgay> get _cacCa => const [];
+  DateTime _ngayDangChon = DateTime.now();
+  String? _noiCongTac;
+  List<CaKhamTrongNgay> _cacCa = [];
+  bool _dangTai = true;
+  bool _dangGoi = false;
+  String? _loi;
+
+  @override
+  void initState() {
+    super.initState();
+    _dichVu.layNoiCongTac().then((v) {
+      if (mounted) setState(() => _noiCongTac = v);
+    }).catchError((_) {});
+    _taiCa();
+  }
+
+  Future<void> _taiCa() async {
+    final ngay = _ngayDangChon;
+    setState(() => _loi = null);
+    try {
+      final ds = await _dichVu.layCaTrongNgay(ngay);
+      if (!mounted || ngay != _ngayDangChon) return; // người dùng đã chọn ngày khác
+      setState(() {
+        _cacCa = ds;
+        _dangTai = false;
+      });
+    } on LoiBacSi catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loi = e.thongBao;
+        _dangTai = false;
+      });
+    }
+  }
+
+  void _chonNgay(DateTime ngay) {
+    setState(() {
+      _ngayDangChon = ngay;
+      _dangTai = true;
+      _cacCa = [];
+    });
+    _taiCa();
+  }
+
+  /// Ca đang làm việc: ca hôm nay có bệnh nhân đang khám, nếu không thì ca sớm nhất còn người chờ.
+  CaKhamTrongNgay? get _caHienTai {
+    final homNay = _cacCa.where((c) => c.laHomNay).toList();
+    for (final c in homNay) {
+      if (c.dangKham != null) return c;
+    }
+    for (final c in homNay) {
+      if (c.dangCho.isNotEmpty) return c;
+    }
+    return null;
+  }
+
+  Future<void> _moKhamBenh(LuotKhamTrongCa luot, CaKhamTrongNgay ca) async {
+    final daLuu = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => ManHinhKhamBenh(luot: luot, ca: ca)),
+    );
+    if (daLuu == true) _taiCa();
+  }
+
+  Future<void> _goiSoTiepTheo(CaKhamTrongNgay ca) async {
+    setState(() => _dangGoi = true);
+    try {
+      final id = await _dichVu.goiSoTiepTheo(ca.id);
+      await _taiCa();
+      final caMoi = _cacCa.firstWhere((c) => c.id == ca.id, orElse: () => ca);
+      final luot = caMoi.danhSach.where((l) => l.id == id).firstOrNull;
+      if (luot != null && mounted) await _moKhamBenh(luot, caMoi);
+    } on LoiBacSi catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.thongBao)));
+    } finally {
+      if (mounted) setState(() => _dangGoi = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,22 +166,17 @@ class _TabLichKhamState extends State<_TabLichKham> {
     int dem(TrangThaiLuotKham t) => tatCaLuot.where((l) => l.trangThai == t).length;
     final tong = tatCaLuot.where((l) => l.trangThai != TrangThaiLuotKham.daHuy).length;
     final daKham = dem(TrangThaiLuotKham.daKham);
-    final dangCho = dem(TrangThaiLuotKham.choKham);
+    final dangCho = dem(TrangThaiLuotKham.choKham) + dem(TrangThaiLuotKham.tamHoan);
 
-    LuotKhamTrongCa? dangKham;
-    String? caDangKham;
-    for (final ca in cacCa) {
-      for (final l in ca.danhSach) {
-        if (l.trangThai == TrangThaiLuotKham.dangKham) {
-          dangKham = l;
-          caDangKham = ca.tenCa;
-        }
-      }
-    }
-    final choKham = tatCaLuot.where((l) => l.trangThai == TrangThaiLuotKham.choKham).toList()
-      ..sort((a, b) => a.soThuTu.compareTo(b.soThuTu));
+    final caHienTai = _caHienTai;
+    final dangKham = caHienTai?.dangKham;
+    final soTiepTheo = (dangKham == null && caHienTai != null && caHienTai.dangCho.isNotEmpty)
+        ? caHienTai.dangCho.first.soThuTu
+        : null;
 
-    return ListView(
+    return RefreshIndicator(
+      onRefresh: _taiCa,
+      child: ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       children: [
         // 1. Lời chào
@@ -122,9 +195,12 @@ class _TabLichKhamState extends State<_TabLichKham> {
                     const Icon(Icons.local_hospital_outlined,
                         size: 16, color: AppTheme.mauChuNhat),
                     const SizedBox(width: 6),
-                    // Khoa và bệnh viện sẽ lấy từ bảng bac_si
-                    Text('Chưa gán khoa · bệnh viện',
-                        style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                    Expanded(
+                      child: Text(_noiCongTac ?? 'Chưa gán khoa · bệnh viện',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                    ),
                   ]),
                 ],
               ),
@@ -137,7 +213,7 @@ class _TabLichKhamState extends State<_TabLichKham> {
         // 2. Chọn ngày trong tuần
         ThanhChonNgay(
           ngayDangChon: _ngayDangChon,
-          onChon: (ngay) => setState(() => _ngayDangChon = ngay),
+          onChon: _chonNgay,
         ),
         const SizedBox(height: 16),
 
@@ -175,17 +251,30 @@ class _TabLichKhamState extends State<_TabLichKham> {
         const SizedBox(height: 16),
 
         // 4. Đang khám
-        TheDangKham(
-          dangKham: dangKham,
-          tenCa: caDangKham,
-          soTiepTheo: choKham.isEmpty ? null : choKham.first.soThuTu,
-          onGoiTiep: () => baoSapCo(context, 'Gọi số tiếp theo'),
-          onMoBenhAn: () => baoSapCo(context, 'Nhập kết quả khám'),
-        ),
+        if (cacCa.any((c) => c.laHomNay))
+          TheDangKham(
+            dangKham: dangKham,
+            tenCa: caHienTai?.tenCa,
+            soTiepTheo: _dangGoi ? null : soTiepTheo,
+            onGoiTiep: () => _goiSoTiepTheo(caHienTai!),
+            onMoBenhAn: () => _moKhamBenh(dangKham!, caHienTai!),
+          ),
         const SizedBox(height: 24),
 
         // 5. Danh sách theo ca
-        if (cacCa.isEmpty)
+        if (_dangTai)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 32),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_loi != null)
+          TheTrang(
+            child: Column(children: [
+              Text(_loi!, textAlign: TextAlign.center),
+              TextButton(onPressed: _taiCa, child: const Text('Thử lại')),
+            ]),
+          )
+        else if (cacCa.isEmpty)
           TheTrang(
             child: Row(
               children: [
@@ -202,11 +291,12 @@ class _TabLichKhamState extends State<_TabLichKham> {
           for (final ca in cacCa) ...[
             DanhSachCa(
               ca: ca,
-              onChonBenhNhan: (_) => baoSapCo(context, 'Hồ sơ bệnh nhân'),
+              onChonBenhNhan: (luot) => _moKhamBenh(luot, ca),
             ),
             const SizedBox(height: 16),
           ],
       ],
+    ),
     );
   }
 }

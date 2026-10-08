@@ -465,6 +465,21 @@ class _TheSapToi extends StatelessWidget {
               ],
             ),
           ),
+          if (luot.trangThai == TrangThaiLuot.tamHoan)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFEDD5),
+                borderRadius: BorderRadius.circular(AppTheme.boGoc),
+              ),
+              child: Text(
+                'Bác sĩ đã gọi số nhưng bạn chưa có mặt. Số của bạn vẫn được giữ — '
+                'hãy đến ${ca.viTriPhong ?? 'phòng khám'} trước ${gioPhut(ca.thoiDiemKetThuc)}.',
+                style: const TextStyle(color: Color(0xFF9A3412), fontSize: 13),
+              ),
+            ),
           // Chân thẻ
           Container(
             padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
