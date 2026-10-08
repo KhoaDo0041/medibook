@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_theme.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
+import '../ban_do/man_hinh_ban_do.dart';
 import 'dich_vu_dat_lich.dart';
 import 'dinh_dang.dart';
 import 'man_hinh_chon_bac_si.dart';
@@ -89,7 +90,19 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chọn bệnh viện')),
+      appBar: AppBar(
+        title: const Text('Chọn bệnh viện'),
+        actions: [
+          IconButton(
+            tooltip: 'Xem trên bản đồ',
+            icon: const Icon(Icons.map_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ManHinhBanDo()),
+            ),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: _taiDuLieu,
         child: ListView(
