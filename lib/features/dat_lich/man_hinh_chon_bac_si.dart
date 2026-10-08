@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
-import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
+import 'chi_duong.dart';
 import 'dich_vu_dat_lich.dart';
 import 'dinh_dang.dart';
 import 'man_hinh_xac_nhan.dart';
@@ -314,7 +314,7 @@ class _TheBenhVienDau extends StatelessWidget {
                 ),
               const Spacer(),
               TextButton.icon(
-                onPressed: () => baoSapCo(context, 'Chỉ đường'),
+                onPressed: () => moChiDuong(context, benhVien),
                 icon: const Icon(Icons.directions_outlined, size: 18),
                 label: const Text('Chỉ đường'),
                 style: TextButton.styleFrom(

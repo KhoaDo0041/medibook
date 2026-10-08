@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
-import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
+import 'chi_duong.dart';
 import 'dich_vu_dat_lich.dart';
 import 'dinh_dang.dart';
 import 'man_hinh_chon_bac_si.dart';
@@ -203,7 +203,7 @@ class _TabLichHenState extends State<TabLichHen> {
         _TheSapToi(
           luot: l,
           onHuy: () => _huy(l),
-          onChiDuong: () => baoSapCo(context, 'Chỉ đường'),
+          onChiDuong: () => moChiDuong(context, l.benhVien),
         ),
         const SizedBox(height: 12),
       ],

@@ -6,7 +6,10 @@ import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
+import '../dat_lich/chi_duong.dart';
 import '../dat_lich/dich_vu_dat_lich.dart';
+import '../dat_lich/man_hinh_chon_bac_si.dart';
+import '../dat_lich/mo_hinh.dart' show LuotKhamCuaToi, TrangThaiLuot;
 import '../dat_lich/man_hinh_chon_benh_vien.dart';
 import '../dat_lich/tab_lich_hen.dart';
 import 'mo_hinh.dart';
@@ -113,7 +116,8 @@ class _TabTrangChu extends StatefulWidget {
 }
 
 class _TabTrangChuState extends State<_TabTrangChu> {
-  LichKhamSapToi? _lichSapToi;
+  LuotKhamCuaToi? _luotSapToi;
+  List<LuotKhamCuaToi> _daKham = []; // mỗi bác sĩ một lượt gần nhất
 
   @override
   void initState() {
@@ -123,8 +127,20 @@ class _TabTrangChuState extends State<_TabTrangChu> {
 
   Future<void> _taiLich() async {
     try {
-      final lich = await DichVuDatLich().layLichSapToi();
-      if (mounted) setState(() => _lichSapToi = lich);
+      final ds = await DichVuDatLich().layLichHenCuaToi(); // mới nhất trước
+      final sapToi = ds.where((l) => l.sapToi).toList()
+        ..sort((a, b) => a.ca.thoiDiemBatDau.compareTo(b.ca.thoiDiemBatDau));
+      final daGap = <String>{};
+      final daKham = [
+        for (final l in ds)
+          if (l.trangThai == TrangThaiLuot.daKham && daGap.add(l.ca.bacSiId)) l,
+      ];
+      if (mounted) {
+        setState(() {
+          _luotSapToi = sapToi.isEmpty ? null : sapToi.first;
+          _daKham = daKham;
+        });
+      }
     } on LoiDatLich {
       // Lỗi mạng: giữ nguyên thẻ hiện tại, kéo xuống để thử lại
     }
@@ -136,8 +152,42 @@ class _TabTrangChuState extends State<_TabTrangChu> {
     final hoSo = widget.hoSo;
     final moTab = widget.moTab;
 
-    final lichSapToi = _lichSapToi;
-    const List<BacSiDaKham> bacSiDaKham = []; // làm ở phần lịch sử khám
+    final luot = _luotSapToi;
+    final lichSapToi = luot == null
+        ? null
+        : LichKhamSapToi(
+            tenBenhVien: luot.benhVien.ten,
+            tenKhoa: luot.tenKhoa,
+            tenBacSi: luot.tenBacSi,
+            tenCa: '${luot.ca.tenCa} ${luot.ca.khungGio}',
+            ngayKham: luot.ca.ngay,
+            soThuTu: luot.soThuTu,
+            phongKham: luot.ca.viTriPhong,
+          );
+    final bacSiDaKham = [
+      for (final l in _daKham)
+        BacSiDaKham(
+          id: l.ca.bacSiId,
+          hoTen: l.tenBacSi,
+          tenKhoa: l.tenKhoa,
+          tenBenhVien: l.benhVien.ten,
+        ),
+    ];
+
+    Future<void> datLai(int i) async {
+      final l = _daKham[i];
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ManHinhChonBacSi(
+            hoSo: hoSo,
+            benhVien: l.benhVien,
+            bacSiIdBanDau: l.ca.bacSiId,
+          ),
+        ),
+      );
+      _taiLich();
+    }
 
     Future<void> datLich() async {
       final kq = await Navigator.push<String>(
@@ -186,7 +236,9 @@ class _TabTrangChuState extends State<_TabTrangChu> {
         TheLichKhamSapToi(
           lich: lichSapToi,
           onDatLich: datLich,
-          onChiDuong: () => baoSapCo(context, 'Chỉ đường'),
+          onChiDuong: () {
+            if (luot != null) moChiDuong(context, luot.benhVien);
+          },
         ),
         const SizedBox(height: 16),
 
@@ -230,8 +282,8 @@ class _TabTrangChuState extends State<_TabTrangChu> {
             ),
             if (bacSiDaKham.isNotEmpty)
               TextButton(
-                onPressed: () => baoSapCo(context, 'Danh sách bác sĩ'),
-                child: const Text('Xem tất cả'),
+                onPressed: widget.moLichSu,
+                child: const Text('Xem lịch sử'),
               ),
           ],
         ),
@@ -260,7 +312,7 @@ class _TabTrangChuState extends State<_TabTrangChu> {
               separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (_, i) => TheBacSiDaKham(
                 bacSi: bacSiDaKham[i],
-                onDatLai: () => baoSapCo(context, 'Đặt lại với bác sĩ'),
+                onDatLai: () => datLai(i),
               ),
             ),
           ),

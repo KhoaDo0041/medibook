@@ -1,7 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/supabase_client.dart';
-import '../benh_nhan/mo_hinh.dart' show LichKhamSapToi;
 import 'mo_hinh.dart';
 
 class LoiDatLich implements Exception {
@@ -105,62 +104,6 @@ class DichVuDatLich {
     } catch (_) {
       throw const LoiDatLich('Không kết nối được máy chủ. Vui lòng thử lại.');
     }
-  }
-
-  /// Lượt khám sắp tới gần nhất của bệnh nhân đang đăng nhập (null nếu không có).
-  Future<LichKhamSapToi?> layLichSapToi() async {
-    final uid = supabase.auth.currentUser?.id;
-    if (uid == null) return null;
-
-    final luot = await _chay(() => supabase
-        .from('luot_kham')
-        .select('id, ca_kham_id, so_thu_tu')
-        .eq('benh_nhan_id', uid)
-        .inFilter('trang_thai', ['cho_kham', 'dang_kham']));
-    if (luot.isEmpty) return null;
-
-    final caRows = await _chay(() => supabase
-        .from('ca_kham')
-        .select('id, bac_si_id, khoa_benh_vien_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky, so_phong, tang')
-        .inFilter('id', luot.map((l) => l['ca_kham_id']).toList()));
-    final caTheoId = {for (final c in caRows) c['id'] as int: c};
-
-    // Chọn lượt có ca chưa kết thúc và bắt đầu sớm nhất
-    Map<String, dynamic>? luotChon;
-    CaKham? caChon;
-    for (final l in luot) {
-      final raw = caTheoId[l['ca_kham_id']];
-      if (raw == null || raw['bac_si_id'] == null) continue;
-      final ca = CaKham.tuJson(raw);
-      if (ca.daKetThuc) continue;
-      if (caChon == null || ca.thoiDiemBatDau.isBefore(caChon.thoiDiemBatDau)) {
-        caChon = ca;
-        luotChon = l;
-      }
-    }
-    if (caChon == null || luotChon == null) return null;
-    final ca = caChon;
-
-    final khoa = await _chay(() => supabase
-        .from('khoa_benh_vien')
-        .select('chuyen_khoa(ten_khoa), benh_vien(ten_benh_vien)')
-        .eq('id', caTheoId[ca.id]!['khoa_benh_vien_id'] as int)
-        .limit(1));
-    final bs = await _chay(() => supabase.from('bac_si').select('hoc_vi').eq('id', ca.bacSiId).limit(1));
-    final ten = await _chay(() => supabase.from('ho_so').select('ho_ten').eq('id', ca.bacSiId).limit(1));
-
-    final hocVi = bs.isEmpty ? '' : (bs.first['hoc_vi'] as String?) ?? '';
-    final hoTen = ten.isEmpty ? 'Bác sĩ' : (ten.first['ho_ten'] as String?) ?? 'Bác sĩ';
-
-    return LichKhamSapToi(
-      tenBenhVien: khoa.isEmpty ? '' : (khoa.first['benh_vien']?['ten_benh_vien'] as String?) ?? '',
-      tenKhoa: khoa.isEmpty ? '' : 'Khoa ${khoa.first['chuyen_khoa']?['ten_khoa'] ?? ''}',
-      tenBacSi: hocVi.isEmpty ? 'BS. $hoTen' : '$hocVi $hoTen',
-      tenCa: '${ca.tenCa} ${ca.khungGio}',
-      phongKham: ca.viTriPhong,
-      ngayKham: ca.ngay,
-      soThuTu: luotChon['so_thu_tu'] as int,
-    );
   }
 
   /// Toàn bộ lượt khám của bệnh nhân đang đăng nhập, mới nhất trước.
