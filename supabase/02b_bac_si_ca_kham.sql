@@ -1,6 +1,6 @@
 -- BƯỚC 2B: Chuẩn hoá dữ liệu cũ, gắn tài khoản bác sĩ mới, tạo ca khám 14 ngày tới.
 -- Trước khi chạy: tạo bacsi5..bacsi12@medibook.test ở Authentication -> Users (tick Auto Confirm User).
--- Chạy lại được nhiều lần.
+-- Chạy lại được nhiều lần. Cần chạy 04_phong_kham.sql trước (cột so_phong, tang).
 
 -- 1. Chuẩn hoá dữ liệu cũ cho thống nhất
 update ho_so set ho_ten = regexp_replace(ho_ten, '^BS\.\s*', '')
@@ -53,8 +53,10 @@ on conflict (id) do update set
 -- 3. Ca khám 14 ngày tới cho mọi bác sĩ đã duyệt (cả 4 bác sĩ cũ).
 -- Ca sáng 07:30-11:30 (20 chỗ), ca chiều 13:30-16:30 (15 chỗ); nghỉ Chủ nhật;
 -- mỗi bác sĩ nghỉ thêm khoảng 1/3 số ngày để có ngày "Đang trực" và ngày không trực.
-insert into ca_kham (bac_si_id, khoa_benh_vien_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da)
-select b.id, k.id, d::date, ca.bd, ca.kt, ca.sl
+insert into ca_kham (bac_si_id, khoa_benh_vien_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, tang, so_phong)
+select b.id, k.id, d::date, ca.bd, ca.kt, ca.sl,
+       1 + (b.chuyen_khoa_id % 4),
+       ((1 + (b.chuyen_khoa_id % 4)) * 100 + 1 + abs(hashtext(b.id::text)) % 20)::text
 from bac_si b
 join khoa_benh_vien k
   on k.benh_vien_id = b.benh_vien_id and k.chuyen_khoa_id = b.chuyen_khoa_id
@@ -75,3 +77,8 @@ join chuyen_khoa ck on ck.id = b.chuyen_khoa_id
 left join ca_kham ca on ca.bac_si_id = b.id
 group by h.ho_ten, b.hoc_vi, bv.ten_benh_vien, ck.ten_khoa
 order by bv.ten_benh_vien;
+
+-- (Đã chạy 08/10) Dọn ca thử cũ không có bác sĩ, bắt buộc mọi ca thuộc một bác sĩ
+delete from luot_kham where ca_kham_id in (select id from ca_kham where bac_si_id is null);
+delete from ca_kham where bac_si_id is null;
+alter table ca_kham alter column bac_si_id set not null;

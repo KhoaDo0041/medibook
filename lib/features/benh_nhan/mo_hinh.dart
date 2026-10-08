@@ -8,6 +8,7 @@ class LichKhamSapToi {
   final String tenCa; // VD: "Ca sáng 7:00–11:00"
   final DateTime ngayKham;
   final int soThuTu;
+  final String? phongKham; // VD: "Phòng 204 · Tầng 2"
 
   const LichKhamSapToi({
     required this.tenBenhVien,
@@ -16,6 +17,7 @@ class LichKhamSapToi {
     required this.tenCa,
     required this.ngayKham,
     required this.soThuTu,
+    this.phongKham,
   });
 }
 

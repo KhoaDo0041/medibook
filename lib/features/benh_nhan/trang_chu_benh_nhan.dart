@@ -8,6 +8,7 @@ import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
 import '../dat_lich/dich_vu_dat_lich.dart';
 import '../dat_lich/man_hinh_chon_benh_vien.dart';
+import '../dat_lich/tab_lich_hen.dart';
 import 'mo_hinh.dart';
 import 'widgets/o_chuc_nang.dart';
 import 'widgets/the_bac_si_da_kham.dart';
@@ -27,17 +28,36 @@ class TrangChuBenhNhan extends StatefulWidget {
 class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
   int _tabDangChon = 0;
 
+  // Tăng mỗi lần mở lại tab để tab đó tải lại dữ liệu mới nhất
+  int _phienBanTrangChu = 0;
+  int _phienBanLichHen = 0;
+  bool _moDaQua = false;
+
+  void _chuyenTab(int i, {bool daQua = false}) {
+    setState(() {
+      _tabDangChon = i;
+      if (i == 0) _phienBanTrangChu++;
+      if (i == 1) {
+        _phienBanLichHen++;
+        _moDaQua = daQua;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final cacTab = [
       _TabTrangChu(
+        key: ValueKey('trang_chu_$_phienBanTrangChu'),
         hoSo: widget.hoSo,
-        moTab: (i) => setState(() => _tabDangChon = i),
+        moTab: _chuyenTab,
+        moLichSu: () => _chuyenTab(1, daQua: true),
       ),
-      const ManHinhSapCo(
-        icon: Icons.event_note_outlined,
-        tieuDe: 'Lịch hẹn của bạn',
-        moTa: 'Danh sách lịch khám đã đặt sẽ hiện ở đây.',
+      TabLichHen(
+        key: ValueKey('lich_hen_$_phienBanLichHen'),
+        hoSo: widget.hoSo,
+        moDaQua: _moDaQua,
+        moTab: _chuyenTab,
       ),
       const ManHinhSapCo(
         icon: Icons.smart_toy_outlined,
@@ -53,7 +73,7 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tabDangChon,
-        onDestinationSelected: (i) => setState(() => _tabDangChon = i),
+        onDestinationSelected: _chuyenTab,
         backgroundColor: Colors.white,
         indicatorColor: AppTheme.mauChinhNhat,
         destinations: const [
@@ -84,8 +104,9 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
 class _TabTrangChu extends StatefulWidget {
   final HoSo hoSo;
   final ValueChanged<int> moTab;
+  final VoidCallback moLichSu;
 
-  const _TabTrangChu({required this.hoSo, required this.moTab});
+  const _TabTrangChu({super.key, required this.hoSo, required this.moTab, required this.moLichSu});
 
   @override
   State<_TabTrangChu> createState() => _TabTrangChuState();
@@ -193,7 +214,7 @@ class _TabTrangChuState extends State<_TabTrangChu> {
                 icon: Icons.medical_information_outlined,
                 tieuDe: 'Lịch sử khám',
                 moTa: 'Xem lại hồ sơ',
-                onTap: () => baoSapCo(context, 'Lịch sử khám'),
+                onTap: widget.moLichSu,
               ),
             ),
           ],

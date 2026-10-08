@@ -152,7 +152,10 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                         icon: Icons.schedule,
                         nhan: 'Ca khám',
                         giaTri: '${ca.tenCa} ${ca.khungGio}',
-                        phu: 'Còn ${ca.soConLai}/${ca.soToiDa} chỗ',
+                        phu: [
+                          if (ca.viTriPhong != null) ca.viTriPhong!,
+                          'Còn ${ca.soConLai}/${ca.soToiDa} chỗ',
+                        ].join(' · '),
                         cuoi: true,
                       ),
                     ],

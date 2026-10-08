@@ -75,7 +75,7 @@ class DichVuDatLich {
     if (bacSiIds.isEmpty) return [];
     final rows = await _chay(() => supabase
         .from('ca_kham')
-        .select('id, bac_si_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky')
+        .select('id, bac_si_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky, so_phong, tang')
         .inFilter('bac_si_id', bacSiIds)
         .gte('ngay_kham', _ngay(tuNgay))
         .lte('ngay_kham', _ngay(denNgay))
@@ -121,7 +121,7 @@ class DichVuDatLich {
 
     final caRows = await _chay(() => supabase
         .from('ca_kham')
-        .select('id, bac_si_id, khoa_benh_vien_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky')
+        .select('id, bac_si_id, khoa_benh_vien_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky, so_phong, tang')
         .inFilter('id', luot.map((l) => l['ca_kham_id']).toList()));
     final caTheoId = {for (final c in caRows) c['id'] as int: c};
 
@@ -157,9 +157,68 @@ class DichVuDatLich {
       tenKhoa: khoa.isEmpty ? '' : 'Khoa ${khoa.first['chuyen_khoa']?['ten_khoa'] ?? ''}',
       tenBacSi: hocVi.isEmpty ? 'BS. $hoTen' : '$hocVi $hoTen',
       tenCa: '${ca.tenCa} ${ca.khungGio}',
+      phongKham: ca.viTriPhong,
       ngayKham: ca.ngay,
       soThuTu: luotChon['so_thu_tu'] as int,
     );
+  }
+
+  /// Toàn bộ lượt khám của bệnh nhân đang đăng nhập, mới nhất trước.
+  Future<List<LuotKhamCuaToi>> layLichHenCuaToi() async {
+    final uid = supabase.auth.currentUser?.id;
+    if (uid == null) return [];
+
+    final luot = await _chay(() => supabase
+        .from('luot_kham')
+        .select('id, ca_kham_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si')
+        .eq('benh_nhan_id', uid));
+    if (luot.isEmpty) return [];
+
+    final caRows = await _chay(() => supabase
+        .from('ca_kham')
+        .select('id, bac_si_id, khoa_benh_vien_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky, so_phong, tang')
+        .inFilter('id', luot.map((l) => l['ca_kham_id']).toSet().toList()));
+    final caTheoId = {for (final c in caRows) c['id'] as int: c};
+
+    final khoaIds = caRows.map((c) => c['khoa_benh_vien_id']).toSet().toList();
+    final khoaRows = await _chay(() => supabase
+        .from('khoa_benh_vien')
+        .select('id, chuyen_khoa(ten_khoa), benh_vien(*)')
+        .inFilter('id', khoaIds));
+    final khoaTheoId = {for (final k in khoaRows) k['id'] as int: k};
+
+    final bacSiIds = caRows.map((c) => c['bac_si_id'] as String).toSet().toList();
+    final bsRows = await _chay(() => supabase.from('bac_si').select('id, hoc_vi').inFilter('id', bacSiIds));
+    final tenRows = await _chay(() => supabase.from('ho_so').select('id, ho_ten').inFilter('id', bacSiIds));
+    final hocVi = {for (final b in bsRows) b['id'] as String: (b['hoc_vi'] as String?) ?? ''};
+    final hoTen = {for (final h in tenRows) h['id'] as String: (h['ho_ten'] as String?) ?? 'Bác sĩ'};
+
+    final ds = <LuotKhamCuaToi>[];
+    for (final l in luot) {
+      final caRaw = caTheoId[l['ca_kham_id']];
+      if (caRaw == null) continue;
+      final ca = CaKham.tuJson(caRaw);
+      final khoa = khoaTheoId[caRaw['khoa_benh_vien_id']];
+      final bvRaw = khoa?['benh_vien'] as Map<String, dynamic>?;
+      final hv = hocVi[ca.bacSiId] ?? '';
+      final ten = hoTen[ca.bacSiId] ?? 'Bác sĩ';
+      ds.add(LuotKhamCuaToi(
+        id: l['id'] as int,
+        soThuTu: l['so_thu_tu'] as int,
+        trangThai: docTrangThai(l['trang_thai'] as String?),
+        trieuChung: l['trieu_chung'] as String?,
+        chanDoan: l['chan_doan'] as String?,
+        ghiChuBacSi: l['ghi_chu_bac_si'] as String?,
+        ca: ca,
+        benhVien: bvRaw == null
+            ? const BenhVien(id: 0, ten: 'Bệnh viện', diaChi: '')
+            : BenhVien.tuJson(bvRaw),
+        tenKhoa: 'Khoa ${khoa?['chuyen_khoa']?['ten_khoa'] ?? ''}',
+        tenBacSi: hv.isEmpty ? 'BS. $ten' : '$hv $ten',
+      ));
+    }
+    ds.sort((a, b) => b.ca.thoiDiemBatDau.compareTo(a.ca.thoiDiemBatDau));
+    return ds;
   }
 
   // ---------- tiện ích ----------

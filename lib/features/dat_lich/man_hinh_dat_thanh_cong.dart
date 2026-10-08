@@ -4,6 +4,7 @@ import '../../core/app_theme.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'dinh_dang.dart';
 import 'mo_hinh.dart';
+import 'the_trang_thai.dart';
 
 /// Bước cuối: phiếu khám điện tử với số thứ tự.
 class ManHinhDatThanhCong extends StatelessWidget {
@@ -87,7 +88,10 @@ class ManHinhDatThanhCong extends StatelessWidget {
                         TextSpan(
                             text: gioPhut(gioCoMat),
                             style: const TextStyle(fontWeight: FontWeight.w800)),
-                        const TextSpan(text: ' và báo số thứ tự tại quầy tiếp đón của khoa.'),
+                        TextSpan(
+                            text: ca.viTriPhong == null
+                                ? ' và báo số thứ tự tại quầy tiếp đón của khoa.'
+                                : ' tại ${ca.viTriPhong} và chờ gọi số thứ tự.'),
                       ]),
                       style: const TextStyle(color: Color(0xFF9A3412)),
                     ),
@@ -180,6 +184,10 @@ class _PhieuKham extends StatelessWidget {
                         color: AppTheme.mauChinh, fontSize: 64, fontWeight: FontWeight.w800, height: 1.1)),
                 Text('${ca.tenCa} · ${ca.khungGio}',
                     style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat)),
+                if (ca.viTriPhong != null) ...[
+                  const SizedBox(height: 10),
+                  NhanPhong(text: ca.viTriPhong!),
+                ],
               ],
             ),
           ),

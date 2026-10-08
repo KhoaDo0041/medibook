@@ -76,6 +76,18 @@ class TheLichKhamSapToi extends StatelessWidget {
                 ),
               ],
             ),
+            if (l.phongKham != null) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(Icons.meeting_room_outlined, size: 18, color: AppTheme.mauChinh),
+                  const SizedBox(width: 6),
+                  Text(l.phongKham!,
+                      style: chu.bodyMedium?.copyWith(
+                          color: AppTheme.mauChinh, fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),

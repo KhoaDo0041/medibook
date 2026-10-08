@@ -86,6 +86,8 @@ class CaKham {
   final Duration gioKetThuc;
   final int soToiDa;
   final int soDaDangKy;
+  final String? soPhong;
+  final int? tang;
 
   const CaKham({
     required this.id,
@@ -95,6 +97,8 @@ class CaKham {
     required this.gioKetThuc,
     required this.soToiDa,
     required this.soDaDangKy,
+    this.soPhong,
+    this.tang,
   });
 
   factory CaKham.tuJson(Map<String, dynamic> j) => CaKham(
@@ -105,7 +109,15 @@ class CaKham {
         gioKetThuc: _docGio(j['gio_ket_thuc'] as String),
         soToiDa: (j['so_luong_toi_da'] as int?) ?? 0,
         soDaDangKy: (j['so_da_dang_ky'] as int?) ?? 0,
+        soPhong: j['so_phong'] as String?,
+        tang: j['tang'] as int?,
       );
+
+  /// VD: "Phòng 204 · Tầng 2"; null nếu chưa có phòng.
+  String? get viTriPhong {
+    if (soPhong == null || soPhong!.trim().isEmpty) return null;
+    return tang == null ? 'Phòng $soPhong' : 'Phòng $soPhong · Tầng $tang';
+  }
 
   static Duration _docGio(String s) {
     final p = s.split(':');
@@ -142,4 +154,52 @@ class LuotKhamMoi {
         soThuTu: j['so_thu_tu'] as int,
         caKhamId: j['ca_kham_id'] as int,
       );
+}
+
+enum TrangThaiLuot { choKham, dangKham, daKham, daHuy }
+
+TrangThaiLuot docTrangThai(String? s) => switch (s) {
+      'dang_kham' => TrangThaiLuot.dangKham,
+      'da_kham' => TrangThaiLuot.daKham,
+      'da_huy' => TrangThaiLuot.daHuy,
+      _ => TrangThaiLuot.choKham,
+    };
+
+/// Một lượt khám của bệnh nhân, kèm đủ thông tin để hiển thị tab Lịch hẹn.
+class LuotKhamCuaToi {
+  final int id;
+  final int soThuTu;
+  final TrangThaiLuot trangThai;
+  final String? trieuChung;
+  final String? chanDoan;
+  final String? ghiChuBacSi;
+  final CaKham ca;
+  final BenhVien benhVien;
+  final String tenKhoa;
+  final String tenBacSi; // VD: "BS.CKII Lê Minh Châu"
+
+  const LuotKhamCuaToi({
+    required this.id,
+    required this.soThuTu,
+    required this.trangThai,
+    required this.trieuChung,
+    required this.chanDoan,
+    required this.ghiChuBacSi,
+    required this.ca,
+    required this.benhVien,
+    required this.tenKhoa,
+    required this.tenBacSi,
+  });
+
+  /// Còn hiệu lực: chưa huỷ, chưa khám xong, ca chưa kết thúc.
+  bool get sapToi =>
+      (trangThai == TrangThaiLuot.choKham || trangThai == TrangThaiLuot.dangKham) && !ca.daKetThuc;
+
+  /// Chỉ huỷ được khi đang chờ và ca chưa bắt đầu (giống luật trong database).
+  bool get huyDuoc =>
+      trangThai == TrangThaiLuot.choKham && DateTime.now().isBefore(ca.thoiDiemBatDau);
+
+  /// Ca đã qua mà không khám, không huỷ.
+  bool get vangMat =>
+      ca.daKetThuc && (trangThai == TrangThaiLuot.choKham || trangThai == TrangThaiLuot.dangKham);
 }
