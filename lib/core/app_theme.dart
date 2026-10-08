@@ -9,6 +9,9 @@ class AppTheme {
   static const Color mauNen = Color(0xFFF8FAFC);
   static const Color mauCam = Color(0xFFF97316);
   static const double boGoc = 12;
+  static const double boGocThe = 16; // thẻ lớn trên dashboard
+  static const Color mauChinhNhat = Color(0xFFEEF2FF); // nền xanh rất nhạt cho ô biểu tượng
+  static const Color mauVien = Color(0xFFE2E8F0);
 
   static ThemeData get theme {
     final khung = ThemeData(
