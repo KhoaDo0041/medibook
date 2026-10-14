@@ -113,7 +113,7 @@ class DichVuDatLich {
 
     final luot = await _chay(() => supabase
         .from('luot_kham')
-        .select('id, ca_kham_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si')
+        .select('id, ca_kham_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si, ly_do_huy')
         .eq('benh_nhan_id', uid));
     if (luot.isEmpty) return [];
 
@@ -152,6 +152,7 @@ class DichVuDatLich {
         trieuChung: l['trieu_chung'] as String?,
         chanDoan: l['chan_doan'] as String?,
         ghiChuBacSi: l['ghi_chu_bac_si'] as String?,
+        lyDoHuy: l['ly_do_huy'] as String?,
         ca: ca,
         benhVien: bvRaw == null
             ? const BenhVien(id: 0, ten: 'Bệnh viện', diaChi: '')

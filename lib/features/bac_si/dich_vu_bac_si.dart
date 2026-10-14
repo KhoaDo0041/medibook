@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/supabase_client.dart';
@@ -112,6 +113,68 @@ class DichVuBacSi {
     ]..sort((a, b) => b.ngay.compareTo(a.ngay));
   }
 
+  /// Bệnh nhân đã từng khám (hoặc vắng mặt) với bác sĩ đang đăng nhập.
+  /// RLS chỉ trả về lượt khám thuộc ca của bác sĩ này.
+  Future<List<BenhNhanCuaToi>> layBenhNhanCuaToi() async {
+    final luotRows = await _chay(() => supabase
+        .from('luot_kham')
+        .select('id, ca_kham_id, benh_nhan_id, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si')
+        .inFilter('trang_thai', ['da_kham', 'vang_mat']));
+    if (luotRows.isEmpty) return [];
+
+    final caRows = await _chay(() => supabase
+        .from('ca_kham')
+        .select('id, ngay_kham, gio_bat_dau')
+        .eq('bac_si_id', _uid)
+        .inFilter('id', luotRows.map((l) => l['ca_kham_id']).toSet().toList()));
+    final caTheoId = {for (final c in caRows) c['id'] as int: c};
+
+    final bnIds = luotRows.map((l) => l['benh_nhan_id'] as String).toSet().toList();
+    final hoSoRows = await _chay(() => supabase
+        .from('ho_so')
+        .select('id, ho_ten, gioi_tinh, ngay_sinh')
+        .inFilter('id', bnIds));
+    final hoSo = {for (final h in hoSoRows) h['id'] as String: h};
+
+    final nhom = <String, List<LanKham>>{};
+    for (final l in luotRows) {
+      final ca = caTheoId[l['ca_kham_id']];
+      if (ca == null) continue;
+      nhom.putIfAbsent(l['benh_nhan_id'] as String, () => []).add(LanKham(
+            luotId: l['id'] as int,
+            ngay: DateTime.parse(ca['ngay_kham'] as String),
+            gioBatDau: _docGio(ca['gio_bat_dau'] as String),
+            trangThai: docTrangThaiLuot(l['trang_thai'] as String?),
+            trieuChung: (l['trieu_chung'] as String?) ?? '',
+            chanDoan: l['chan_doan'] as String?,
+            loiDan: l['ghi_chu_bac_si'] as String?,
+          ));
+    }
+
+    final ds = <BenhNhanCuaToi>[];
+    nhom.forEach((id, cacLan) {
+      cacLan.sort((a, b) => b.ngay.add(b.gioBatDau).compareTo(a.ngay.add(a.gioBatDau)));
+      final h = hoSo[id];
+      final ten = (h?['ho_ten'] as String?)?.trim() ?? '';
+      ds.add(BenhNhanCuaToi(
+        id: id,
+        hoTen: ten.isEmpty ? 'Bệnh nhân' : ten,
+        gioiTinh: h?['gioi_tinh'] as String?,
+        ngaySinh: h?['ngay_sinh'] == null ? null : DateTime.tryParse(h!['ngay_sinh'] as String),
+        cacLan: cacLan,
+      ));
+    });
+    // Ai khám gần đây nhất lên trước; người chỉ có lượt vắng mặt xuống cuối
+    ds.sort((a, b) {
+      final ta = a.lanGanNhat, tb = b.lanGanNhat;
+      if (ta == null && tb == null) return a.hoTen.compareTo(b.hoTen);
+      if (ta == null) return 1;
+      if (tb == null) return -1;
+      return tb.ngay.add(tb.gioBatDau).compareTo(ta.ngay.add(ta.gioBatDau));
+    });
+    return ds;
+  }
+
   Future<int> goiSoTiepTheo(int caKhamId) async {
     final kq = await _rpc('goi_so_tiep_theo', {'p_ca_kham_id': caKhamId});
     return (kq as Map)['id'] as int;
@@ -173,7 +236,11 @@ class DichVuBacSi {
   }
 
   String _dichLoi(PostgrestException e) {
+    // In lỗi gốc ra Logcat để dễ tìm nguyên nhân (lọc: MediBook)
+    debugPrint('[MediBook][SUPABASE] code=${e.code} message=${e.message} details=${e.details}');
     if (RegExp(r'[À-ỹ]').hasMatch(e.message)) return e.message; // thông báo tiếng Việt từ hàm SQL
-    return 'Có lỗi xảy ra, vui lòng thử lại';
+    if (e.message.contains('check constraint')) return 'Database chưa cập nhật trạng thái mới (chạy lại file SQL 07)';
+    if (e.message.contains('Could not find the function')) return 'Database chưa có hàm này (chạy lại file SQL 07)';
+    return 'Có lỗi xảy ra (${e.code ?? 'không rõ mã'}), vui lòng thử lại';
   }
 }

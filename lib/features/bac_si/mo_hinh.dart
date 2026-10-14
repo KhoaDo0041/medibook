@@ -118,3 +118,58 @@ class LanKhamTruoc {
 
   const LanKhamTruoc({required this.ngay, required this.chanDoan});
 }
+
+/// Một lần đến khám (đã khám hoặc vắng mặt) của bệnh nhân với bác sĩ này.
+class LanKham {
+  final int luotId;
+  final DateTime ngay;
+  final Duration gioBatDau;
+  final TrangThaiLuotKham trangThai;
+  final String trieuChung;
+  final String? chanDoan;
+  final String? loiDan;
+
+  const LanKham({
+    required this.luotId,
+    required this.ngay,
+    required this.gioBatDau,
+    required this.trangThai,
+    required this.trieuChung,
+    this.chanDoan,
+    this.loiDan,
+  });
+
+  String get tenCa => gioBatDau.inHours < 12 ? 'Ca sáng' : 'Ca chiều';
+  bool get daKham => trangThai == TrangThaiLuotKham.daKham;
+}
+
+/// Một bệnh nhân bác sĩ đã từng khám, kèm toàn bộ các lần khám (mới nhất trước).
+class BenhNhanCuaToi {
+  final String id;
+  final String hoTen;
+  final String? gioiTinh;
+  final DateTime? ngaySinh;
+  final List<LanKham> cacLan;
+
+  const BenhNhanCuaToi({
+    required this.id,
+    required this.hoTen,
+    required this.cacLan,
+    this.gioiTinh,
+    this.ngaySinh,
+  });
+
+  List<LanKham> get cacLanDaKham => cacLan.where((l) => l.daKham).toList();
+  int get soLanKham => cacLanDaKham.length;
+  LanKham? get lanGanNhat => cacLanDaKham.isEmpty ? null : cacLanDaKham.first;
+  LanKham? get lanDauTien => cacLanDaKham.isEmpty ? null : cacLanDaKham.last;
+
+  int? get tuoi {
+    final ns = ngaySinh;
+    if (ns == null) return null;
+    final nay = DateTime.now();
+    var t = nay.year - ns.year;
+    if (nay.month < ns.month || (nay.month == ns.month && nay.day < ns.day)) t--;
+    return t;
+  }
+}

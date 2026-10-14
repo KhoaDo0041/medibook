@@ -87,8 +87,16 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
     }
   }
 
+  /// Đặt lại với một bác sĩ cụ thể, và bác sĩ đó vẫn còn nhận lịch.
+  bool get _chiMotBacSi =>
+      widget.bacSiIdBanDau != null && _bacSi.any((b) => b.id == widget.bacSiIdBanDau);
+
+  /// Đặt lại nhưng bác sĩ cũ không còn trong danh sách (nghỉ việc / chuyển đi).
+  bool get _bacSiCuKhongCon =>
+      widget.bacSiIdBanDau != null && !_dangTai && !_chiMotBacSi;
+
   List<BacSi> get _bacSiLoc => _bacSi.where((b) {
-        if (widget.bacSiIdBanDau != null) return b.id == widget.bacSiIdBanDau;
+        if (_chiMotBacSi) return b.id == widget.bacSiIdBanDau;
         return _chuyenKhoaChon == null || b.chuyenKhoaId == _chuyenKhoaChon;
       }).toList();
 
@@ -157,9 +165,27 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
     return [
       _TheBenhVienDau(benhVien: widget.benhVien),
       const SizedBox(height: 24),
+      if (_bacSiCuKhongCon) ...[
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFEDD5),
+            borderRadius: BorderRadius.circular(AppTheme.boGoc),
+          ),
+          child: const Row(children: [
+            Icon(Icons.info_outline, color: Color(0xFFC2410C)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text('Bác sĩ bạn khám trước đây hiện không còn nhận lịch. Bạn có thể chọn bác sĩ khác.',
+                  style: TextStyle(color: Color(0xFF9A3412))),
+            ),
+          ]),
+        ),
+        const SizedBox(height: 16),
+      ],
 
       // Chuyên khoa
-      if (widget.bacSiIdBanDau == null) ...[
+      if (!_chiMotBacSi) ...[
         Row(
           children: [
             Expanded(

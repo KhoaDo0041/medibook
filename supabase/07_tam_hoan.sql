@@ -1,6 +1,21 @@
 -- BƯỚC 7: Tạm hoãn khi bệnh nhân chưa có mặt; chỉ tính vắng mặt khi ca đã kết thúc;
 -- kết quả khám bị khoá sau khi hoàn tất. Chạy lại được nhiều lần.
 
+-- Xoá mọi ràng buộc CHECK cũ trên cột trang_thai (bảng tạo từ thời bản Java có sẵn
+-- một ràng buộc chỉ cho 4 trạng thái, làm 'tam_hoan' và 'vang_mat' bị từ chối)
+do $$
+declare r record;
+begin
+  for r in
+    select conname from pg_constraint
+    where conrelid = 'public.luot_kham'::regclass and contype = 'c'
+      and pg_get_constraintdef(oid) like '%trang_thai%'
+  loop
+    execute format('alter table luot_kham drop constraint %I', r.conname);
+    raise notice 'Đã xoá ràng buộc %', r.conname;
+  end loop;
+end $$;
+
 alter table luot_kham drop constraint if exists luot_kham_trang_thai_hop_le;
 alter table luot_kham
   add constraint luot_kham_trang_thai_hop_le

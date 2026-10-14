@@ -69,7 +69,20 @@ class DichVuTaiKhoan {
           ? 'Tài khoản này không phải tài khoản bác sĩ'
           : 'Đây là tài khoản bác sĩ. Vui lòng chọn "Tôi là Bác sĩ".');
     }
+
+    // Bác sĩ đã nghỉ việc thì không cho vào
+    if (hoSo.laBacSi && !await bacSiConHoatDong()) {
+      await dangXuat();
+      throw const LoiTaiKhoan(
+          'Tài khoản bác sĩ đã ngừng hoạt động. Vui lòng liên hệ quản trị viên.');
+    }
     return hoSo;
+  }
+
+  /// Bác sĩ đang đăng nhập còn làm việc không (trang_thai = 'da_duyet').
+  static Future<bool> bacSiConHoatDong() async {
+    final kq = await supabase.rpc('bac_si_con_hoat_dong');
+    return kq == true;
   }
 
   /// Đăng ký tài khoản bệnh nhân. Supabase sẽ gửi mã xác nhận đến email.

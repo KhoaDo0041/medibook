@@ -20,7 +20,13 @@ class _CongVaoAppState extends State<CongVaoApp> {
 
   Future<HoSo?> _taiHoSo() async {
     try {
-      return await DichVuTaiKhoan.layHoSoHienTai();
+      final hoSo = await DichVuTaiKhoan.layHoSoHienTai();
+      // Bác sĩ đã nghỉ việc mà vẫn còn phiên đăng nhập cũ: đăng xuất luôn
+      if (hoSo != null && hoSo.laBacSi && !await DichVuTaiKhoan.bacSiConHoatDong()) {
+        await DichVuTaiKhoan.dangXuat();
+        return null;
+      }
+      return hoSo;
     } catch (_) {
       return null; // mất mạng hoặc lỗi: coi như chưa đăng nhập
     }

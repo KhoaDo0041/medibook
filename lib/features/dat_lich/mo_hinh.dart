@@ -175,6 +175,7 @@ class LuotKhamCuaToi {
   final String? trieuChung;
   final String? chanDoan;
   final String? ghiChuBacSi;
+  final String? lyDoHuy; // VD "Bác sĩ nghỉ việc"; null = bệnh nhân tự huỷ
   final CaKham ca;
   final BenhVien benhVien;
   final String tenKhoa;
@@ -187,6 +188,7 @@ class LuotKhamCuaToi {
     required this.trieuChung,
     required this.chanDoan,
     required this.ghiChuBacSi,
+    this.lyDoHuy,
     required this.ca,
     required this.benhVien,
     required this.tenKhoa,

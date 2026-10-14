@@ -90,7 +90,8 @@ class _TabLichHenState extends State<TabLichHen> {
         builder: (_) => ManHinhChonBacSi(
           hoSo: widget.hoSo,
           benhVien: l.benhVien,
-          bacSiIdBanDau: l.ca.bacSiId,
+          // Bác sĩ nghỉ việc thì mở cả bệnh viện để chọn bác sĩ khác
+          bacSiIdBanDau: l.lyDoHuy == null ? l.ca.bacSiId : null,
         ),
       ),
     );
@@ -535,7 +536,9 @@ class _TheDaQua extends StatelessWidget {
     final chanDoan = luot.chanDoan?.trim();
 
     final String? ghiChu = luot.trangThai == TrangThaiLuot.daHuy
-        ? 'Bạn đã huỷ lịch khám này'
+        ? (luot.lyDoHuy != null
+            ? 'Lịch bị huỷ: ${luot.lyDoHuy}. Vui lòng đặt lại với bác sĩ khác.'
+            : 'Bạn đã huỷ lịch khám này')
         : luot.vangMat
             ? 'Bạn đã không đến khám ca này'
             : null;
@@ -621,7 +624,8 @@ class _TheDaQua extends StatelessWidget {
               child: Row(children: [
                 const Icon(Icons.info_outline, size: 16, color: AppTheme.mauChuNhat),
                 const SizedBox(width: 8),
-                Text(ghiChu, style: const TextStyle(color: AppTheme.mauChuNhat, fontSize: 13)),
+                Expanded(
+                    child: Text(ghiChu, style: const TextStyle(color: AppTheme.mauChuNhat, fontSize: 13))),
               ]),
             ),
           ],

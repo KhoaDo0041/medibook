@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
 import '../../core/widgets/anh_dai_dien.dart';
-import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
 import 'dich_vu_bac_si.dart';
 import 'man_hinh_kham_benh.dart';
 import 'mo_hinh.dart';
+import 'tab_benh_nhan.dart';
 import 'widgets/danh_sach_ca.dart';
 import 'widgets/o_thong_ke.dart';
 import 'widgets/thanh_chon_ngay.dart';
@@ -26,16 +26,13 @@ class TrangChuBacSi extends StatefulWidget {
 
 class _TrangChuBacSiState extends State<TrangChuBacSi> {
   int _tabDangChon = 0;
+  int _phienBanBenhNhan = 0; // tăng mỗi lần mở tab Bệnh nhân để tải lại
 
   @override
   Widget build(BuildContext context) {
     final cacTab = [
       _TabLichKham(hoSo: widget.hoSo),
-      const ManHinhSapCo(
-        icon: Icons.groups_outlined,
-        tieuDe: 'Bệnh nhân',
-        moTa: 'Danh sách bệnh nhân bạn đã khám và hồ sơ của họ sẽ hiện ở đây.',
-      ),
+      TabBenhNhan(key: ValueKey('benh_nhan_$_phienBanBenhNhan')),
       TabHoSo(hoSo: widget.hoSo),
     ];
 
@@ -43,7 +40,10 @@ class _TrangChuBacSiState extends State<TrangChuBacSi> {
       body: SafeArea(child: IndexedStack(index: _tabDangChon, children: cacTab)),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tabDangChon,
-        onDestinationSelected: (i) => setState(() => _tabDangChon = i),
+        onDestinationSelected: (i) => setState(() {
+          _tabDangChon = i;
+          if (i == 1) _phienBanBenhNhan++;
+        }),
         backgroundColor: Colors.white,
         indicatorColor: AppTheme.mauChinhNhat,
         destinations: const [
