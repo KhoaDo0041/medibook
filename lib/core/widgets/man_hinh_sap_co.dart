@@ -26,12 +26,16 @@ class ManHinhSapCo extends StatelessWidget {
           children: [
             Icon(icon, size: 56, color: AppTheme.mauChinh),
             const SizedBox(height: 16),
-            Text(tieuDe,
-                style: chu.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              tieuDe,
+              style: chu.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
-            Text(moTa,
-                textAlign: TextAlign.center,
-                style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat)),
+            Text(
+              moTa,
+              textAlign: TextAlign.center,
+              style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
+            ),
           ],
         ),
       ),
@@ -43,5 +47,7 @@ class ManHinhSapCo extends StatelessWidget {
 void baoSapCo(BuildContext context, String tenChucNang) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text('$tenChucNang đang được phát triển')));
+    ..showSnackBar(
+      SnackBar(content: Text('$tenChucNang đang được phát triển')),
+    );
 }

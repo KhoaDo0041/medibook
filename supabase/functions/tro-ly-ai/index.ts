@@ -64,6 +64,119 @@ const SCHEMA = {
   required: ['tra_loi', 'muc_do', 'can_hoi_them', 'goi_y_khoa'],
 };
 
+// ---------- Gọi Gemini có giới hạn thời gian ----------
+async function goiGemini(model: string, noiDung: string): Promise<Response | null> {
+  try {
+    return await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_KEY },
+        body: noiDung,
+        signal: AbortSignal.timeout(12_000),
+      },
+    );
+  } catch {
+    return null; // hết 12 giây hoặc lỗi mạng
+  }
+}
+
+// ---------- Danh sách model để thử lần lượt ----------
+// Model chính (secret GEMINI_MODEL) trước, rồi model dự phòng (GEMINI_MODEL_DU_PHONG),
+// rồi tự hỏi Google xem tài khoản đang dùng được những model "flash" nào.
+let boNhoModel: string[] | null = null;
+async function danhSachModel(): Promise<string[]> {
+  const ds = [MODEL, Deno.env.get('GEMINI_MODEL_DU_PHONG') ?? ''].filter(Boolean);
+  if (boNhoModel === null) {
+    boNhoModel = [];
+    try {
+      const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {
+        headers: { 'x-goog-api-key': GEMINI_KEY },
+        signal: AbortSignal.timeout(5_000),
+      });
+      if (r.ok) {
+        const j = await r.json();
+        boNhoModel = (j.models ?? [])
+          .filter((m: { name: string; supportedGenerationMethods?: string[] }) =>
+            m.supportedGenerationMethods?.includes('generateContent') &&
+            /flash/.test(m.name) &&
+            !/(image|tts|audio|live|embedding|preview|exp)/.test(m.name))
+          .map((m: { name: string }) => m.name.replace('models/', ''))
+          // ưu tiên bản "lite" (ít người dùng hơn, nhanh hơn), rồi bản mới hơn
+          .sort((x: string, y: string) =>
+            Number(y.includes('lite')) - Number(x.includes('lite')) || y.localeCompare(x));
+      }
+    } catch { /* không lấy được danh sách: chỉ dùng model đã cấu hình */ }
+  }
+  return [...new Set([...ds, ...boNhoModel])].slice(0, 4);
+}
+
+// ---------- Gợi ý dự phòng khi Gemini không phản hồi ----------
+// Đọc từ khoá trong lời kể của bệnh nhân để gợi ý chuyên khoa có trong hệ thống.
+function goiYDuPhong(
+  tinNhan: { vai_tro: string; noi_dung: string }[],
+  dsKhoa: { id: number; ten_khoa: string }[],
+  coAnh: boolean,
+) {
+  const loi = tinNhan
+    .filter((t) => t.vai_tro !== 'tro_ly')
+    .map((t) => String(t.noi_dung ?? ''))
+    .join(' ')
+    .toLowerCase();
+  // So khớp nguyên từ (để "ho" không khớp nhầm với "cho", "hoặc"…)
+  const co = (...tu: string[]) =>
+    tu.some((x) => new RegExp(`(^|[^\\p{L}])${x}([^\\p{L}]|$)`, 'u').test(loi));
+
+  const ghiChu = '\n\n(Trợ lý AI đang quá tải nên đây là gợi ý nhanh theo từ khoá. '
+    + 'Thông tin chỉ mang tính tham khảo, không thay thế chẩn đoán của bác sĩ.)';
+
+  if (co('đau ngực', 'khó thở', 'méo miệng', 'nói khó', 'liệt', 'co giật', 'ngất', 'bất tỉnh',
+         'lơ mơ', 'nôn ra máu', 'chảy máu không cầm', 'cổ cứng', 'tự tử', 'tự hại')) {
+    return {
+      tra_loi: 'Các dấu hiệu bạn kể có thể nguy hiểm. Hãy gọi 115 hoặc đến cơ sở cấp cứu gần nhất NGAY, đừng chờ đặt lịch.',
+      muc_do: 'cap_cuu', can_hoi_them: false, goi_y_khoa: [], du_phong: true,
+    };
+  }
+
+  const quyTac: [string, string[], string][] = [
+    ['Nhi', ['con mình', 'con tôi', 'con em', 'bé', 'bé nhà', 'trẻ', 'cháu', 'tháng tuổi', 'em bé'],
+      'Người bệnh là trẻ nhỏ nên khám chuyên khoa Nhi.'],
+    ['Mắt', ['mắt', 'nhìn mờ', 'cộm', 'chảy nước mắt', 'ghèn'],
+      'Triệu chứng liên quan đến mắt.'],
+    ['Răng Hàm Mặt', ['răng', 'nướu', 'lợi', 'hàm', 'nhổ', 'sâu răng', 'hôi miệng'],
+      'Triệu chứng ở răng, nướu hoặc hàm.'],
+    ['Tai Mũi Họng', ['họng', 'ho', 'mũi', 'tai', 'khàn tiếng', 'nghẹt', 'sổ mũi', 'amidan', 'ù tai'],
+      'Triệu chứng ở tai, mũi hoặc họng.'],
+    ['Da liễu', ['da', 'mẩn', 'ngứa', 'mụn', 'phát ban', 'dị ứng', 'cháy nắng', 'bỏng nắng', 'nấm', 'lở', 'vết'],
+      'Triệu chứng biểu hiện trên da.'],
+  ];
+  const tim = (ten: string) => dsKhoa.find((k) => k.ten_khoa.toLowerCase() === ten.toLowerCase());
+  const goiY: { id: number; ten: string; ly_do: string }[] = [];
+  for (const [ten, tu, lyDo] of quyTac) {
+    const k = tim(ten);
+    if (k && co(...tu) && goiY.length < 2) goiY.push({ id: k.id, ten: k.ten_khoa, ly_do: lyDo });
+    if (goiY[0]?.ten === 'Nhi') break; // trẻ em: chỉ gợi ý khoa Nhi
+  }
+  if (goiY.length === 0 && coAnh) {
+    const k = tim('Da liễu');
+    if (k) goiY.push({ id: k.id, ten: k.ten_khoa, ly_do: 'Ảnh bạn gửi có thể là tổn thương trên da.' });
+  }
+  if (goiY.length === 0) {
+    const k = tim('Nội tổng quát');
+    if (k) goiY.push({ id: k.id, ten: k.ten_khoa, ly_do: 'Bác sĩ Nội tổng quát sẽ khám ban đầu và hướng dẫn tiếp.' });
+  }
+
+  const kamSom = co('sốt cao', 'kéo dài', 'nhiều ngày', 'tuần', 'ngày càng', 'nặng hơn', 'không đỡ');
+  return {
+    tra_loi: `Dựa trên những gì bạn kể, bạn nên đến khám ${goiY.map((g) => 'khoa ' + g.ten).join(' hoặc ')}.`
+      + (kamSom ? ' Triệu chứng đã kéo dài hoặc nặng dần, bạn nên đi khám sớm.' : '') + ghiChu,
+    muc_do: kamSom ? 'nen_kham_som' : 'thong_thuong',
+    can_hoi_them: false,
+    goi_y_khoa: goiY,
+    du_phong: true,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
 
@@ -101,10 +214,9 @@ Deno.serve(async (req) => {
       contents[contents.length - 1].parts.push({ inline_data: { mime_type: anh.mime, data: anh.base64 } });
     }
 
-    // 4. Gọi Gemini, yêu cầu trả JSON đúng khuôn
-    // Gemini đôi khi quá tải (503) → thử lại tối đa 3 lần, rồi chuyển model dự phòng nếu có
-    const DU_PHONG = Deno.env.get('GEMINI_MODEL_DU_PHONG');
-    const dsModel = DU_PHONG ? [MODEL, DU_PHONG] : [MODEL];
+    // 4. Gọi Gemini, yêu cầu trả JSON đúng khuôn.
+    //    Gemini miễn phí hay quá tải (503) → thử lần lượt nhiều model, mỗi lần tối đa 12 giây.
+    //    Nếu tất cả đều lỗi → dùng bộ gợi ý dự phòng theo từ khoá, app KHÔNG bao giờ báo lỗi.
     const noiDung = JSON.stringify({
       systemInstruction: { parts: [{ text: loiNhacHeThong(khoa) }] },
       contents,
@@ -114,35 +226,29 @@ Deno.serve(async (req) => {
         responseSchema: SCHEMA,
       },
     });
-    let res!: Response;
-    thu: for (const m of dsModel) {
-      for (let lan = 0; lan < 3; lan++) {
-        res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_KEY },
-            body: noiDung,
-          },
-        );
-        if (res.ok) break thu;
-        if (![429, 500, 503].includes(res.status)) break thu;
-        if (m === dsModel[dsModel.length - 1] && lan === 2) break thu; // hết lượt thử
-        console.warn(`Gemini ${m} lỗi ${res.status}, thử lại lần ${lan + 2}`);
-        await res.body?.cancel();
-        await new Promise((r) => setTimeout(r, 1000 * (lan + 1)));
+    const batDau = Date.now();
+    let res: Response | null = null;
+    const dsModel = await danhSachModel();
+    for (let i = 0; i < dsModel.length && Date.now() - batDau < 25_000; i++) {
+      const m = dsModel[i];
+      const r = await goiGemini(m, noiDung);
+      if (r?.ok) {
+        res = r;
+        if (i > 0) console.warn(`Đã chuyển sang model dự phòng ${m}`);
+        break;
+      }
+      console.warn(`Gemini ${m} lỗi ${r ? r.status : 'quá thời gian'}`, r ? (await r.text()).slice(0, 300) : '');
+      // Model chính: chờ chút rồi thử lại 1 lần trước khi đổi model
+      if (i === 0 && r && [429, 500, 503].includes(r.status)) {
+        await new Promise((x) => setTimeout(x, 700));
+        const r2 = await goiGemini(m, noiDung);
+        if (r2?.ok) { res = r2; break; }
+        if (r2) await r2.body?.cancel();
       }
     }
-    if (!res.ok) {
-      const chiTiet = await res.text();
-      console.error('Gemini lỗi', res.status, chiTiet);
-      const s = res.status;
-      const loi = s === 429 ? 'Trợ lý AI đang quá tải hoặc hết lượt miễn phí, thử lại sau ít phút'
-        : s === 400 && chiTiet.includes('API_KEY') ? 'Khoá Gemini không hợp lệ (kiểm tra secret GEMINI_API_KEY)'
-        : s === 403 ? 'Khoá Gemini bị từ chối (403) – kiểm tra key hoặc bật Generative Language API'
-        : s === 404 ? `Không tìm thấy model ${MODEL} – đặt secret GEMINI_MODEL`
-        : 'Trợ lý AI đang bận, vui lòng thử lại sau ít phút';
-      return json({ loi: `${loi} [mã ${s}]` }, 502);
+    if (!res) {
+      console.error('Tất cả model Gemini đều lỗi → dùng gợi ý dự phòng');
+      return json(goiYDuPhong(tinNhan, khoa, Boolean(anh?.base64)));
     }
     const g = await res.json();
     const text: string = (g.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? '').join('');

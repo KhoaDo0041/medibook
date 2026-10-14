@@ -14,13 +14,12 @@ class KetQuaViTri {
   bool get co => trangThai == TrangThaiViTri.coViTri;
 
   String get loiNhan => switch (trangThai) {
-        TrangThaiViTri.coViTri => 'Sắp xếp theo khoảng cách từ vị trí của bạn',
-        TrangThaiViTri.tatDinhVi => 'Định vị đang tắt, danh sách sắp theo tên',
-        TrangThaiViTri.tuChoi ||
-        TrangThaiViTri.tuChoiVinhVien =>
-          'Chưa cấp quyền vị trí, danh sách sắp theo tên',
-        TrangThaiViTri.loi => 'Không lấy được vị trí, danh sách sắp theo tên',
-      };
+    TrangThaiViTri.coViTri => 'Sắp xếp theo khoảng cách từ vị trí của bạn',
+    TrangThaiViTri.tatDinhVi => 'Định vị đang tắt, danh sách sắp theo tên',
+    TrangThaiViTri.tuChoi || TrangThaiViTri.tuChoiVinhVien =>
+      'Chưa cấp quyền vị trí, danh sách sắp theo tên',
+    TrangThaiViTri.loi => 'Không lấy được vị trí, danh sách sắp theo tên',
+  };
 }
 
 /// Lấy vị trí hiện tại (xin quyền nếu cần). Không bao giờ ném lỗi.
@@ -52,7 +51,11 @@ Future<KetQuaViTri> layViTri() async {
       vt = await Geolocator.getLastKnownPosition();
     }
     if (vt == null) return const KetQuaViTri(TrangThaiViTri.loi);
-    return KetQuaViTri(TrangThaiViTri.coViTri, viDo: vt.latitude, kinhDo: vt.longitude);
+    return KetQuaViTri(
+      TrangThaiViTri.coViTri,
+      viDo: vt.latitude,
+      kinhDo: vt.longitude,
+    );
   } catch (_) {
     return const KetQuaViTri(TrangThaiViTri.loi);
   }

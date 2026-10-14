@@ -53,28 +53,34 @@ class DichVuTaiKhoan {
       throw LoiTaiKhoan('Đăng nhập thất bại: ${e.message}');
     } catch (_) {
       throw const LoiTaiKhoan(
-          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
     }
 
     final hoSo = await layHoSoHienTai();
     if (hoSo == null) {
       await dangXuat();
-      throw const LoiTaiKhoan('Tài khoản chưa có hồ sơ. Vui lòng liên hệ hỗ trợ.');
+      throw const LoiTaiKhoan(
+        'Tài khoản chưa có hồ sơ. Vui lòng liên hệ hỗ trợ.',
+      );
     }
 
     // Chọn "Tôi là Bác sĩ" nhưng tài khoản là bệnh nhân (hoặc ngược lại)
     if (hoSo.vaiTro != vaiTroMongMuon) {
       await dangXuat();
-      throw LoiTaiKhoan(vaiTroMongMuon == VaiTro.bacSi
-          ? 'Tài khoản này không phải tài khoản bác sĩ'
-          : 'Đây là tài khoản bác sĩ. Vui lòng chọn "Tôi là Bác sĩ".');
+      throw LoiTaiKhoan(
+        vaiTroMongMuon == VaiTro.bacSi
+            ? 'Tài khoản này không phải tài khoản bác sĩ'
+            : 'Đây là tài khoản bác sĩ. Vui lòng chọn "Tôi là Bác sĩ".',
+      );
     }
 
     // Bác sĩ đã nghỉ việc thì không cho vào
     if (hoSo.laBacSi && !await bacSiConHoatDong()) {
       await dangXuat();
       throw const LoiTaiKhoan(
-          'Tài khoản bác sĩ đã ngừng hoạt động. Vui lòng liên hệ quản trị viên.');
+        'Tài khoản bác sĩ đã ngừng hoạt động. Vui lòng liên hệ quản trị viên.',
+      );
     }
     return hoSo;
   }
@@ -109,7 +115,8 @@ class DichVuTaiKhoan {
       throw LoiTaiKhoan(_dichLoi(e));
     } catch (_) {
       throw const LoiTaiKhoan(
-          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
     }
   }
 
@@ -128,13 +135,15 @@ class DichVuTaiKhoan {
       throw LoiTaiKhoan(_dichLoi(e));
     } catch (_) {
       throw const LoiTaiKhoan(
-          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
     }
 
     final hoSo = await layHoSoHienTai();
     if (hoSo == null) {
       throw const LoiTaiKhoan(
-          'Đã xác nhận email nhưng chưa có hồ sơ. Vui lòng liên hệ hỗ trợ.');
+        'Đã xác nhận email nhưng chưa có hồ sơ. Vui lòng liên hệ hỗ trợ.',
+      );
     }
     return hoSo;
   }
@@ -147,7 +156,8 @@ class DichVuTaiKhoan {
       throw LoiTaiKhoan(_dichLoi(e));
     } catch (_) {
       throw const LoiTaiKhoan(
-          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
     }
   }
 
@@ -160,7 +170,8 @@ class DichVuTaiKhoan {
       throw LoiTaiKhoan(_dichLoi(e));
     } catch (_) {
       throw const LoiTaiKhoan(
-          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
     }
   }
 
@@ -183,7 +194,8 @@ class DichVuTaiKhoan {
       throw LoiTaiKhoan(_dichLoi(e));
     } catch (_) {
       throw const LoiTaiKhoan(
-          'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.');
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
     }
   }
 

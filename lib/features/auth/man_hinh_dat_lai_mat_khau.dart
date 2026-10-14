@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../core/app_theme.dart';
 import '../../core/kiem_tra_nhap.dart';
+import '../../core/widgets/khung_xac_thuc.dart';
+import '../../core/widgets/hieu_ung.dart';
 import 'dich_vu_tai_khoan.dart';
 import 'man_hinh_chao_mung.dart';
 
@@ -78,13 +79,14 @@ class _ManHinhDatLaiMatKhauState extends State<ManHinhDatLaiMatKhau> {
 
       // Về màn hình chào mừng để đăng nhập lại bằng mật khẩu mới
       final thongBao = ScaffoldMessenger.of(context);
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const ManHinhChaoMung()),
-        (route) => false,
+      Navigator.of(
+        context,
+      ).pushAndRemoveUntil(trangMem(const ManHinhChaoMung()), (route) => false);
+      thongBao.showSnackBar(
+        const SnackBar(
+          content: Text('Đã đổi mật khẩu. Vui lòng đăng nhập lại.'),
+        ),
       );
-      thongBao.showSnackBar(const SnackBar(
-        content: Text('Đã đổi mật khẩu. Vui lòng đăng nhập lại.'),
-      ));
     } on LoiTaiKhoan catch (e) {
       if (!mounted) return;
       setState(() => _loi = e.thongBao);
@@ -112,123 +114,95 @@ class _ManHinhDatLaiMatKhauState extends State<ManHinhDatLaiMatKhau> {
   Widget _nutConMat() {
     return IconButton(
       tooltip: _anMatKhau ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
-      icon: Icon(_anMatKhau
-          ? Icons.visibility_outlined
-          : Icons.visibility_off_outlined),
+      icon: Icon(
+        _anMatKhau ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+      ),
       onPressed: () => setState(() => _anMatKhau = !_anMatKhau),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final chu = Theme.of(context).textTheme;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _khoaForm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Đặt mật khẩu mới',
-                  style: chu.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Nếu ${widget.email} đã đăng ký MediBook, mã xác nhận đã được gửi đến email này.',
-                  style: chu.bodyLarge?.copyWith(color: AppTheme.mauChuNhat),
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
-                  controller: _oMa,
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  maxLength: 8,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    labelText: 'Mã xác nhận',
-                    prefixIcon: Icon(Icons.pin_outlined),
-                    counterText: '',
-                  ),
-                  validator: (giaTri) {
-                    if (giaTri == null || giaTri.trim().length < 6) {
-                      return 'Vui lòng nhập đủ mã xác nhận';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _oMatKhau,
-                  obscureText: _anMatKhau,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Mật khẩu mới',
-                    helperText: 'Ít nhất 8 ký tự, có chữ hoa, chữ thường và số',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: _nutConMat(),
-                  ),
-                  validator: KiemTraNhap.matKhauMoi,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _oNhapLai,
-                  obscureText: _anMatKhau,
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _datLai(),
-                  decoration: InputDecoration(
-                    labelText: 'Nhập lại mật khẩu mới',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: _nutConMat(),
-                  ),
-                  validator: (giaTri) {
-                    if (giaTri == null || giaTri.isEmpty) {
-                      return 'Vui lòng nhập lại mật khẩu';
-                    }
-                    if (giaTri != _oMatKhau.text) return 'Mật khẩu nhập lại không khớp';
-                    return null;
-                  },
-                ),
-                if (_loi != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    _loi!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
-                ],
-                if (_thongBao != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    _thongBao!,
-                    style: const TextStyle(color: Color(0xFF15803D)),
-                  ),
-                ],
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: _dangXuLy ? null : _datLai,
-                  child: _dangXuLy
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.5),
-                        )
-                      : const Text('Đổi mật khẩu'),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: _giayConLai > 0 ? null : _guiLai,
-                  child: Text(_giayConLai > 0
-                      ? 'Gửi lại mã sau $_giayConLai giây'
-                      : 'Gửi lại mã'),
-                ),
-              ],
+    return KhungXacThuc(
+      tieuDe: 'Đặt mật khẩu mới',
+      moTa:
+          'Nếu ${widget.email} đã đăng ký MediBook, mã xác nhận đã được gửi đến email này.',
+      icon: Icons.password_rounded,
+      lanLac: _loi?.hashCode ?? 0,
+      child: Form(
+        key: _khoaForm,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _oMa,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              maxLength: 8,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                labelText: 'Mã xác nhận',
+                prefixIcon: Icon(Icons.pin_outlined),
+                counterText: '',
+              ),
+              validator: (giaTri) {
+                if (giaTri == null || giaTri.trim().length < 6) {
+                  return 'Vui lòng nhập đủ mã xác nhận';
+                }
+                return null;
+              },
             ),
-          ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _oMatKhau,
+              obscureText: _anMatKhau,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                labelText: 'Mật khẩu mới',
+                helperText: 'Ít nhất 8 ký tự, có chữ hoa, chữ thường và số',
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: _nutConMat(),
+              ),
+              validator: KiemTraNhap.matKhauMoi,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _oNhapLai,
+              obscureText: _anMatKhau,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) => _datLai(),
+              decoration: InputDecoration(
+                labelText: 'Nhập lại mật khẩu mới',
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: _nutConMat(),
+              ),
+              validator: (giaTri) {
+                if (giaTri == null || giaTri.isEmpty) {
+                  return 'Vui lòng nhập lại mật khẩu';
+                }
+                if (giaTri != _oMatKhau.text)
+                  return 'Mật khẩu nhập lại không khớp';
+                return null;
+              },
+            ),
+            HopThongBao(noiDung: _loi),
+            HopThongBao(noiDung: _thongBao, thanhCong: true),
+            const SizedBox(height: 24),
+            NutGradient(
+              nhan: 'Đổi mật khẩu',
+              dangXuLy: _dangXuLy,
+              onPressed: _datLai,
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: _giayConLai > 0 ? null : _guiLai,
+              child: Text(
+                _giayConLai > 0
+                    ? 'Gửi lại mã sau $_giayConLai giây'
+                    : 'Gửi lại mã',
+              ),
+            ),
+          ],
         ),
       ),
     );

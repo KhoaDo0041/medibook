@@ -37,11 +37,19 @@ class ManHinhKetQuaKham extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('MÃ PHIẾU',
-                              style: chu.labelSmall
-                                  ?.copyWith(color: AppTheme.mauChuNhat, letterSpacing: 0.5)),
-                          Text('#MB-${luot.id.toString().padLeft(6, '0')}',
-                              style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                          Text(
+                            'MÃ PHIẾU',
+                            style: chu.labelSmall?.copyWith(
+                              color: AppTheme.mauChuNhat,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          Text(
+                            '#MB-${luot.id.toString().padLeft(6, '0')}',
+                            style: chu.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -51,13 +59,20 @@ class ManHinhKetQuaKham extends StatelessWidget {
                 const Divider(height: 24, color: AppTheme.mauVien),
                 _Dong(
                   icon: Icons.event_outlined,
-                  text: '${ngayDayDu(luot.ca.ngay)} · ${luot.ca.tenCa} ${luot.ca.khungGio}',
+                  text:
+                      '${ngayDayDu(luot.ca.ngay)} · ${luot.ca.tenCa} ${luot.ca.khungGio}',
                 ),
                 const SizedBox(height: 6),
-                _Dong(icon: Icons.local_hospital_outlined, text: luot.benhVien.ten),
+                _Dong(
+                  icon: Icons.local_hospital_outlined,
+                  text: luot.benhVien.ten,
+                ),
                 if (luot.ca.viTriPhong != null) ...[
                   const SizedBox(height: 6),
-                  _Dong(icon: Icons.meeting_room_outlined, text: luot.ca.viTriPhong!),
+                  _Dong(
+                    icon: Icons.meeting_room_outlined,
+                    text: luot.ca.viTriPhong!,
+                  ),
                 ],
                 const SizedBox(height: 12),
                 Container(
@@ -74,10 +89,18 @@ class ManHinhKetQuaKham extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(luot.tenBacSi,
-                                style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
-                            Text(luot.tenKhoa,
-                                style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                            Text(
+                              luot.tenBacSi,
+                              style: chu.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            Text(
+                              luot.tenKhoa,
+                              style: chu.bodySmall?.copyWith(
+                                color: AppTheme.mauChuNhat,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -90,45 +113,69 @@ class ManHinhKetQuaKham extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Triệu chứng
-          _TieuDe(icon: Icons.record_voice_over_outlined, text: 'Triệu chứng bạn khai'),
+          _TieuDe(
+            icon: Icons.record_voice_over_outlined,
+            text: 'Triệu chứng bạn khai',
+          ),
           TheTrang(
             padding: const EdgeInsets.all(16),
             child: Text(
-              trieuChung.isEmpty ? 'Bạn không khai triệu chứng khi đặt lịch.' : '“$trieuChung”',
+              trieuChung.isEmpty
+                  ? 'Bạn không khai triệu chứng khi đặt lịch.'
+                  : '“$trieuChung”',
               style: TextStyle(
-                color: trieuChung.isEmpty ? AppTheme.mauChuNhat : AppTheme.mauChuDam,
-                fontStyle: trieuChung.isEmpty ? FontStyle.normal : FontStyle.italic,
+                color: trieuChung.isEmpty
+                    ? AppTheme.mauChuNhat
+                    : AppTheme.mauChuDam,
+                fontStyle: trieuChung.isEmpty
+                    ? FontStyle.normal
+                    : FontStyle.italic,
               ),
             ),
           ),
           const SizedBox(height: 20),
 
           // Chẩn đoán
-          _TieuDe(icon: Icons.fact_check_outlined, text: 'Chẩn đoán của bác sĩ'),
+          _TieuDe(
+            icon: Icons.fact_check_outlined,
+            text: 'Chẩn đoán của bác sĩ',
+          ),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppTheme.mauChinhNhat,
               borderRadius: BorderRadius.circular(AppTheme.boGocThe),
-              border: const Border(top: BorderSide(color: AppTheme.mauChinh, width: 3)),
+              border: const Border(
+                top: BorderSide(color: AppTheme.mauChinh, width: 3),
+              ),
             ),
             child: Text(
               chanDoan.isEmpty ? 'Bác sĩ chưa nhập chẩn đoán.' : chanDoan,
               style: chanDoan.isEmpty
                   ? const TextStyle(color: AppTheme.mauChuNhat)
-                  : chu.titleLarge?.copyWith(color: AppTheme.mauChinh, fontWeight: FontWeight.w800),
+                  : chu.titleLarge?.copyWith(
+                      color: AppTheme.mauChinh,
+                      fontWeight: FontWeight.w800,
+                    ),
             ),
           ),
           const SizedBox(height: 20),
 
           // Lời dặn
-          _TieuDe(icon: Icons.health_and_safety_outlined, text: 'Lời dặn của bác sĩ'),
+          _TieuDe(
+            icon: Icons.health_and_safety_outlined,
+            text: 'Lời dặn của bác sĩ',
+          ),
           TheTrang(
             padding: const EdgeInsets.all(16),
             child: Text(
               loiDan.isEmpty ? 'Không có lời dặn thêm.' : loiDan,
               style: TextStyle(
-                  color: loiDan.isEmpty ? AppTheme.mauChuNhat : AppTheme.mauChuDam, height: 1.5),
+                color: loiDan.isEmpty
+                    ? AppTheme.mauChuNhat
+                    : AppTheme.mauChuDam,
+                height: 1.5,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -177,12 +224,14 @@ class _Dong extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          Icon(icon, size: 16, color: AppTheme.mauChuNhat),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(color: AppTheme.mauChuNhat))),
-        ],
-      );
+    children: [
+      Icon(icon, size: 16, color: AppTheme.mauChuNhat),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Text(text, style: const TextStyle(color: AppTheme.mauChuNhat)),
+      ),
+    ],
+  );
 }
 
 class _TieuDe extends StatelessWidget {
@@ -193,14 +242,17 @@ class _TieuDe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: AppTheme.mauChinh),
-            const SizedBox(width: 8),
-            Text(text,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-          ],
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Row(
+      children: [
+        Icon(icon, size: 20, color: AppTheme.mauChinh),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
-      );
+      ],
+    ),
+  );
 }

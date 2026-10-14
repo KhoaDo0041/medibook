@@ -8,7 +8,11 @@ class TheTroLyAi extends StatelessWidget {
   final VoidCallback onTroChuyen;
   final VoidCallback onChupAnh;
 
-  const TheTroLyAi({super.key, required this.onTroChuyen, required this.onChupAnh});
+  const TheTroLyAi({
+    super.key,
+    required this.onTroChuyen,
+    required this.onChupAnh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +30,29 @@ class TheTroLyAi extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      const Icon(Icons.auto_awesome, size: 16, color: AppTheme.mauCam),
-                      const SizedBox(width: 6),
-                      Text('Trợ lý sức khoẻ thông minh',
-                          style: chu.labelLarge?.copyWith(color: AppTheme.mauCam)),
-                    ]),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome,
+                          size: 16,
+                          color: AppTheme.mauCam,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Trợ lý sức khoẻ thông minh',
+                          style: chu.labelLarge?.copyWith(
+                            color: AppTheme.mauCam,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 8),
-                    Text('Bạn đang thấy không khoẻ?',
-                        style: chu.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      'Bạn đang thấy không khoẻ?',
+                      style: chu.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -44,7 +62,10 @@ class TheTroLyAi extends StatelessWidget {
                   color: AppTheme.mauChinh,
                   borderRadius: BorderRadius.circular(AppTheme.boGoc),
                 ),
-                child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+                child: const Icon(
+                  Icons.smart_toy_outlined,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),

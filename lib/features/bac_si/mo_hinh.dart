@@ -3,13 +3,13 @@
 enum TrangThaiLuotKham { choKham, dangKham, tamHoan, daKham, daHuy, vangMat }
 
 TrangThaiLuotKham docTrangThaiLuot(String? s) => switch (s) {
-      'dang_kham' => TrangThaiLuotKham.dangKham,
-      'tam_hoan' => TrangThaiLuotKham.tamHoan,
-      'da_kham' => TrangThaiLuotKham.daKham,
-      'da_huy' => TrangThaiLuotKham.daHuy,
-      'vang_mat' => TrangThaiLuotKham.vangMat,
-      _ => TrangThaiLuotKham.choKham,
-    };
+  'dang_kham' => TrangThaiLuotKham.dangKham,
+  'tam_hoan' => TrangThaiLuotKham.tamHoan,
+  'da_kham' => TrangThaiLuotKham.daKham,
+  'da_huy' => TrangThaiLuotKham.daHuy,
+  'vang_mat' => TrangThaiLuotKham.vangMat,
+  _ => TrangThaiLuotKham.choKham,
+};
 
 /// Một bệnh nhân đã lấy số trong một ca.
 class LuotKhamTrongCa {
@@ -44,7 +44,8 @@ class LuotKhamTrongCa {
     if (ns == null) return null;
     final nay = DateTime.now();
     var t = nay.year - ns.year;
-    if (nay.month < ns.month || (nay.month == ns.month && nay.day < ns.day)) t--;
+    if (nay.month < ns.month || (nay.month == ns.month && nay.day < ns.day))
+      t--;
     return t;
   }
 
@@ -169,7 +170,8 @@ class BenhNhanCuaToi {
     if (ns == null) return null;
     final nay = DateTime.now();
     var t = nay.year - ns.year;
-    if (nay.month < ns.month || (nay.month == ns.month && nay.day < ns.day)) t--;
+    if (nay.month < ns.month || (nay.month == ns.month && nay.day < ns.day))
+      t--;
     return t;
   }
 }

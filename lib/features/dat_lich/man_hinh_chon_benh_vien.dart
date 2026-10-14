@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
 import '../../core/widgets/the_trang.dart';
+import '../../core/widgets/hieu_ung.dart';
+import '../../core/widgets/khung_cho_tai.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'dich_vu_dat_lich.dart';
 import 'dinh_dang.dart';
@@ -59,7 +61,10 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
     });
     final viTri = await layViTri();
     try {
-      var ds = await _dichVu.layBenhVien(viDo: viTri.viDo, kinhDo: viTri.kinhDo);
+      var ds = await _dichVu.layBenhVien(
+        viDo: viTri.viDo,
+        kinhDo: viTri.kinhDo,
+      );
       final khoa = widget.chuyenKhoaId;
       if (khoa != null) {
         final coKhoa = await _dichVu.layBenhVienCoKhoa(khoa);
@@ -91,7 +96,11 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
     final q = _oTim.text.trim().toLowerCase();
     if (q.isEmpty) return _ds;
     return _ds
-        .where((b) => b.ten.toLowerCase().contains(q) || b.diaChi.toLowerCase().contains(q))
+        .where(
+          (b) =>
+              b.ten.toLowerCase().contains(q) ||
+              b.diaChi.toLowerCase().contains(q),
+        )
         .toList();
   }
 
@@ -141,15 +150,19 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
                   color: const Color(0xFFFFEDD5),
                   borderRadius: BorderRadius.circular(AppTheme.boGoc),
                 ),
-                child: Row(children: [
-                  const Icon(Icons.auto_awesome, color: AppTheme.mauCam),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text('Trợ lý AI gợi ý khám khoa ${widget.tenKhoa}. '
+                child: Row(
+                  children: [
+                    const Icon(Icons.auto_awesome, color: AppTheme.mauCam),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Trợ lý AI gợi ý khám khoa ${widget.tenKhoa}. '
                         'Dưới đây là các bệnh viện có khoa này.',
-                        style: const TextStyle(color: Color(0xFF9A3412))),
-                  ),
-                ]),
+                        style: const TextStyle(color: Color(0xFF9A3412)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
             ],
@@ -166,12 +179,7 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
 
   List<Widget> _noiDung() {
     if (_dangTai) {
-      return const [
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 48),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ];
+      return const [KhungChoTai(soThe: 4)];
     }
     if (_loi != null) {
       return [
@@ -184,10 +192,15 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
     }
     final ds = _dsLoc;
     if (ds.isEmpty) {
-      return [const _ThongBaoTrong(icon: Icons.search_off, text: 'Không tìm thấy bệnh viện phù hợp.')];
+      return [
+        const _ThongBaoTrong(
+          icon: Icons.search_off,
+          text: 'Không tìm thấy bệnh viện phù hợp.',
+        ),
+      ];
     }
     final coViTri = _viTri?.co ?? false;
-    return [
+    return lanLuot([
       for (var i = 0; i < ds.length; i++) ...[
         _TheBenhVien(
           benhVien: ds[i],
@@ -196,7 +209,7 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
         ),
         const SizedBox(height: 12),
       ],
-    ];
+    ]);
   }
 }
 
@@ -216,8 +229,11 @@ class _DongViTri extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(viTri.co ? Icons.near_me_outlined : Icons.location_off_outlined,
-              size: 18, color: AppTheme.mauChinh),
+          Icon(
+            viTri.co ? Icons.near_me_outlined : Icons.location_off_outlined,
+            size: 18,
+            color: AppTheme.mauChinh,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Padding(
@@ -238,7 +254,11 @@ class _TheBenhVien extends StatelessWidget {
   final bool ganNhat;
   final VoidCallback onTap;
 
-  const _TheBenhVien({required this.benhVien, required this.ganNhat, required this.onTap});
+  const _TheBenhVien({
+    required this.benhVien,
+    required this.ganNhat,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +276,11 @@ class _TheBenhVien extends StatelessWidget {
               color: AppTheme.mauChinhNhat,
               borderRadius: BorderRadius.circular(AppTheme.boGoc),
             ),
-            child: const Icon(Icons.local_hospital_outlined, color: AppTheme.mauChinh, size: 28),
+            child: const Icon(
+              Icons.local_hospital_outlined,
+              color: AppTheme.mauChinh,
+              size: 28,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -272,15 +296,19 @@ class _TheBenhVien extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                 ],
-                Text(benhVien.ten,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  benhVien.ten,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                ),
                 const SizedBox(height: 2),
-                Text(benhVien.diaChi,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                Text(
+                  benhVien.diaChi,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+                ),
                 if (km != null) ...[
                   const SizedBox(height: 8),
                   _Nhan(
@@ -306,7 +334,12 @@ class _Nhan extends StatelessWidget {
   final Color mauChu;
   final Color mauNen;
 
-  const _Nhan({required this.text, required this.icon, required this.mauChu, required this.mauNen});
+  const _Nhan({
+    required this.text,
+    required this.icon,
+    required this.mauChu,
+    required this.mauNen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +351,14 @@ class _Nhan extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: mauChu),
           const SizedBox(width: 4),
-          Text(text, style: TextStyle(color: mauChu, fontSize: 13, fontWeight: FontWeight.w700)),
+          Text(
+            text,
+            style: TextStyle(
+              color: mauChu,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -339,7 +379,11 @@ class _ThongBaoTrong extends StatelessWidget {
         children: [
           Icon(icon, size: 40, color: AppTheme.mauChuNhat),
           const SizedBox(height: 8),
-          Text(text, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.mauChuNhat)),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: AppTheme.mauChuNhat),
+          ),
           if (nut != null) nut!,
         ],
       ),
@@ -376,11 +420,19 @@ class _TheHoiAi extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Chưa rõ nên khám khoa nào?',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
+                Text(
+                  'Chưa rõ nên khám khoa nào?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
                 SizedBox(height: 2),
-                Text('Hỏi trợ lý AI để được gợi ý chuyên khoa',
-                    style: TextStyle(color: Colors.white70, fontSize: 13)),
+                Text(
+                  'Hỏi trợ lý AI để được gợi ý chuyên khoa',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
               ],
             ),
           ),

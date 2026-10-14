@@ -6,7 +6,12 @@ class AnhBenhNhan extends StatelessWidget {
   final String hoTen;
   final double kichThuoc;
 
-  const AnhBenhNhan({super.key, required this.id, required this.hoTen, this.kichThuoc = 48});
+  const AnhBenhNhan({
+    super.key,
+    required this.id,
+    required this.hoTen,
+    this.kichThuoc = 48,
+  });
 
   static const _bangMau = [
     (Color(0xFFDBEAFE), Color(0xFF1D4ED8)), // xanh dương
@@ -27,8 +32,14 @@ class AnhBenhNhan extends StatelessWidget {
       height: kichThuoc,
       alignment: Alignment.center,
       decoration: BoxDecoration(color: nen, shape: BoxShape.circle),
-      child: Text(chuCai,
-          style: TextStyle(color: chu, fontSize: kichThuoc * 0.42, fontWeight: FontWeight.w800)),
+      child: Text(
+        chuCai,
+        style: TextStyle(
+          color: chu,
+          fontSize: kichThuoc * 0.42,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }

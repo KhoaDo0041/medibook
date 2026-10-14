@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/app_theme.dart';
 import '../../core/kiem_tra_nhap.dart';
+import '../../core/widgets/khung_xac_thuc.dart';
+import '../../core/widgets/hieu_ung.dart';
 import 'dich_vu_tai_khoan.dart';
 import 'man_hinh_dat_lai_mat_khau.dart';
 
@@ -41,9 +42,7 @@ class _ManHinhQuenMatKhauState extends State<ManHinhQuenMatKhau> {
     try {
       await DichVuTaiKhoan.guiMaDatLaiMatKhau(email);
       if (!mounted) return;
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => ManHinhDatLaiMatKhau(email: email)),
-      );
+      Navigator.of(context).push(trangMem(ManHinhDatLaiMatKhau(email: email)));
     } on LoiTaiKhoan catch (e) {
       if (!mounted) return;
       setState(() => _loi = e.thongBao);
@@ -54,62 +53,32 @@ class _ManHinhQuenMatKhauState extends State<ManHinhQuenMatKhau> {
 
   @override
   Widget build(BuildContext context) {
-    final chu = Theme.of(context).textTheme;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _khoaForm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Quên mật khẩu',
-                  style: chu.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Nhập email của tài khoản. Chúng tôi sẽ gửi mã để bạn đặt mật khẩu mới.',
-                  style: chu.bodyLarge?.copyWith(color: AppTheme.mauChuNhat),
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
-                  controller: _oEmail,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.done,
-                  autocorrect: false,
-                  onFieldSubmitted: (_) => _guiMa(),
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.mail_outline),
-                  ),
-                  validator: KiemTraNhap.email,
-                ),
-                if (_loi != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    _loi!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
-                ],
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: _dangXuLy ? null : _guiMa,
-                  child: _dangXuLy
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.5),
-                        )
-                      : const Text('Gửi mã'),
-                ),
-              ],
+    return KhungXacThuc(
+      tieuDe: 'Quên mật khẩu',
+      moTa: 'Nhập email của tài khoản, chúng tôi sẽ gửi mã để bạn đặt mật khẩu mới.',
+      icon: Icons.lock_reset_rounded,
+      lanLac: _loi?.hashCode ?? 0,
+      child: Form(
+        key: _khoaForm,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _oEmail,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.done,
+              autocorrect: false,
+              onFieldSubmitted: (_) => _guiMa(),
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.mail_outline),
+              ),
+              validator: KiemTraNhap.email,
             ),
-          ),
+            HopThongBao(noiDung: _loi),
+            const SizedBox(height: 24),
+            NutGradient(nhan: 'Gửi mã', dangXuLy: _dangXuLy, onPressed: _guiMa),
+          ],
         ),
       ),
     );

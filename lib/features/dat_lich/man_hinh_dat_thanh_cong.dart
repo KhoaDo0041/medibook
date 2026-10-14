@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/widgets/dau_tich_thanh_cong.dart';
+import '../../core/widgets/hieu_ung.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'dinh_dang.dart';
 import 'mo_hinh.dart';
@@ -39,27 +41,27 @@ class ManHinhDatThanhCong extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Đặt lịch thành công'),
-          leading: IconButton(icon: const Icon(Icons.close), onPressed: () => _veTrangChu(context)),
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => _veTrangChu(context),
+          ),
         ),
         body: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          children: [
-            Center(
-              child: Container(
-                width: 88,
-                height: 88,
-                decoration: const BoxDecoration(color: Color(0xFFDCFCE7), shape: BoxShape.circle),
-                child: const Icon(Icons.check_circle, size: 56, color: Color(0xFF16A34A)),
-              ),
-            ),
+          children: lanLuot([
+            const Center(child: DauTichThanhCong()),
             const SizedBox(height: 16),
-            Text('Đặt lịch thành công!',
-                textAlign: TextAlign.center,
-                style: chu.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+            Text(
+              'Đặt lịch thành công!',
+              textAlign: TextAlign.center,
+              style: chu.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            ),
             const SizedBox(height: 4),
-            Text('Lịch khám của bạn đã được ghi nhận tại ${benhVien.ten}.',
-                textAlign: TextAlign.center,
-                style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat)),
+            Text(
+              'Lịch khám của bạn đã được ghi nhận tại ${benhVien.ten}.',
+              textAlign: TextAlign.center,
+              style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
+            ),
             const SizedBox(height: 24),
 
             _PhieuKham(
@@ -83,16 +85,20 @@ class ManHinhDatThanhCong extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text.rich(
-                      TextSpan(children: [
-                        const TextSpan(text: 'Vui lòng có mặt lúc '),
-                        TextSpan(
+                      TextSpan(
+                        children: [
+                          const TextSpan(text: 'Vui lòng có mặt lúc '),
+                          TextSpan(
                             text: gioPhut(gioCoMat),
-                            style: const TextStyle(fontWeight: FontWeight.w800)),
-                        TextSpan(
+                            style: const TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                          TextSpan(
                             text: ca.viTriPhong == null
                                 ? ' và báo số thứ tự tại quầy tiếp đón của khoa.'
-                                : ' tại ${ca.viTriPhong} và chờ gọi số thứ tự.'),
-                      ]),
+                                : ' tại ${ca.viTriPhong} và chờ gọi số thứ tự.',
+                          ),
+                        ],
+                      ),
                       style: const TextStyle(color: Color(0xFF9A3412)),
                     ),
                   ),
@@ -105,7 +111,7 @@ class ManHinhDatThanhCong extends StatelessWidget {
               icon: const Icon(Icons.home_outlined),
               label: const Text('Về trang chủ'),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -149,23 +155,45 @@ class _PhieuKham extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
               color: AppTheme.mauChinhNhat,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.boGocThe)),
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(AppTheme.boGocThe),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.local_hospital_outlined, size: 18, color: AppTheme.mauChinh),
+                const Icon(
+                  Icons.local_hospital_outlined,
+                  size: 18,
+                  color: AppTheme.mauChinh,
+                ),
                 const SizedBox(width: 6),
                 const Expanded(
-                  child: Text('PHIẾU KHÁM ĐIỆN TỬ',
-                      style: TextStyle(
-                          color: AppTheme.mauChinh, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+                  child: Text(
+                    'PHIẾU KHÁM ĐIỆN TỬ',
+                    style: TextStyle(
+                      color: AppTheme.mauChinh,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: const ShapeDecoration(color: Color(0xFFDCFCE7), shape: StadiumBorder()),
-                  child: const Text('ĐÃ XÁC NHẬN',
-                      style: TextStyle(
-                          color: Color(0xFF15803D), fontSize: 11, fontWeight: FontWeight.w700)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: const ShapeDecoration(
+                    color: Color(0xFFDCFCE7),
+                    shape: StadiumBorder(),
+                  ),
+                  child: const Text(
+                    'ĐÃ XÁC NHẬN',
+                    style: TextStyle(
+                      color: Color(0xFF15803D),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -176,14 +204,26 @@ class _PhieuKham extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
-                Text('SỐ THỨ TỰ CỦA BẠN',
-                    style: chu.labelMedium
-                        ?.copyWith(color: AppTheme.mauChuNhat, letterSpacing: 1)),
-                Text(haiSo(luotKham.soThuTu),
-                    style: const TextStyle(
-                        color: AppTheme.mauChinh, fontSize: 64, fontWeight: FontWeight.w800, height: 1.1)),
-                Text('${ca.tenCa} · ${ca.khungGio}',
-                    style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat)),
+                Text(
+                  'SỐ THỨ TỰ CỦA BẠN',
+                  style: chu.labelMedium?.copyWith(
+                    color: AppTheme.mauChuNhat,
+                    letterSpacing: 1,
+                  ),
+                ),
+                Text(
+                  haiSo(luotKham.soThuTu),
+                  style: const TextStyle(
+                    color: AppTheme.mauChinh,
+                    fontSize: 64,
+                    fontWeight: FontWeight.w800,
+                    height: 1.1,
+                  ),
+                ),
+                Text(
+                  '${ca.tenCa} · ${ca.khungGio}',
+                  style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
+                ),
                 if (ca.viTriPhong != null) ...[
                   const SizedBox(height: 10),
                   NhanPhong(text: ca.viTriPhong!),
@@ -206,20 +246,37 @@ class _PhieuKham extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Bệnh nhân',
-                              style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
-                          Text(hoSo.hoTen,
-                              style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                          Text(
+                            'Bệnh nhân',
+                            style: chu.bodySmall?.copyWith(
+                              color: AppTheme.mauChuNhat,
+                            ),
+                          ),
+                          Text(
+                            hoSo.hoTen,
+                            style: chu.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Mã phiếu', style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
-                        Text('#MB-${luotKham.id.toString().padLeft(6, '0')}',
-                            style: chu.titleSmall?.copyWith(
-                                color: AppTheme.mauChinh, fontWeight: FontWeight.w800)),
+                        Text(
+                          'Mã phiếu',
+                          style: chu.bodySmall?.copyWith(
+                            color: AppTheme.mauChuNhat,
+                          ),
+                        ),
+                        Text(
+                          '#MB-${luotKham.id.toString().padLeft(6, '0')}',
+                          style: chu.titleSmall?.copyWith(
+                            color: AppTheme.mauChinh,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -275,7 +332,11 @@ class _DuongCatPhieu extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(
                       soGach,
-                      (_) => Container(width: 5, height: 1.5, color: AppTheme.mauVien),
+                      (_) => Container(
+                        width: 5,
+                        height: 1.5,
+                        color: AppTheme.mauVien,
+                      ),
                     ),
                   );
                 },
@@ -290,7 +351,10 @@ class _DuongCatPhieu extends StatelessWidget {
               child: Container(
                 width: khuyet * 2,
                 height: khuyet * 2,
-                decoration: const BoxDecoration(color: AppTheme.mauNen, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                  color: AppTheme.mauNen,
+                  shape: BoxShape.circle,
+                ),
               ),
             ),
         ],
@@ -340,10 +404,21 @@ class _ODong extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(nhan,
-                    style: chu.labelSmall?.copyWith(color: AppTheme.mauChuNhat, letterSpacing: 0.5)),
-                Text(giaTri, style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-                Text(phu, style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                Text(
+                  nhan,
+                  style: chu.labelSmall?.copyWith(
+                    color: AppTheme.mauChuNhat,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                Text(
+                  giaTri,
+                  style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                Text(
+                  phu,
+                  style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+                ),
               ],
             ),
           ),

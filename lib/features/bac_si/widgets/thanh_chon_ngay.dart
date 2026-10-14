@@ -7,7 +7,11 @@ class ThanhChonNgay extends StatelessWidget {
   final DateTime ngayDangChon;
   final ValueChanged<DateTime> onChon;
 
-  const ThanhChonNgay({super.key, required this.ngayDangChon, required this.onChon});
+  const ThanhChonNgay({
+    super.key,
+    required this.ngayDangChon,
+    required this.onChon,
+  });
 
   static const _tenThu = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
@@ -17,8 +21,11 @@ class ThanhChonNgay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homNay = DateTime.now();
-    final thuHai = DateTime(homNay.year, homNay.month, homNay.day)
-        .subtract(Duration(days: homNay.weekday - 1));
+    final thuHai = DateTime(
+      homNay.year,
+      homNay.month,
+      homNay.day,
+    ).subtract(Duration(days: homNay.weekday - 1));
     final cacNgay = List.generate(7, (i) => thuHai.add(Duration(days: i)));
     final chu = Theme.of(context).textTheme;
 
@@ -27,15 +34,25 @@ class ThanhChonNgay extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.calendar_month_outlined, size: 20, color: AppTheme.mauChuDam),
+            const Icon(
+              Icons.calendar_month_outlined,
+              size: 20,
+              color: AppTheme.mauChuDam,
+            ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text('Lịch làm việc tuần',
-                  style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+              child: Text(
+                'Lịch làm việc tuần',
+                style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
             ),
-            Text('THÁNG ${ngayDangChon.month} · ${ngayDangChon.year}',
-                style: chu.labelMedium?.copyWith(
-                    color: AppTheme.mauChinh, fontWeight: FontWeight.w700)),
+            Text(
+              'THÁNG ${ngayDangChon.month} · ${ngayDangChon.year}',
+              style: chu.labelMedium?.copyWith(
+                color: AppTheme.mauChinh,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -62,24 +79,32 @@ class ThanhChonNgay extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(laHomNay ? 'Hôm nay' : _tenThu[i],
-                            style: TextStyle(
-                                color: mauChu,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600)),
+                        Text(
+                          laHomNay ? 'Hôm nay' : _tenThu[i],
+                          style: TextStyle(
+                            color: mauChu,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text(ngay.day.toString().padLeft(2, '0'),
-                            style: TextStyle(
-                                color: mauChu,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800)),
+                        Text(
+                          ngay.day.toString().padLeft(2, '0'),
+                          style: TextStyle(
+                            color: mauChu,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                         if (laHomNay)
                           Container(
                             margin: const EdgeInsets.only(top: 2),
                             width: 5,
                             height: 5,
                             decoration: BoxDecoration(
-                              color: dangChon ? Colors.greenAccent : AppTheme.mauChinh,
+                              color: dangChon
+                                  ? Colors.greenAccent
+                                  : AppTheme.mauChinh,
                               shape: BoxShape.circle,
                             ),
                           ),

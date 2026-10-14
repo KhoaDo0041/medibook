@@ -35,12 +35,24 @@ class OChucNang extends StatelessWidget {
             child: Icon(icon, color: AppTheme.mauChinh, size: 28),
           ),
           const SizedBox(height: 20),
-          Text(tieuDe, style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            tieuDe,
+            style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 4),
-          Row(children: [
-            Text(moTa, style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
-            const Icon(Icons.chevron_right, size: 16, color: AppTheme.mauChuNhat),
-          ]),
+          Row(
+            children: [
+              Text(
+                moTa,
+                style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+              ),
+              const Icon(
+                Icons.chevron_right,
+                size: 16,
+                color: AppTheme.mauChuNhat,
+              ),
+            ],
+          ),
         ],
       ),
     );

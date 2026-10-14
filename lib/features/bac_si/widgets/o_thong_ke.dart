@@ -30,10 +30,12 @@ class OThongKe extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(nhan,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: chu.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+                child: Text(
+                  nhan,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: chu.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
               ),
               Container(
                 padding: const EdgeInsets.all(5),
@@ -49,9 +51,15 @@ class OThongKe extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(giaTri.toString().padLeft(2, '0'),
-                  style: TextStyle(
-                      fontSize: 30, fontWeight: FontWeight.w800, color: mau, height: 1)),
+              Text(
+                giaTri.toString().padLeft(2, '0'),
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w800,
+                  color: mau,
+                  height: 1,
+                ),
+              ),
               const SizedBox(width: 4),
               Text(donVi, style: chu.bodySmall?.copyWith(color: mau)),
             ],

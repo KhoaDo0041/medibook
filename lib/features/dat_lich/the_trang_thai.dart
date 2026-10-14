@@ -10,14 +10,39 @@ class NhanTrangThai extends StatelessWidget {
   const NhanTrangThai({super.key, required this.luot});
 
   static (String, Color, Color) kieu(LuotKhamCuaToi l) {
-    if (l.vangMat) return ('Vắng mặt', AppTheme.mauChuNhat, const Color(0xFFF1F5F9));
+    if (l.vangMat)
+      return ('Vắng mặt', AppTheme.mauChuNhat, const Color(0xFFF1F5F9));
     return switch (l.trangThai) {
-      TrangThaiLuot.choKham => ('Chờ khám', const Color(0xFF475569), const Color(0xFFE2E8F0)),
-      TrangThaiLuot.dangKham => ('Đang khám', AppTheme.mauChinh, AppTheme.mauChinhNhat),
-      TrangThaiLuot.tamHoan => ('Tạm hoãn', const Color(0xFFC2410C), const Color(0xFFFFEDD5)),
-      TrangThaiLuot.daKham => ('Đã khám', const Color(0xFF15803D), const Color(0xFFDCFCE7)),
-      TrangThaiLuot.daHuy => ('Đã huỷ', const Color(0xFFB91C1C), const Color(0xFFFEE2E2)),
-      TrangThaiLuot.vangMat => ('Vắng mặt', AppTheme.mauChuNhat, const Color(0xFFF1F5F9)),
+      TrangThaiLuot.choKham => (
+        'Chờ khám',
+        const Color(0xFF475569),
+        const Color(0xFFE2E8F0),
+      ),
+      TrangThaiLuot.dangKham => (
+        'Đang khám',
+        AppTheme.mauChinh,
+        AppTheme.mauChinhNhat,
+      ),
+      TrangThaiLuot.tamHoan => (
+        'Tạm hoãn',
+        const Color(0xFFC2410C),
+        const Color(0xFFFFEDD5),
+      ),
+      TrangThaiLuot.daKham => (
+        'Đã khám',
+        const Color(0xFF15803D),
+        const Color(0xFFDCFCE7),
+      ),
+      TrangThaiLuot.daHuy => (
+        'Đã huỷ',
+        const Color(0xFFB91C1C),
+        const Color(0xFFFEE2E2),
+      ),
+      TrangThaiLuot.vangMat => (
+        'Vắng mặt',
+        AppTheme.mauChuNhat,
+        const Color(0xFFF1F5F9),
+      ),
     };
   }
 
@@ -30,9 +55,20 @@ class NhanTrangThai extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 6, height: 6, decoration: BoxDecoration(color: mau, shape: BoxShape.circle)),
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(color: mau, shape: BoxShape.circle),
+          ),
           const SizedBox(width: 6),
-          Text(nhan, style: TextStyle(color: mau, fontSize: 12, fontWeight: FontWeight.w700)),
+          Text(
+            nhan,
+            style: TextStyle(
+              color: mau,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );
@@ -48,7 +84,11 @@ class OChuCaiBacSi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tu = tenBacSi.trim().split(' ').where((t) => t.isNotEmpty && !t.contains('.')).toList();
+    final tu = tenBacSi
+        .trim()
+        .split(' ')
+        .where((t) => t.isNotEmpty && !t.contains('.'))
+        .toList();
     final chu = tu.isEmpty ? '?' : tu.last.characters.first.toUpperCase();
     return Container(
       width: kichThuoc,
@@ -58,9 +98,14 @@ class OChuCaiBacSi extends StatelessWidget {
         color: AppTheme.mauChinhNhat,
         borderRadius: BorderRadius.circular(AppTheme.boGoc),
       ),
-      child: Text(chu,
-          style: TextStyle(
-              color: AppTheme.mauChinh, fontSize: kichThuoc * 0.4, fontWeight: FontWeight.w800)),
+      child: Text(
+        chu,
+        style: TextStyle(
+          color: AppTheme.mauChinh,
+          fontSize: kichThuoc * 0.4,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }
@@ -75,15 +120,27 @@ class NhanPhong extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: const ShapeDecoration(color: AppTheme.mauChinhNhat, shape: StadiumBorder()),
+      decoration: const ShapeDecoration(
+        color: AppTheme.mauChinhNhat,
+        shape: StadiumBorder(),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.meeting_room_outlined, size: 16, color: AppTheme.mauChinh),
+          const Icon(
+            Icons.meeting_room_outlined,
+            size: 16,
+            color: AppTheme.mauChinh,
+          ),
           const SizedBox(width: 6),
-          Text(text,
-              style: const TextStyle(
-                  color: AppTheme.mauChinh, fontWeight: FontWeight.w700, fontSize: 13)),
+          Text(
+            text,
+            style: const TextStyle(
+              color: AppTheme.mauChinh,
+              fontWeight: FontWeight.w700,
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
     );

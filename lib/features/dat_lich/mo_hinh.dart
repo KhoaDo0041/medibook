@@ -22,15 +22,21 @@ class BenhVien {
   });
 
   factory BenhVien.tuJson(Map<String, dynamic> j) => BenhVien(
-        id: j['id'] as int,
-        ten: j['ten_benh_vien'] as String,
-        diaChi: (j['dia_chi'] as String?) ?? '',
-        viDo: (j['vi_do'] as num?)?.toDouble(),
-        kinhDo: (j['kinh_do'] as num?)?.toDouble(),
-      );
+    id: j['id'] as int,
+    ten: j['ten_benh_vien'] as String,
+    diaChi: (j['dia_chi'] as String?) ?? '',
+    viDo: (j['vi_do'] as num?)?.toDouble(),
+    kinhDo: (j['kinh_do'] as num?)?.toDouble(),
+  );
 
   BenhVien voiKhoangCach(double? km) => BenhVien(
-        id: id, ten: ten, diaChi: diaChi, viDo: viDo, kinhDo: kinhDo, khoangCachKm: km);
+    id: id,
+    ten: ten,
+    diaChi: diaChi,
+    viDo: viDo,
+    kinhDo: kinhDo,
+    khoangCachKm: km,
+  );
 
   /// Khoảng cách đường chim bay (Haversine), đơn vị km.
   double? tinhKhoangCach(double viDoToi, double kinhDoToi) {
@@ -39,7 +45,8 @@ class BenhVien {
     double rad(double d) => d * pi / 180;
     final dLat = rad(viDo! - viDoToi);
     final dLon = rad(kinhDo! - kinhDoToi);
-    final a = sin(dLat / 2) * sin(dLat / 2) +
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) +
         cos(rad(viDoToi)) * cos(rad(viDo!)) * sin(dLon / 2) * sin(dLon / 2);
     return banKinhTraiDat * 2 * atan2(sqrt(a), sqrt(1 - a));
   }
@@ -50,7 +57,11 @@ class KhoaBenhVien {
   final int chuyenKhoaId;
   final String ten;
 
-  const KhoaBenhVien({required this.id, required this.chuyenKhoaId, required this.ten});
+  const KhoaBenhVien({
+    required this.id,
+    required this.chuyenKhoaId,
+    required this.ten,
+  });
 }
 
 class BacSi {
@@ -102,16 +113,16 @@ class CaKham {
   });
 
   factory CaKham.tuJson(Map<String, dynamic> j) => CaKham(
-        id: j['id'] as int,
-        bacSiId: j['bac_si_id'] as String,
-        ngay: DateTime.parse(j['ngay_kham'] as String),
-        gioBatDau: _docGio(j['gio_bat_dau'] as String),
-        gioKetThuc: _docGio(j['gio_ket_thuc'] as String),
-        soToiDa: (j['so_luong_toi_da'] as int?) ?? 0,
-        soDaDangKy: (j['so_da_dang_ky'] as int?) ?? 0,
-        soPhong: j['so_phong'] as String?,
-        tang: j['tang'] as int?,
-      );
+    id: j['id'] as int,
+    bacSiId: j['bac_si_id'] as String,
+    ngay: DateTime.parse(j['ngay_kham'] as String),
+    gioBatDau: _docGio(j['gio_bat_dau'] as String),
+    gioKetThuc: _docGio(j['gio_ket_thuc'] as String),
+    soToiDa: (j['so_luong_toi_da'] as int?) ?? 0,
+    soDaDangKy: (j['so_da_dang_ky'] as int?) ?? 0,
+    soPhong: j['so_phong'] as String?,
+    tang: j['tang'] as int?,
+  );
 
   /// VD: "Phòng 204 · Tầng 2"; null nếu chưa có phòng.
   String? get viTriPhong {
@@ -147,25 +158,29 @@ class LuotKhamMoi {
   final int soThuTu;
   final int caKhamId;
 
-  const LuotKhamMoi({required this.id, required this.soThuTu, required this.caKhamId});
+  const LuotKhamMoi({
+    required this.id,
+    required this.soThuTu,
+    required this.caKhamId,
+  });
 
   factory LuotKhamMoi.tuJson(Map<String, dynamic> j) => LuotKhamMoi(
-        id: j['id'] as int,
-        soThuTu: j['so_thu_tu'] as int,
-        caKhamId: j['ca_kham_id'] as int,
-      );
+    id: j['id'] as int,
+    soThuTu: j['so_thu_tu'] as int,
+    caKhamId: j['ca_kham_id'] as int,
+  );
 }
 
 enum TrangThaiLuot { choKham, dangKham, tamHoan, daKham, daHuy, vangMat }
 
 TrangThaiLuot docTrangThai(String? s) => switch (s) {
-      'dang_kham' => TrangThaiLuot.dangKham,
-      'tam_hoan' => TrangThaiLuot.tamHoan,
-      'da_kham' => TrangThaiLuot.daKham,
-      'da_huy' => TrangThaiLuot.daHuy,
-      'vang_mat' => TrangThaiLuot.vangMat,
-      _ => TrangThaiLuot.choKham,
-    };
+  'dang_kham' => TrangThaiLuot.dangKham,
+  'tam_hoan' => TrangThaiLuot.tamHoan,
+  'da_kham' => TrangThaiLuot.daKham,
+  'da_huy' => TrangThaiLuot.daHuy,
+  'vang_mat' => TrangThaiLuot.vangMat,
+  _ => TrangThaiLuot.choKham,
+};
 
 /// Một lượt khám của bệnh nhân, kèm đủ thông tin để hiển thị tab Lịch hẹn.
 class LuotKhamCuaToi {
@@ -204,10 +219,13 @@ class LuotKhamCuaToi {
 
   /// Chỉ huỷ được khi đang chờ và ca chưa bắt đầu (giống luật trong database).
   bool get huyDuoc =>
-      trangThai == TrangThaiLuot.choKham && DateTime.now().isBefore(ca.thoiDiemBatDau);
+      trangThai == TrangThaiLuot.choKham &&
+      DateTime.now().isBefore(ca.thoiDiemBatDau);
 
   /// Bác sĩ đánh dấu vắng mặt, hoặc ca đã qua mà không khám, không huỷ.
   bool get vangMat =>
       trangThai == TrangThaiLuot.vangMat ||
-      (ca.daKetThuc && (trangThai == TrangThaiLuot.choKham || trangThai == TrangThaiLuot.tamHoan));
+      (ca.daKetThuc &&
+          (trangThai == TrangThaiLuot.choKham ||
+              trangThai == TrangThaiLuot.tamHoan));
 }

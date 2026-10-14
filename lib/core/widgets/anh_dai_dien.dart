@@ -21,11 +21,14 @@ class AnhDaiDien extends StatelessWidget {
     return CircleAvatar(
       radius: banKinh,
       backgroundColor: AppTheme.mauChinh,
-      child: Text(chu,
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: banKinh * 0.8)),
+      child: Text(
+        chu,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          fontSize: banKinh * 0.8,
+        ),
+      ),
     );
   }
 }

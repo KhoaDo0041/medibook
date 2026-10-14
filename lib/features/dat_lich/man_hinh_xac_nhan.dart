@@ -30,9 +30,18 @@ class ManHinhXacNhan extends StatefulWidget {
 }
 
 class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
-  static const _goiY = ['Sốt', 'Ho', 'Đau đầu', 'Đau họng', 'Đau bụng', 'Tái khám định kỳ'];
+  static const _goiY = [
+    'Sốt',
+    'Ho',
+    'Đau đầu',
+    'Đau họng',
+    'Đau bụng',
+    'Tái khám định kỳ',
+  ];
 
-  late final _trieuChung = TextEditingController(text: widget.trieuChungBanDau ?? '');
+  late final _trieuChung = TextEditingController(
+    text: widget.trieuChungBanDau ?? '',
+  );
   bool _dangGui = false;
   String? _loi;
 
@@ -46,7 +55,9 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
     final hienTai = _trieuChung.text.trim();
     if (hienTai.toLowerCase().contains(g.toLowerCase())) return;
     _trieuChung.text = hienTai.isEmpty ? g : '$hienTai, ${g.toLowerCase()}';
-    _trieuChung.selection = TextSelection.collapsed(offset: _trieuChung.text.length);
+    _trieuChung.selection = TextSelection.collapsed(
+      offset: _trieuChung.text.length,
+    );
     setState(() {});
   }
 
@@ -57,7 +68,10 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
       _loi = null;
     });
     try {
-      final kq = await DichVuDatLich().datLuotKham(widget.ca.id, trieuChung: _trieuChung.text);
+      final kq = await DichVuDatLich().datLuotKham(
+        widget.ca.id,
+        trieuChung: _trieuChung.text,
+      );
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -100,7 +114,9 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
                     color: AppTheme.mauChinhNhat,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.boGocThe)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(AppTheme.boGocThe),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -110,9 +126,18 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                         child: Text(
                           bs.hoTen.trim().isEmpty
                               ? '?'
-                              : bs.hoTen.trim().split(' ').last.characters.first.toUpperCase(),
+                              : bs.hoTen
+                                    .trim()
+                                    .split(' ')
+                                    .last
+                                    .characters
+                                    .first
+                                    .toUpperCase(),
                           style: const TextStyle(
-                              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -120,10 +145,18 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(bs.tenDayDu,
-                                style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                            Text('${bs.soNamKinhNghiem} năm kinh nghiệm · Khoa ${bs.tenKhoa}',
-                                style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                            Text(
+                              bs.tenDayDu,
+                              style: chu.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              '${bs.soNamKinhNghiem} năm kinh nghiệm · Khoa ${bs.tenKhoa}',
+                              style: chu.bodySmall?.copyWith(
+                                color: AppTheme.mauChuNhat,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -177,15 +210,26 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                 Row(
                   children: [
                     Expanded(
-                      child: Text('Triệu chứng hoặc lý do khám',
-                          style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                      child: Text(
+                        'Triệu chứng hoặc lý do khám',
+                        style: chu.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
-                    Text('Tuỳ chọn', style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                    Text(
+                      'Tuỳ chọn',
+                      style: chu.bodySmall?.copyWith(
+                        color: AppTheme.mauChuNhat,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text('Giúp bác sĩ chuẩn bị trước khi khám.',
-                    style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                Text(
+                  'Giúp bác sĩ chuẩn bị trước khi khám.',
+                  style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+                ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
@@ -208,7 +252,9 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                   maxLines: 5,
                   maxLength: 500,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(hintText: 'VD: sốt 2 ngày, đau họng…'),
+                  decoration: const InputDecoration(
+                    hintText: 'VD: sốt 2 ngày, đau họng…',
+                  ),
                 ),
               ],
             ),
@@ -248,9 +294,14 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
               if (_loi != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(_loi!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                  child: Text(
+                    _loi!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               FilledButton(
                 onPressed: _dangGui ? null : _xacNhan,
@@ -258,7 +309,10 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                     ? const SizedBox(
                         width: 22,
                         height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
                       )
                     : const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -303,7 +357,10 @@ class _DongThongTin extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: const BoxDecoration(color: AppTheme.mauChinhNhat, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: AppTheme.mauChinhNhat,
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, size: 20, color: AppTheme.mauChinh),
           ),
           const SizedBox(width: 12),
@@ -311,10 +368,19 @@ class _DongThongTin extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(nhan, style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
-                Text(giaTri, style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  nhan,
+                  style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+                ),
+                Text(
+                  giaTri,
+                  style: chu.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
                 if (phu != null)
-                  Text(phu!, style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat)),
+                  Text(
+                    phu!,
+                    style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+                  ),
               ],
             ),
           ),

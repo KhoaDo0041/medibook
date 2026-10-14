@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/app_theme.dart';
 import '../../core/kiem_tra_nhap.dart';
+import '../../core/widgets/hieu_ung.dart';
+import '../../core/widgets/khung_xac_thuc.dart';
 import '../bac_si/trang_chu_bac_si.dart';
 import '../benh_nhan/trang_chu_benh_nhan.dart';
 import 'dich_vu_tai_khoan.dart';
@@ -28,6 +29,7 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
   bool _anMatKhau = true;
   bool _dangXuLy = false;
   String? _loi;
+  int _lanLoi = 0; // tăng mỗi lần lỗi để form lắc
 
   bool get _laBacSi => widget.vaiTro == VaiTro.bacSi;
 
@@ -38,9 +40,21 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
     super.dispose();
   }
 
+  void _baoLoi(String? loi) {
+    setState(() {
+      _loi = loi;
+      _lanLoi++;
+    });
+  }
+
   Future<void> _dangNhap() async {
+    if (_dangXuLy) return;
+    FocusScope.of(context).unfocus();
     // Kiểm tra từng ô, lỗi hiện ngay dưới ô đó
-    if (!_khoaForm.currentState!.validate()) return;
+    if (!_khoaForm.currentState!.validate()) {
+      _baoLoi(null);
+      return;
+    }
 
     setState(() {
       _dangXuLy = true;
@@ -57,8 +71,8 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
 
       // Vào trang chủ và xoá các màn hình trước đó khỏi nút Back
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => hoSo.laBacSi
+        trangMem(
+          hoSo.laBacSi
               ? TrangChuBacSi(hoSo: hoSo)
               : TrangChuBenhNhan(hoSo: hoSo),
         ),
@@ -75,15 +89,13 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
           // gửi lại thất bại (ví dụ vừa gửi xong): vẫn cho nhập mã cũ
         }
         if (!mounted) return;
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => ManHinhNhapMa(email: email)),
-        );
+        Navigator.of(context).push(trangMem(ManHinhNhapMa(email: email)));
         return;
       }
-      setState(() => _loi = e.thongBao);
+      _baoLoi(e.thongBao);
     } catch (_) {
       if (!mounted) return;
-      setState(() => _loi = 'Có lỗi xảy ra. Vui lòng thử lại.');
+      _baoLoi('Có lỗi xảy ra. Vui lòng thử lại.');
     } finally {
       if (mounted) setState(() => _dangXuLy = false);
     }
@@ -91,109 +103,101 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
 
   @override
   Widget build(BuildContext context) {
-    final chu = Theme.of(context).textTheme;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _khoaForm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  _laBacSi ? 'Đăng nhập bác sĩ' : 'Đăng nhập',
-                  style: chu.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+    return KhungXacThuc(
+      tieuDe: _laBacSi ? 'Đăng nhập bác sĩ' : 'Chào mừng trở lại',
+      moTa: _laBacSi
+          ? 'Dùng tài khoản do bệnh viện cấp'
+          : 'Đăng nhập để tiếp tục với MediBook',
+      lanLac: _lanLoi,
+      child: Form(
+        key: _khoaForm,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            XuatHien(
+              thuTu: 1,
+              child: TextFormField(
+                controller: _oEmail,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.mail_outline_rounded),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  _laBacSi
-                      ? 'Dùng tài khoản do bệnh viện cấp'
-                      : 'Chào mừng bạn quay lại MediBook',
-                  style: chu.bodyLarge?.copyWith(color: AppTheme.mauChuNhat),
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
-                  controller: _oEmail,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.mail_outline),
-                  ),
-                  validator: KiemTraNhap.email,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _oMatKhau,
-                  obscureText: _anMatKhau,
-                  textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _dangNhap(),
-                  decoration: InputDecoration(
-                    labelText: 'Mật khẩu',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    // Nút con mắt: ẩn / hiện mật khẩu
-                    suffixIcon: IconButton(
-                      tooltip: _anMatKhau ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
-                      icon: Icon(_anMatKhau
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined),
-                      onPressed: () => setState(() => _anMatKhau = !_anMatKhau),
-                    ),
-                  ),
-                  validator: KiemTraNhap.matKhauDangNhap,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => ManHinhQuenMatKhau(
-                            emailBanDau: _oEmail.text.trim(),
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text('Quên mật khẩu?'),
-                  ),
-                ),
-                if (_loi != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    _loi!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: _dangXuLy ? null : _dangNhap,
-                  child: _dangXuLy
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.5),
-                        )
-                      : const Text('Đăng nhập'),
-                ),
-                if (!_laBacSi) ...[
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const ManHinhDangKy()),
-                      );
-                    },
-                    child: const Text('Chưa có tài khoản? Đăng ký ngay'),
-                  ),
-                ],
-              ],
+                validator: KiemTraNhap.email,
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            XuatHien(
+              thuTu: 2,
+              child: TextFormField(
+                controller: _oMatKhau,
+                obscureText: _anMatKhau,
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) => _dangNhap(),
+                decoration: InputDecoration(
+                  labelText: 'Mật khẩu',
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  // Nút con mắt: ẩn / hiện mật khẩu
+                  suffixIcon: IconButton(
+                    tooltip: _anMatKhau ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
+                    icon: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      transitionBuilder: (c, a) =>
+                          ScaleTransition(scale: a, child: c),
+                      child: Icon(
+                        _anMatKhau
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        key: ValueKey(_anMatKhau),
+                      ),
+                    ),
+                    onPressed: () => setState(() => _anMatKhau = !_anMatKhau),
+                  ),
+                ),
+                validator: KiemTraNhap.matKhauDangNhap,
+              ),
+            ),
+            XuatHien(
+              thuTu: 3,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      trangMem(
+                        ManHinhQuenMatKhau(emailBanDau: _oEmail.text.trim()),
+                      ),
+                    );
+                  },
+                  child: const Text('Quên mật khẩu?'),
+                ),
+              ),
+            ),
+            HopThongBao(noiDung: _loi),
+            const SizedBox(height: 16),
+            XuatHien(
+              thuTu: 4,
+              child: NutGradient(
+                nhan: 'Đăng nhập',
+                dangXuLy: _dangXuLy,
+                onPressed: _dangNhap,
+              ),
+            ),
+            if (!_laBacSi) ...[
+              const SizedBox(height: 16),
+              XuatHien(
+                thuTu: 5,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(trangMem(const ManHinhDangKy()));
+                  },
+                  child: const Text('Chưa có tài khoản? Đăng ký ngay'),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

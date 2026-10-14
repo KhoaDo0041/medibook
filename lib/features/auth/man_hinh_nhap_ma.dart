@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/widgets/khung_xac_thuc.dart';
+import '../../core/widgets/hieu_ung.dart';
 import '../benh_nhan/trang_chu_benh_nhan.dart';
 import 'dich_vu_tai_khoan.dart';
 
@@ -72,7 +74,7 @@ class _ManHinhNhapMaState extends State<ManHinhNhapMa> {
       );
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => TrangChuBenhNhan(hoSo: hoSo)),
+        trangMem(TrangChuBenhNhan(hoSo: hoSo)),
         (route) => false,
       );
     } on LoiTaiKhoan catch (e) {
@@ -105,89 +107,56 @@ class _ManHinhNhapMaState extends State<ManHinhNhapMa> {
   @override
   Widget build(BuildContext context) {
     final chu = Theme.of(context).textTheme;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Icon(Icons.mark_email_read_outlined,
-                  size: 64, color: AppTheme.mauChinh),
-              const SizedBox(height: 16),
-              Text(
-                'Nhập mã xác nhận',
-                textAlign: TextAlign.center,
-                style: chu.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Chúng tôi đã gửi mã xác nhận đến\n${widget.email}',
-                textAlign: TextAlign.center,
-                style: chu.bodyLarge?.copyWith(color: AppTheme.mauChuNhat),
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: _oMa,
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                maxLength: 8,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                style: const TextStyle(
-                    fontSize: 28, letterSpacing: 8, fontWeight: FontWeight.w700),
-                decoration: const InputDecoration(
-                  hintText: '••••••',
-                  counterText: '',
-                ),
-                onSubmitted: (_) => _xacNhan(),
-              ),
-              if (_loi != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  _loi!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ],
-              if (_thongBao != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  _thongBao!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Color(0xFF15803D)),
-                ),
-              ],
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: _dangXuLy ? null : _xacNhan,
-                child: _dangXuLy
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5),
-                      )
-                    : const Text('Xác nhận'),
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: _giayConLai > 0 ? null : _guiLai,
-                child: Text(_giayConLai > 0
-                    ? 'Gửi lại mã sau $_giayConLai giây'
-                    : 'Gửi lại mã'),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Không thấy email? Hãy kiểm tra mục Thư rác.',
-                textAlign: TextAlign.center,
-                style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
-              ),
-            ],
+    return KhungXacThuc(
+      tieuDe: 'Nhập mã xác nhận',
+      moTa: 'Chúng tôi đã gửi mã xác nhận đến\n${widget.email}',
+      icon: Icons.mark_email_read_rounded,
+      lanLac: _loi?.hashCode ?? 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _oMa,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            maxLength: 8,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: const TextStyle(
+              fontSize: 28,
+              letterSpacing: 8,
+              fontWeight: FontWeight.w700,
+            ),
+            decoration: const InputDecoration(
+              hintText: '••••••',
+              counterText: '',
+            ),
+            onSubmitted: (_) => _xacNhan(),
           ),
-        ),
+          HopThongBao(noiDung: _loi),
+          HopThongBao(noiDung: _thongBao, thanhCong: true),
+          const SizedBox(height: 24),
+          NutGradient(
+            nhan: 'Xác nhận',
+            dangXuLy: _dangXuLy,
+            onPressed: _xacNhan,
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: _giayConLai > 0 ? null : _guiLai,
+            child: Text(
+              _giayConLai > 0
+                  ? 'Gửi lại mã sau $_giayConLai giây'
+                  : 'Gửi lại mã',
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Không thấy email? Hãy kiểm tra mục Thư rác.',
+            textAlign: TextAlign.center,
+            style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+          ),
+        ],
       ),
     );
   }
