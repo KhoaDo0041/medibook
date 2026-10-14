@@ -24,6 +24,15 @@ class DichVuDatLich {
     return ds;
   }
 
+  /// Id các bệnh viện có chuyên khoa này (dùng khi AI gợi ý khoa).
+  Future<Set<int>> layBenhVienCoKhoa(int chuyenKhoaId) async {
+    final rows = await _chay(() => supabase
+        .from('khoa_benh_vien')
+        .select('benh_vien_id')
+        .eq('chuyen_khoa_id', chuyenKhoaId));
+    return rows.map((r) => r['benh_vien_id'] as int).toSet();
+  }
+
   /// Các khoa của một bệnh viện.
   Future<List<KhoaBenhVien>> layKhoa(int benhVienId) async {
     final rows = await _chay(() => supabase

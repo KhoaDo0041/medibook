@@ -17,11 +17,19 @@ class ManHinhChonBacSi extends StatefulWidget {
   /// Nếu có: chỉ hiện bác sĩ này (dùng cho "Đặt lại với bác sĩ").
   final String? bacSiIdBanDau;
 
+  /// Chọn sẵn chuyên khoa (khi mở từ gợi ý của Trợ lý AI).
+  final int? chuyenKhoaBanDau;
+
+  /// Triệu chứng đã kể với Trợ lý AI, điền sẵn ở bước xác nhận.
+  final String? trieuChung;
+
   const ManHinhChonBacSi({
     super.key,
     required this.hoSo,
     required this.benhVien,
     this.bacSiIdBanDau,
+    this.chuyenKhoaBanDau,
+    this.trieuChung,
   });
 
   @override
@@ -40,7 +48,7 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
   bool _dangTai = true;
   String? _loi;
 
-  int? _chuyenKhoaChon; // null = tất cả
+  late int? _chuyenKhoaChon = widget.chuyenKhoaBanDau; // null = tất cả
   late DateTime _ngayChon = _homNay;
 
   List<DateTime> get _cacNgay => List.generate(_soNgay, (i) => _homNay.add(Duration(days: i)));
@@ -118,6 +126,7 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
           benhVien: widget.benhVien,
           bacSi: bacSi,
           ca: ca,
+          trieuChungBanDau: widget.trieuChung,
         ),
       ),
     );

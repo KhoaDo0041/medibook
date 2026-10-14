@@ -14,7 +14,18 @@ import 'vi_tri.dart';
 class ManHinhChonBenhVien extends StatefulWidget {
   final HoSo hoSo;
 
-  const ManHinhChonBenhVien({super.key, required this.hoSo});
+  /// Khi mở từ Trợ lý AI: chỉ hiện bệnh viện có khoa này, chọn sẵn khoa, điền sẵn triệu chứng.
+  final int? chuyenKhoaId;
+  final String? tenKhoa;
+  final String? trieuChung;
+
+  const ManHinhChonBenhVien({
+    super.key,
+    required this.hoSo,
+    this.chuyenKhoaId,
+    this.tenKhoa,
+    this.trieuChung,
+  });
 
   @override
   State<ManHinhChonBenhVien> createState() => _ManHinhChonBenhVienState();
@@ -48,7 +59,12 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
     });
     final viTri = await layViTri();
     try {
-      final ds = await _dichVu.layBenhVien(viDo: viTri.viDo, kinhDo: viTri.kinhDo);
+      var ds = await _dichVu.layBenhVien(viDo: viTri.viDo, kinhDo: viTri.kinhDo);
+      final khoa = widget.chuyenKhoaId;
+      if (khoa != null) {
+        final coKhoa = await _dichVu.layBenhVienCoKhoa(khoa);
+        ds = ds.where((b) => coKhoa.contains(b.id)).toList();
+      }
       if (!mounted) return;
       setState(() {
         _viTri = viTri;
@@ -82,7 +98,14 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
   void _chon(BenhVien bv) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => ManHinhChonBacSi(hoSo: widget.hoSo, benhVien: bv)),
+      MaterialPageRoute(
+        builder: (_) => ManHinhChonBacSi(
+          hoSo: widget.hoSo,
+          benhVien: bv,
+          chuyenKhoaBanDau: widget.chuyenKhoaId,
+          trieuChung: widget.trieuChung,
+        ),
+      ),
     );
   }
 
@@ -111,6 +134,25 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
               ),
             ),
             const SizedBox(height: 12),
+            if (widget.tenKhoa != null) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFEDD5),
+                  borderRadius: BorderRadius.circular(AppTheme.boGoc),
+                ),
+                child: Row(children: [
+                  const Icon(Icons.auto_awesome, color: AppTheme.mauCam),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text('Trợ lý AI gợi ý khám khoa ${widget.tenKhoa}. '
+                        'Dưới đây là các bệnh viện có khoa này.',
+                        style: const TextStyle(color: Color(0xFF9A3412))),
+                  ),
+                ]),
+              ),
+              const SizedBox(height: 12),
+            ],
             if (_viTri != null) _DongViTri(viTri: _viTri!, onBat: _batViTri),
             const SizedBox(height: 16),
             ..._noiDung(),

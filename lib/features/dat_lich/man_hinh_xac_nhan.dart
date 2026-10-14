@@ -14,6 +14,7 @@ class ManHinhXacNhan extends StatefulWidget {
   final BenhVien benhVien;
   final BacSi bacSi;
   final CaKham ca;
+  final String? trieuChungBanDau;
 
   const ManHinhXacNhan({
     super.key,
@@ -21,6 +22,7 @@ class ManHinhXacNhan extends StatefulWidget {
     required this.benhVien,
     required this.bacSi,
     required this.ca,
+    this.trieuChungBanDau,
   });
 
   @override
@@ -30,7 +32,7 @@ class ManHinhXacNhan extends StatefulWidget {
 class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
   static const _goiY = ['Sốt', 'Ho', 'Đau đầu', 'Đau họng', 'Đau bụng', 'Tái khám định kỳ'];
 
-  final _trieuChung = TextEditingController();
+  late final _trieuChung = TextEditingController(text: widget.trieuChungBanDau ?? '');
   bool _dangGui = false;
   String? _loi;
 

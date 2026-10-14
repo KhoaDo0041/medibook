@@ -12,6 +12,7 @@ import '../dat_lich/man_hinh_chon_bac_si.dart';
 import '../dat_lich/mo_hinh.dart' show LuotKhamCuaToi, TrangThaiLuot;
 import '../dat_lich/man_hinh_chon_benh_vien.dart';
 import '../dat_lich/tab_lich_hen.dart';
+import '../tro_ly_ai/tab_tro_ly_ai.dart';
 import 'mo_hinh.dart';
 import 'widgets/o_chuc_nang.dart';
 import 'widgets/the_bac_si_da_kham.dart';
@@ -35,6 +36,7 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
   int _phienBanTrangChu = 0;
   int _phienBanLichHen = 0;
   bool _moDaQua = false;
+  int _lenhChupAnh = 0; // tăng để tab Trợ lý AI mở camera ngay
 
   void _chuyenTab(int i, {bool daQua = false}) {
     setState(() {
@@ -55,6 +57,10 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
         hoSo: widget.hoSo,
         moTab: _chuyenTab,
         moLichSu: () => _chuyenTab(1, daQua: true),
+        chupAnh: () => setState(() {
+          _tabDangChon = 2;
+          _lenhChupAnh++;
+        }),
       ),
       TabLichHen(
         key: ValueKey('lich_hen_$_phienBanLichHen'),
@@ -62,11 +68,7 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
         moDaQua: _moDaQua,
         moTab: _chuyenTab,
       ),
-      const ManHinhSapCo(
-        icon: Icons.smart_toy_outlined,
-        tieuDe: 'Trợ lý AI',
-        moTa: 'Trò chuyện về triệu chứng và chụp ảnh để nhận định sơ bộ.',
-      ),
+      TabTroLyAi(hoSo: widget.hoSo, lenhChupAnh: _lenhChupAnh),
       TabHoSo(hoSo: widget.hoSo),
     ];
 
@@ -108,8 +110,15 @@ class _TabTrangChu extends StatefulWidget {
   final HoSo hoSo;
   final ValueChanged<int> moTab;
   final VoidCallback moLichSu;
+  final VoidCallback chupAnh;
 
-  const _TabTrangChu({super.key, required this.hoSo, required this.moTab, required this.moLichSu});
+  const _TabTrangChu({
+    super.key,
+    required this.hoSo,
+    required this.moTab,
+    required this.moLichSu,
+    required this.chupAnh,
+  });
 
   @override
   State<_TabTrangChu> createState() => _TabTrangChuState();
@@ -245,7 +254,7 @@ class _TabTrangChuState extends State<_TabTrangChu> {
         // 3. Trợ lý AI
         TheTroLyAi(
           onTroChuyen: () => moTab(2),
-          onChupAnh: () => baoSapCo(context, 'Chụp ảnh nhận định'),
+          onChupAnh: widget.chupAnh,
         ),
         const SizedBox(height: 16),
 
