@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/kiem_tra_nhap.dart';
 import '../../core/widgets/hieu_ung.dart';
@@ -26,8 +27,8 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
   final _oEmail = TextEditingController();
   final _oMatKhau = TextEditingController();
 
-  bool _anMatKhau = true;
   bool _dangXuLy = false;
+  bool _thanhCong = false; // đăng nhập đúng: nút chuyển dấu tích xanh
   String? _loi;
   int _lanLoi = 0; // tăng mỗi lần lỗi để form lắc
 
@@ -41,6 +42,7 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
   }
 
   void _baoLoi(String? loi) {
+    HapticFeedback.mediumImpact(); // rung nhẹ khi sai
     setState(() {
       _loi = loi;
       _lanLoi++;
@@ -67,6 +69,12 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
         matKhau: _oMatKhau.text,
         vaiTroMongMuon: widget.vaiTro,
       );
+      if (!mounted) return;
+
+      // Hiện dấu tích xanh một nhịp rồi mới vào trang chủ
+      setState(() => _thanhCong = true);
+      HapticFeedback.lightImpact();
+      await Future.delayed(const Duration(milliseconds: 650));
       if (!mounted) return;
 
       // Vào trang chủ và xoá các màn hình trước đó khỏi nút Back
@@ -109,6 +117,7 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
           ? 'Dùng tài khoản do bệnh viện cấp'
           : 'Đăng nhập để tiếp tục với MediBook',
       lanLac: _lanLoi,
+      nhipTim: true,
       child: Form(
         key: _khoaForm,
         child: Column(
@@ -116,46 +125,28 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
           children: [
             XuatHien(
               thuTu: 1,
-              child: TextFormField(
-                controller: _oEmail,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                autocorrect: false,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.mail_outline_rounded),
+              child: SangKhiChon(
+                child: TextFormField(
+                  controller: _oEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  autocorrect: false,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.mail_outline_rounded),
+                  ),
+                  validator: KiemTraNhap.email,
                 ),
-                validator: KiemTraNhap.email,
               ),
             ),
             const SizedBox(height: 16),
             XuatHien(
               thuTu: 2,
-              child: TextFormField(
+              child: OMatKhau(
                 controller: _oMatKhau,
-                obscureText: _anMatKhau,
+                nhan: 'Mật khẩu',
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _dangNhap(),
-                decoration: InputDecoration(
-                  labelText: 'Mật khẩu',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  // Nút con mắt: ẩn / hiện mật khẩu
-                  suffixIcon: IconButton(
-                    tooltip: _anMatKhau ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
-                    icon: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      transitionBuilder: (c, a) =>
-                          ScaleTransition(scale: a, child: c),
-                      child: Icon(
-                        _anMatKhau
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        key: ValueKey(_anMatKhau),
-                      ),
-                    ),
-                    onPressed: () => setState(() => _anMatKhau = !_anMatKhau),
-                  ),
-                ),
                 validator: KiemTraNhap.matKhauDangNhap,
               ),
             ),
@@ -182,6 +173,7 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
               child: NutGradient(
                 nhan: 'Đăng nhập',
                 dangXuLy: _dangXuLy,
+                thanhCong: _thanhCong,
                 onPressed: _dangNhap,
               ),
             ),

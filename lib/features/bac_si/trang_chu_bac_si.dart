@@ -5,6 +5,8 @@ import '../../core/widgets/anh_dai_dien.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../../core/widgets/khung_cho_tai.dart';
+import '../../core/widgets/trang_thai.dart';
+import '../../core/widgets/tuong_tac.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
 import 'dich_vu_bac_si.dart';
@@ -53,17 +55,17 @@ class _TrangChuBacSiState extends State<TrangChuBacSi> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.event_note_outlined),
-            selectedIcon: Icon(Icons.event_note, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.event_note),
             label: 'Lịch khám',
           ),
           NavigationDestination(
             icon: Icon(Icons.groups_outlined),
-            selectedIcon: Icon(Icons.groups, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.groups),
             label: 'Bệnh nhân',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.person),
             label: 'Hồ sơ',
           ),
         ],
@@ -302,14 +304,7 @@ class _TabLichKhamState extends State<_TabLichKham> {
           if (_dangTai)
             const KhungChoTai(soThe: 2, caoThe: 120)
           else if (_loi != null)
-            TheTrang(
-              child: Column(
-                children: [
-                  Text(_loi!, textAlign: TextAlign.center),
-                  TextButton(onPressed: _taiCa, child: const Text('Thử lại')),
-                ],
-              ),
-            )
+            TheLoi(thongBao: _loi!, onThuLai: _taiCa)
           else if (cacCa.isEmpty)
             TheTrang(
               child: Row(

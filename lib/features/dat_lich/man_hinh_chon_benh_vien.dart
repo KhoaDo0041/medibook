@@ -6,7 +6,8 @@ import '../../core/widgets/hieu_ung.dart';
 import '../../core/widgets/khung_cho_tai.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'dich_vu_dat_lich.dart';
-import 'dinh_dang.dart';
+import '../../core/dinh_dang.dart';
+import '../../core/widgets/trang_thai.dart';
 import 'man_hinh_chon_bac_si.dart';
 import 'mo_hinh.dart';
 import 'vi_tri.dart';
@@ -182,20 +183,15 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
       return const [KhungChoTai(soThe: 4)];
     }
     if (_loi != null) {
-      return [
-        _ThongBaoTrong(
-          icon: Icons.wifi_off,
-          text: _loi!,
-          nut: TextButton(onPressed: _taiDuLieu, child: const Text('Thử lại')),
-        ),
-      ];
+      return [TheLoi(thongBao: _loi!, onThuLai: _taiDuLieu)];
     }
     final ds = _dsLoc;
     if (ds.isEmpty) {
       return [
-        const _ThongBaoTrong(
+        const TrangThaiTrong(
           icon: Icons.search_off,
-          text: 'Không tìm thấy bệnh viện phù hợp.',
+          tieuDe: 'Không tìm thấy bệnh viện phù hợp',
+          moTa: 'Thử tên khác hoặc xoá ô tìm kiếm.',
         ),
       ];
     }
@@ -269,17 +265,20 @@ class _TheBenhVien extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: AppTheme.mauChinhNhat,
-              borderRadius: BorderRadius.circular(AppTheme.boGoc),
-            ),
-            child: const Icon(
-              Icons.local_hospital_outlined,
-              color: AppTheme.mauChinh,
-              size: 28,
+          Hero(
+            tag: 'benh-vien-${benhVien.id}',
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppTheme.mauChinhNhat,
+                borderRadius: BorderRadius.circular(AppTheme.boGoc),
+              ),
+              child: const Icon(
+                Icons.local_hospital_outlined,
+                color: AppTheme.mauChinh,
+                size: 28,
+              ),
             ),
           ),
           const SizedBox(width: 14),
@@ -359,32 +358,6 @@ class _Nhan extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ThongBaoTrong extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final Widget? nut;
-
-  const _ThongBaoTrong({required this.icon, required this.text, this.nut});
-
-  @override
-  Widget build(BuildContext context) {
-    return TheTrang(
-      child: Column(
-        children: [
-          Icon(icon, size: 40, color: AppTheme.mauChuNhat),
-          const SizedBox(height: 8),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: AppTheme.mauChuNhat),
-          ),
-          if (nut != null) nut!,
         ],
       ),
     );

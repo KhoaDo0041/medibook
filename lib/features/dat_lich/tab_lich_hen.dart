@@ -7,7 +7,9 @@ import '../../core/widgets/khung_cho_tai.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'chi_duong.dart';
 import 'dich_vu_dat_lich.dart';
-import 'dinh_dang.dart';
+import '../../core/dinh_dang.dart';
+import '../../core/widgets/trang_thai.dart';
+import '../../core/widgets/tuong_tac.dart';
 import 'man_hinh_chon_bac_si.dart';
 import 'man_hinh_chon_benh_vien.dart';
 import 'man_hinh_ket_qua_kham.dart';
@@ -179,7 +181,7 @@ class _TabLichHenState extends State<TabLichHen> {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                     children: _loi != null
-                        ? [_loiWidget()]
+                        ? [TheLoi(thongBao: _loi!, onThuLai: _taiDuLieu)]
                         : _daQua
                         ? _dsDaQua()
                         : _dsSapToi(),
@@ -190,22 +192,12 @@ class _TabLichHenState extends State<TabLichHen> {
     );
   }
 
-  Widget _loiWidget() => TheTrang(
-    child: Column(
-      children: [
-        const Icon(Icons.wifi_off, size: 40, color: AppTheme.mauChuNhat),
-        const SizedBox(height: 8),
-        Text(_loi!, textAlign: TextAlign.center),
-        TextButton(onPressed: _taiDuLieu, child: const Text('Thử lại')),
-      ],
-    ),
-  );
-
   List<Widget> _dsSapToi() {
     final ds = _sapToi;
     if (ds.isEmpty) {
       return [
-        _TrongRong(
+        TrangThaiTrong(
+          icon: Icons.calendar_month_outlined,
           tieuDe: 'Bạn chưa có lịch hẹn nào',
           moTa: 'Chọn bệnh viện và bác sĩ phù hợp để nhận số thứ tự trước.',
           nut: FilledButton.icon(
@@ -271,7 +263,8 @@ class _TabLichHenState extends State<TabLichHen> {
     final tatCa = _cacLuotDaQua;
     if (tatCa.isEmpty) {
       return [
-        const _TrongRong(
+        const TrangThaiTrong(
+          icon: Icons.history_rounded,
           tieuDe: 'Chưa có lịch sử khám',
           moTa: 'Các lượt khám đã qua và kết quả bác sĩ ghi sẽ hiện ở đây.',
         ),
@@ -352,53 +345,13 @@ class _ThanhChon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget nut(String text, bool giaTri, IconData icon) {
-      final chon = daQua == giaTri;
-      return Expanded(
-        child: Material(
-          color: chon ? AppTheme.mauChinh : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppTheme.boGoc),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(AppTheme.boGoc),
-            onTap: () => onChon(giaTri),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    icon,
-                    size: 18,
-                    color: chon ? Colors.white : AppTheme.mauChuNhat,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    text,
-                    style: TextStyle(
-                      color: chon ? Colors.white : AppTheme.mauChuNhat,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppTheme.mauChinhNhat,
-        borderRadius: BorderRadius.circular(AppTheme.boGoc + 4),
-      ),
-      child: Row(
-        children: [
-          nut('Sắp tới ($soSapToi)', false, Icons.event_outlined),
-          nut('Đã qua', true, Icons.history),
-        ],
-      ),
+    return ThanhChonTruot(
+      cacMuc: [
+        ('Sắp tới ($soSapToi)', Icons.event_outlined),
+        ('Đã qua', Icons.history),
+      ],
+      dangChon: daQua ? 1 : 0,
+      onChon: (i) => onChon(i == 1),
     );
   }
 }
@@ -552,8 +505,8 @@ class _TheSapToi extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Text(
-                        haiSo(luot.soThuTu),
+                      SoChay(
+                        so: luot.soThuTu,
                         style: const TextStyle(
                           color: AppTheme.mauChinh,
                           fontSize: 26,
@@ -844,51 +797,6 @@ class _NutNhe extends StatelessWidget {
           ),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
-      ),
-    );
-  }
-}
-
-class _TrongRong extends StatelessWidget {
-  final String tieuDe;
-  final String moTa;
-  final Widget? nut;
-
-  const _TrongRong({required this.tieuDe, required this.moTa, this.nut});
-
-  @override
-  Widget build(BuildContext context) {
-    final chu = Theme.of(context).textTheme;
-    return TheTrang(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Container(
-            width: 88,
-            height: 88,
-            decoration: const BoxDecoration(
-              color: AppTheme.mauChinhNhat,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.calendar_month_outlined,
-              size: 40,
-              color: AppTheme.mauChinh,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            tieuDe,
-            style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            moTa,
-            textAlign: TextAlign.center,
-            style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
-          ),
-          if (nut != null) ...[const SizedBox(height: 16), nut!],
-        ],
       ),
     );
   }

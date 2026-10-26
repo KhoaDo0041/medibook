@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/app_theme.dart';
 import '../../../core/widgets/the_trang.dart';
+import '../../../core/dinh_dang.dart';
 import '../mo_hinh.dart';
 
 /// Một ca khám: tiêu đề ca + danh sách bệnh nhân theo số thứ tự.
@@ -133,7 +134,7 @@ class _DongBenhNhan extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                luot.soThuTu.toString().padLeft(2, '0'),
+                haiSo(luot.soThuTu),
                 style: TextStyle(
                   color: kieu.chuSo,
                   fontWeight: FontWeight.w800,

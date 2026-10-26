@@ -4,7 +4,8 @@ import '../../core/app_theme.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../../core/widgets/khung_cho_tai.dart';
-import '../dat_lich/dinh_dang.dart';
+import '../../core/dinh_dang.dart';
+import '../../core/widgets/trang_thai.dart';
 import 'dich_vu_bac_si.dart';
 import 'man_hinh_ho_so_benh_nhan.dart';
 import 'mo_hinh.dart';
@@ -202,20 +203,11 @@ class _TabBenhNhanState extends State<TabBenhNhan> {
       return const [KhungChoTai(soThe: 4)];
     }
     if (_loi != null) {
-      return [
-        TheTrang(
-          child: Column(
-            children: [
-              Text(_loi!, textAlign: TextAlign.center),
-              TextButton(onPressed: _taiDuLieu, child: const Text('Thử lại')),
-            ],
-          ),
-        ),
-      ];
+      return [TheLoi(thongBao: _loi!, onThuLai: _taiDuLieu)];
     }
     if (_ds.isEmpty) {
       return [
-        const _TrangTrong(
+        const TrangThaiTrong(
           icon: Icons.groups_outlined,
           tieuDe: 'Chưa có bệnh nhân nào',
           moTa: 'Bệnh nhân sẽ xuất hiện ở đây sau khi bạn hoàn tất lượt khám đầu tiên.',
@@ -225,7 +217,7 @@ class _TabBenhNhanState extends State<TabBenhNhan> {
     final ds = _dsLoc;
     if (ds.isEmpty) {
       return [
-        const _TrangTrong(
+        const TrangThaiTrong(
           icon: Icons.search_off,
           tieuDe: 'Không tìm thấy',
           moTa: 'Thử tên khác hoặc đổi bộ lọc.',
@@ -393,50 +385,6 @@ class _DayNhip extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _TrangTrong extends StatelessWidget {
-  final IconData icon;
-  final String tieuDe;
-  final String moTa;
-
-  const _TrangTrong({
-    required this.icon,
-    required this.tieuDe,
-    required this.moTa,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final chu = Theme.of(context).textTheme;
-    return TheTrang(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(
-              color: AppTheme.mauChinhNhat,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 38, color: AppTheme.mauChinh),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            tieuDe,
-            style: chu.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            moTa,
-            textAlign: TextAlign.center,
-            style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
-          ),
-        ],
-      ),
     );
   }
 }

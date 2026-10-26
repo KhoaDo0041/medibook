@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
+import 'duong_nhip_tim.dart';
 import 'hieu_ung.dart';
 import 'logo_medibook.dart';
 import 'nen_chuyen_dong.dart';
@@ -25,7 +26,11 @@ class KhungXacThuc extends StatelessWidget {
     required this.child,
     this.icon,
     this.lanLac = 0,
+    this.nhipTim = false,
   });
+
+  /// Hiện đường điện tim chạy dưới tiêu đề (dùng ở màn đăng nhập).
+  final bool nhipTim;
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +90,15 @@ class KhungXacThuc extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.85),
                       ),
                     ),
+                    if (nhipTim && !coBanPhim) ...[
+                      const SizedBox(height: 10),
+                      const SizedBox(width: 170, child: DuongNhipTim(cao: 30)),
+                    ],
                   ],
                 ),
               ),
               Expanded(
-                child: XuatHien(
-                  thuTu: 1,
+                child: _TheTruotLen(
                   child: Container(
                     decoration: const BoxDecoration(
                       color: Colors.white,
@@ -195,10 +203,67 @@ class HopThongBao extends StatelessWidget {
   }
 }
 
-/// Nút chính nền gradient; khi đang xử lý thì co lại thành vòng tròn quay.
+/// Thẻ form trượt lên từ dưới, nảy nhẹ khi dừng — hiệu ứng mở màn hình.
+class _TheTruotLen extends StatelessWidget {
+  final Widget child;
+
+  const _TheTruotLen({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.of(context).disableAnimations) return child;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 850),
+      curve: Curves.easeOutBack,
+      child: child,
+      builder: (context, v, child) => Opacity(
+        opacity: v.clamp(0.0, 1.0),
+        child: Transform.translate(
+          offset: Offset(0, (1 - v) * 260),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// Ô nhập sáng viền xanh dịu khi đang được gõ.
+class SangKhiChon extends StatefulWidget {
+  final Widget child;
+
+  const SangKhiChon({super.key, required this.child});
+
+  @override
+  State<SangKhiChon> createState() => _SangKhiChonState();
+}
+
+class _SangKhiChonState extends State<SangKhiChon> {
+  bool _dangChon = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (v) => setState(() => _dangChon = v),
+      child: AnimatedScale(
+        scale: _dangChon ? 1.015 : 1,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// Nút chính nền gradient:
+/// - đang xử lý: co lại thành vòng tròn quay;
+/// - thành công: chuyển xanh lá và hiện dấu tích.
 class NutGradient extends StatelessWidget {
   final String nhan;
   final bool dangXuLy;
+  final bool thanhCong;
   final VoidCallback onPressed;
 
   const NutGradient({
@@ -206,26 +271,64 @@ class NutGradient extends StatelessWidget {
     required this.nhan,
     required this.dangXuLy,
     required this.onPressed,
+    this.thanhCong = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final boGoc = BorderRadius.circular(dangXuLy ? 26 : AppTheme.boGoc);
+    final tron = dangXuLy || thanhCong;
+    final boGoc = BorderRadius.circular(tron ? 26 : AppTheme.boGoc);
+    final mau = thanhCong
+        ? const [Color(0xFF16A34A), Color(0xFF22C55E)]
+        : const [Color(0xFF1D4ED8), Color(0xFF3B82F6)];
+
+    final Widget noiDung;
+    if (thanhCong) {
+      noiDung = TweenAnimationBuilder<double>(
+        key: const ValueKey('tich'),
+        tween: Tween(begin: 0, end: 1),
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.elasticOut,
+        builder: (context, v, _) => Transform.scale(
+          scale: v,
+          child: const Icon(Icons.check_rounded, color: Colors.white, size: 28),
+        ),
+      );
+    } else if (dangXuLy) {
+      noiDung = const SizedBox(
+        key: ValueKey('quay'),
+        width: 22,
+        height: 22,
+        child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+      );
+    } else {
+      noiDung = Text(
+        nhan,
+        key: const ValueKey('chu'),
+        maxLines: 1,
+        overflow: TextOverflow.clip,
+        softWrap: false,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+        ),
+      );
+    }
+
     return LayoutBuilder(
       builder: (context, kt) => Center(
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 320),
           curve: Curves.easeOutCubic,
-          width: dangXuLy ? 52 : kt.maxWidth,
+          width: tron ? 52 : kt.maxWidth,
           height: 52,
           decoration: BoxDecoration(
             borderRadius: boGoc,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF1D4ED8), Color(0xFF3B82F6)],
-            ),
+            gradient: LinearGradient(colors: mau),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.mauChinh.withValues(alpha: 0.35),
+                color: mau.first.withValues(alpha: 0.35),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -235,28 +338,72 @@ class NutGradient extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: boGoc,
-              onTap: dangXuLy ? null : onPressed,
+              onTap: tron ? null : onPressed,
               child: Center(
-                child: dangXuLy
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Text(
-                        nhan,
-                        maxLines: 1,
-                        overflow: TextOverflow.clip,
-                        softWrap: false,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: noiDung,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Ô nhập mật khẩu có nút con mắt ẩn/hiện — dùng chung cho đăng nhập, đăng ký,
+/// đặt lại và đổi mật khẩu.
+class OMatKhau extends StatefulWidget {
+  final TextEditingController controller;
+  final String nhan;
+  final String? goiY;
+  final IconData icon;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+  final FormFieldValidator<String>? validator;
+
+  const OMatKhau({
+    super.key,
+    required this.controller,
+    required this.nhan,
+    this.goiY,
+    this.icon = Icons.lock_outline_rounded,
+    this.textInputAction,
+    this.onFieldSubmitted,
+    this.validator,
+  });
+
+  @override
+  State<OMatKhau> createState() => _OMatKhauState();
+}
+
+class _OMatKhauState extends State<OMatKhau> {
+  bool _an = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return SangKhiChon(
+      child: TextFormField(
+        controller: widget.controller,
+        obscureText: _an,
+        textInputAction: widget.textInputAction,
+        onFieldSubmitted: widget.onFieldSubmitted,
+        validator: widget.validator,
+        decoration: InputDecoration(
+          labelText: widget.nhan,
+          helperText: widget.goiY,
+          prefixIcon: Icon(widget.icon),
+          suffixIcon: IconButton(
+            tooltip: _an ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
+            onPressed: () => setState(() => _an = !_an),
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (c, a) => ScaleTransition(scale: a, child: c),
+              child: Icon(
+                _an ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                key: ValueKey(_an),
               ),
             ),
           ),

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
 import '../../core/widgets/anh_dai_dien.dart';
-import '../../core/widgets/man_hinh_sap_co.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/widgets/hieu_ung.dart';
+import '../../core/widgets/tuong_tac.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/tab_ho_so.dart';
 import '../dat_lich/chi_duong.dart';
@@ -85,22 +85,22 @@ class _TrangChuBenhNhanState extends State<TrangChuBenhNhan> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.home),
             label: 'Trang chủ',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_today_outlined),
-            selectedIcon: Icon(Icons.calendar_today, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.calendar_today),
             label: 'Lịch hẹn',
           ),
           NavigationDestination(
             icon: Icon(Icons.smart_toy_outlined),
-            selectedIcon: Icon(Icons.smart_toy, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.smart_toy),
             label: 'Trợ lý AI',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person, color: AppTheme.mauChinh),
+            selectedIcon: IconNay(Icons.person),
             label: 'Hồ sơ',
           ),
         ],
@@ -239,11 +239,6 @@ class _TabTrangChuState extends State<_TabTrangChu> {
                   ],
                 ),
               ),
-              _NutTron(
-                icon: Icons.notifications_none,
-                onTap: () => baoSapCo(context, 'Thông báo'),
-              ),
-              const SizedBox(width: 12),
               GestureDetector(
                 onTap: () => moTab(3),
                 child: AnhDaiDien(hoTen: hoSo.hoTen),
@@ -370,33 +365,6 @@ class _TabTrangChuState extends State<_TabTrangChu> {
             ),
           ),
         ]),
-      ),
-    );
-  }
-}
-
-class _NutTron extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _NutTron({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.boGoc),
-      ),
-      elevation: 1,
-      shadowColor: const Color(0x1A0F172A),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.boGoc),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Icon(icon, color: AppTheme.mauChuDam),
-        ),
       ),
     );
   }

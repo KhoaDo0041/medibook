@@ -4,7 +4,8 @@ import '../../core/app_theme.dart';
 import '../../core/widgets/dau_tich_thanh_cong.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../auth/dich_vu_tai_khoan.dart';
-import 'dinh_dang.dart';
+import '../../core/dinh_dang.dart';
+import '../../core/widgets/tuong_tac.dart';
 import 'mo_hinh.dart';
 import 'the_trang_thai.dart';
 
@@ -211,8 +212,8 @@ class _PhieuKham extends StatelessWidget {
                     letterSpacing: 1,
                   ),
                 ),
-                Text(
-                  haiSo(luotKham.soThuTu),
+                SoChay(
+                  so: luotKham.soThuTu,
                   style: const TextStyle(
                     color: AppTheme.mauChinh,
                     fontSize: 64,

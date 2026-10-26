@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widgets/the_trang.dart';
+import '../../../core/dinh_dang.dart';
 
 /// Ô thống kê nhỏ: "Tổng bệnh nhân", "Đã khám", "Đang chờ".
 class OThongKe extends StatelessWidget {
@@ -52,7 +53,7 @@ class OThongKe extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                giaTri.toString().padLeft(2, '0'),
+                haiSo(giaTri),
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,

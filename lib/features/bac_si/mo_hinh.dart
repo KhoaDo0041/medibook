@@ -1,3 +1,5 @@
+import '../../core/dinh_dang.dart';
+
 // Dữ liệu hiển thị phía bác sĩ (lấy từ Supabase qua DichVuBacSi).
 
 enum TrangThaiLuotKham { choKham, dangKham, tamHoan, daKham, daHuy, vangMat }
@@ -48,12 +50,6 @@ class LuotKhamTrongCa {
       t--;
     return t;
   }
-
-  /// Còn trong hàng chờ (chưa khám xong, chưa huỷ, chưa vắng mặt).
-  bool get conXuLy =>
-      trangThai == TrangThaiLuotKham.choKham ||
-      trangThai == TrangThaiLuotKham.dangKham ||
-      trangThai == TrangThaiLuotKham.tamHoan;
 }
 
 /// Một ca làm việc của bác sĩ trong ngày, kèm danh sách bệnh nhân.
@@ -78,9 +74,8 @@ class CaKhamTrongNgay {
 
   bool get laCaSang => gioBatDau.inHours < 12;
   String get tenCa => laCaSang ? 'Ca sáng' : 'Ca chiều';
-  String get khungGio => '${_gio(gioBatDau)} – ${_gio(gioKetThuc)}';
-  static String _gio(Duration d) =>
-      '${d.inHours.toString().padLeft(2, '0')}:${(d.inMinutes % 60).toString().padLeft(2, '0')}';
+  String get khungGio =>
+      '${gioCuaKhoang(gioBatDau)} – ${gioCuaKhoang(gioKetThuc)}';
 
   bool get laHomNay {
     final n = DateTime.now();
@@ -98,10 +93,6 @@ class CaKhamTrongNgay {
 
   List<LuotKhamTrongCa> get dangCho =>
       danhSach.where((l) => l.trangThai == TrangThaiLuotKham.choKham).toList()
-        ..sort((a, b) => a.soThuTu.compareTo(b.soThuTu));
-
-  List<LuotKhamTrongCa> get dangTamHoan =>
-      danhSach.where((l) => l.trangThai == TrangThaiLuotKham.tamHoan).toList()
         ..sort((a, b) => a.soThuTu.compareTo(b.soThuTu));
 
   LuotKhamTrongCa? get dangKham {

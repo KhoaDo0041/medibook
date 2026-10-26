@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/supabase_client.dart';
+import '../../core/dinh_dang.dart';
 import 'mo_hinh.dart';
 
 class LoiBacSi implements Exception {
@@ -31,19 +32,6 @@ class DichVuBacSi {
     return [if (khoa != null) 'Khoa $khoa', if (bv != null) bv].join(' · ');
   }
 
-  /// Các ngày (trong khoảng) bác sĩ có ca — để đánh dấu trên thanh chọn ngày.
-  Future<Set<DateTime>> layNgayCoCa(DateTime tu, DateTime den) async {
-    final rows = await _chay(
-      () => supabase
-          .from('ca_kham')
-          .select('ngay_kham')
-          .eq('bac_si_id', _uid)
-          .gte('ngay_kham', _ngay(tu))
-          .lte('ngay_kham', _ngay(den)),
-    );
-    return rows.map((r) => DateTime.parse(r['ngay_kham'] as String)).toSet();
-  }
-
   /// Các ca của bác sĩ trong một ngày, kèm bệnh nhân từng ca.
   Future<List<CaKhamTrongNgay>> layCaTrongNgay(DateTime ngay) async {
     // Ca nào đã hết giờ thì người còn chờ / tạm hoãn chuyển thành vắng mặt
@@ -58,7 +46,7 @@ class DichVuBacSi {
             'id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_phong, tang',
           )
           .eq('bac_si_id', _uid)
-          .eq('ngay_kham', _ngay(ngay))
+          .eq('ngay_kham', ngayISO(ngay))
           .order('gio_bat_dau'),
     );
     if (caRows.isEmpty) return [];
@@ -278,9 +266,6 @@ class DichVuBacSi {
     final p = s.split(':');
     return Duration(hours: int.parse(p[0]), minutes: int.parse(p[1]));
   }
-
-  static String _ngay(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Future<List<Map<String, dynamic>>> _chay(
     Future<List<Map<String, dynamic>>> Function() truyVan,

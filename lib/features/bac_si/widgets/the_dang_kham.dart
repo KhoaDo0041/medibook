@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/app_theme.dart';
+import '../../../core/dinh_dang.dart';
 import '../mo_hinh.dart';
 
 /// Khối xanh "Đang khám": bệnh nhân hiện tại và nút gọi số tiếp theo.
@@ -86,7 +87,7 @@ class TheDangKham extends StatelessWidget {
           const SizedBox(height: 12),
           if (l != null) ...[
             Text(
-              'Số ${l.soThuTu.toString().padLeft(2, '0')}',
+              'Số ${haiSo(l.soThuTu)}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 28,
@@ -125,7 +126,7 @@ class TheDangKham extends StatelessWidget {
                   label: Text(
                     soTiepTheo == null
                         ? 'Hết bệnh nhân chờ'
-                        : 'Gọi số tiếp theo (${soTiepTheo.toString().padLeft(2, '0')})',
+                        : 'Gọi số tiếp theo (${haiSo(soTiepTheo!)})',
                   ),
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.white,

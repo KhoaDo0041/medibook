@@ -4,7 +4,7 @@ import '../../core/app_theme.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'dich_vu_dat_lich.dart';
-import 'dinh_dang.dart';
+import '../../core/dinh_dang.dart';
 import 'man_hinh_dat_thanh_cong.dart';
 import 'mo_hinh.dart';
 

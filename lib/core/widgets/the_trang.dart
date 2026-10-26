@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
+import 'tuong_tac.dart';
 
 /// Thẻ nền trắng bo góc, đổ bóng nhẹ — dùng chung cho các khối trên dashboard.
 class TheTrang extends StatelessWidget {
@@ -20,24 +21,27 @@ class TheTrang extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final boGoc = BorderRadius.circular(AppTheme.boGocThe);
-    return Container(
-      decoration: BoxDecoration(
-        color: mauNen,
-        borderRadius: boGoc,
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
+    return NhanLun(
+      batLun: onTap != null,
+      child: Container(
+        decoration: BoxDecoration(
+          color: mauNen,
           borderRadius: boGoc,
-          onTap: onTap,
-          child: Padding(padding: padding, child: child),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: boGoc,
+            onTap: onTap,
+            child: Padding(padding: padding, child: child),
+          ),
         ),
       ),
     );

@@ -7,6 +7,7 @@ import '../../core/widgets/the_trang.dart';
 import '../../core/widgets/hieu_ung.dart';
 import 'dich_vu_tai_khoan.dart';
 import 'man_hinh_chao_mung.dart';
+import 'man_hinh_doi_mat_khau.dart';
 
 /// Tab "Hồ sơ" dùng chung cho bệnh nhân và bác sĩ: thông tin tài khoản + đăng xuất.
 class TabHoSo extends StatelessWidget {
@@ -169,6 +170,59 @@ class TabHoSo extends StatelessWidget {
                 icon: Icons.info_outline_rounded,
                 tieuDe: 'Phiên bản',
                 giaTri: 'MediBook 1.0.0',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Bảo mật: đổi mật khẩu
+        TheTrang(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          onTap: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const ManHinhDoiMatKhau())),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppTheme.mauChinhNhat,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.lock_reset_rounded,
+                  size: 20,
+                  color: AppTheme.mauChinh,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Đổi mật khẩu',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.mauChuDam,
+                      ),
+                    ),
+                    Text(
+                      'Nên đổi định kỳ để bảo vệ tài khoản',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppTheme.mauChuNhat,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppTheme.mauChuNhat,
               ),
             ],
           ),

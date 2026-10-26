@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import '../../core/dinh_dang.dart';
+
 /// Các mô hình dữ liệu cho luồng đặt lịch khám.
 
 class BenhVien {
@@ -146,10 +148,8 @@ class CaKham {
   bool get datDuoc => !hetCho && !daKetThuc;
 
   /// VD: "07:30 – 11:30"
-  String get khungGio => '${_inGio(gioBatDau)} – ${_inGio(gioKetThuc)}';
-
-  static String _inGio(Duration d) =>
-      '${d.inHours.toString().padLeft(2, '0')}:${(d.inMinutes % 60).toString().padLeft(2, '0')}';
+  String get khungGio =>
+      '${gioCuaKhoang(gioBatDau)} – ${gioCuaKhoang(gioKetThuc)}';
 }
 
 /// Kết quả sau khi đặt thành công.

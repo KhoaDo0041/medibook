@@ -199,6 +199,42 @@ class DichVuTaiKhoan {
     }
   }
 
+  /// Đổi mật khẩu khi đang đăng nhập (tab Hồ sơ).
+  /// Kiểm tra mật khẩu hiện tại bằng cách đăng nhập lại, đúng thì mới đổi.
+  static Future<void> doiMatKhau({
+    required String matKhauHienTai,
+    required String matKhauMoi,
+  }) async {
+    final email = supabase.auth.currentUser?.email;
+    if (email == null) {
+      throw const LoiTaiKhoan(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
+      );
+    }
+    if (matKhauHienTai == matKhauMoi) {
+      throw const LoiTaiKhoan('Mật khẩu mới phải khác mật khẩu hiện tại');
+    }
+    try {
+      try {
+        await supabase.auth.signInWithPassword(
+          email: email,
+          password: matKhauHienTai,
+        );
+      } on AuthException {
+        throw const LoiTaiKhoan('Mật khẩu hiện tại không đúng');
+      }
+      await supabase.auth.updateUser(UserAttributes(password: matKhauMoi));
+    } on LoiTaiKhoan {
+      rethrow;
+    } on AuthException catch (e) {
+      throw LoiTaiKhoan(_dichLoi(e));
+    } catch (_) {
+      throw const LoiTaiKhoan(
+        'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.',
+      );
+    }
+  }
+
   /// Đổi thông báo lỗi tiếng Anh của Supabase sang tiếng Việt.
   static String _dichLoi(AuthException e) {
     final loi = e.message.toLowerCase();

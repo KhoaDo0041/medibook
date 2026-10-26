@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
 import '../../core/widgets/the_trang.dart';
-import '../dat_lich/dinh_dang.dart';
+import '../../core/dinh_dang.dart';
 import 'dich_vu_bac_si.dart';
 import 'mo_hinh.dart';
 

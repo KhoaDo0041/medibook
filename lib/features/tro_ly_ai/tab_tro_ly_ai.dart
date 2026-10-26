@@ -491,7 +491,11 @@ class _ManChaoAi extends StatelessWidget {
           'Kể triệu chứng hoặc chụp ảnh, mình sẽ gợi ý chuyên khoa '
           'và bệnh viện gần bạn để đặt lịch.',
           textAlign: TextAlign.center,
-          style: TextStyle(color: AppTheme.mauChuNhat, fontSize: 14, height: 1.4),
+          style: TextStyle(
+            color: AppTheme.mauChuNhat,
+            fontSize: 14,
+            height: 1.4,
+          ),
         ),
       ],
     );
@@ -549,7 +553,10 @@ class _OTinhNang extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 moTa,
-                style: const TextStyle(color: AppTheme.mauChuNhat, fontSize: 12),
+                style: const TextStyle(
+                  color: AppTheme.mauChuNhat,
+                  fontSize: 12,
+                ),
               ),
             ],
           ),
@@ -564,7 +571,11 @@ class _ChipGoiY extends StatelessWidget {
   final String ten;
   final VoidCallback onTap;
 
-  const _ChipGoiY({required this.emoji, required this.ten, required this.onTap});
+  const _ChipGoiY({
+    required this.emoji,
+    required this.ten,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -604,13 +615,21 @@ class _LuuY extends StatelessWidget {
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.health_and_safety_outlined, size: 20, color: Color(0xFFC2410C)),
+          Icon(
+            Icons.health_and_safety_outlined,
+            size: 20,
+            color: Color(0xFFC2410C),
+          ),
           SizedBox(width: 8),
           Expanded(
             child: Text(
               'Trợ lý chỉ gợi ý chuyên khoa nên khám, không chẩn đoán hay kê thuốc. '
               'Khi khó thở, đau ngực dữ dội, co giật… hãy gọi 115 ngay.',
-              style: TextStyle(color: Color(0xFF9A3412), fontSize: 13, height: 1.35),
+              style: TextStyle(
+                color: Color(0xFF9A3412),
+                fontSize: 13,
+                height: 1.35,
+              ),
             ),
           ),
         ],
@@ -629,7 +648,8 @@ class _BongBong extends StatelessWidget {
   Widget build(BuildContext context) {
     final bong = Container(
       constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * (laNguoiDung ? 0.78 : 0.74),
+        maxWidth:
+            MediaQuery.of(context).size.width * (laNguoiDung ? 0.78 : 0.74),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       decoration: BoxDecoration(
@@ -669,8 +689,9 @@ class _BongBong extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment:
-            laNguoiDung ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: laNguoiDung
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!laNguoiDung) ...[
@@ -801,7 +822,10 @@ class _TheGoiYKhoa extends StatelessWidget {
               ),
               if (mucDo == MucDo.nenKhamSom)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: const ShapeDecoration(
                     color: Color(0xFFFFEDD5),
                     shape: StadiumBorder(),
@@ -869,7 +893,11 @@ class _NutDatLich extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.event_available, size: 18, color: Colors.white),
+                const Icon(
+                  Icons.event_available,
+                  size: 18,
+                  color: Colors.white,
+                ),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
@@ -1008,7 +1036,11 @@ class _DangGoState extends State<_DangGo> with SingleTickerProviderStateMixin {
               Transform.translate(
                 offset: Offset(
                   0,
-                  -5 * math.max(0.0, math.sin((_ac.value - i * 0.15) * 2 * math.pi)),
+                  -5 *
+                      math.max(
+                        0.0,
+                        math.sin((_ac.value - i * 0.15) * 2 * math.pi),
+                      ),
                 ),
                 child: Container(
                   width: 8,
@@ -1190,7 +1222,9 @@ class _ONhap extends StatelessWidget {
                         boxShadow: bat
                             ? [
                                 BoxShadow(
-                                  color: AppTheme.mauChinh.withValues(alpha: 0.35),
+                                  color: AppTheme.mauChinh.withValues(
+                                    alpha: 0.35,
+                                  ),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),

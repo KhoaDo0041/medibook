@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
-import '../dat_lich/dinh_dang.dart';
+import '../../core/dinh_dang.dart';
 import 'mo_hinh.dart';
 import 'widgets/anh_benh_nhan.dart';
 

@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/supabase_client.dart';
+import '../../core/dinh_dang.dart';
 import 'mo_hinh.dart';
 
 class LoiDatLich implements Exception {
@@ -117,8 +118,8 @@ class DichVuDatLich {
             'id, bac_si_id, ngay_kham, gio_bat_dau, gio_ket_thuc, so_luong_toi_da, so_da_dang_ky, so_phong, tang',
           )
           .inFilter('bac_si_id', bacSiIds)
-          .gte('ngay_kham', _ngay(tuNgay))
-          .lte('ngay_kham', _ngay(denNgay))
+          .gte('ngay_kham', ngayISO(tuNgay))
+          .lte('ngay_kham', ngayISO(denNgay))
           .order('ngay_kham')
           .order('gio_bat_dau'),
     );
@@ -239,9 +240,6 @@ class DichVuDatLich {
   }
 
   // ---------- tiện ích ----------
-
-  static String _ngay(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Future<List<Map<String, dynamic>>> _chay(
     Future<List<Map<String, dynamic>>> Function() truyVan,

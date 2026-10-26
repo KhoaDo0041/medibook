@@ -22,7 +22,6 @@ class _ManHinhDangKyState extends State<ManHinhDangKy> {
   final _oMatKhau = TextEditingController();
   final _oNhapLai = TextEditingController();
 
-  bool _anMatKhau = true;
   bool _dangXuLy = false;
   String? _loi;
 
@@ -63,16 +62,6 @@ class _ManHinhDangKyState extends State<ManHinhDangKy> {
     }
   }
 
-  Widget _nutConMat() {
-    return IconButton(
-      tooltip: _anMatKhau ? 'Hiện mật khẩu' : 'Ẩn mật khẩu',
-      icon: Icon(
-        _anMatKhau ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-      ),
-      onPressed: () => setState(() => _anMatKhau = !_anMatKhau),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return KhungXacThuc(
@@ -108,29 +97,19 @@ class _ManHinhDangKyState extends State<ManHinhDangKy> {
               validator: KiemTraNhap.email,
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            OMatKhau(
               controller: _oMatKhau,
-              obscureText: _anMatKhau,
+              nhan: 'Mật khẩu',
+              goiY: 'Ít nhất 8 ký tự, có chữ hoa, chữ thường và số',
               textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                labelText: 'Mật khẩu',
-                helperText: 'Ít nhất 8 ký tự, có chữ hoa, chữ thường và số',
-                prefixIcon: const Icon(Icons.lock_outline),
-                suffixIcon: _nutConMat(),
-              ),
               validator: KiemTraNhap.matKhauMoi,
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            OMatKhau(
               controller: _oNhapLai,
-              obscureText: _anMatKhau,
+              nhan: 'Nhập lại mật khẩu',
               textInputAction: TextInputAction.done,
               onFieldSubmitted: (_) => _dangKy(),
-              decoration: InputDecoration(
-                labelText: 'Nhập lại mật khẩu',
-                prefixIcon: const Icon(Icons.lock_outline),
-                suffixIcon: _nutConMat(),
-              ),
               validator: (giaTri) {
                 if (giaTri == null || giaTri.isEmpty) {
                   return 'Vui lòng nhập lại mật khẩu';

@@ -17,11 +17,21 @@ String haiSo(int n) => n.toString().padLeft(2, '0');
 String thuNgan(DateTime d) => _thuNgan[d.weekday - 1];
 
 /// "Thứ Năm, 09/10/2026"
-String ngayDayDu(DateTime d) =>
-    '${_thuDai[d.weekday - 1]}, ${haiSo(d.day)}/${haiSo(d.month)}/${d.year}';
+String ngayDayDu(DateTime d) => '${ngayThang(d)}/${d.year}';
+
+/// "Thứ Năm, 09/10"
+String ngayThang(DateTime d) =>
+    '${_thuDai[d.weekday - 1]}, ${haiSo(d.day)}/${haiSo(d.month)}';
+
+/// "2026-10-09" — dạng ngày Supabase/PostgreSQL dùng khi lọc
+String ngayISO(DateTime d) => '${d.year}-${haiSo(d.month)}-${haiSo(d.day)}';
 
 /// "07:15"
 String gioPhut(DateTime d) => '${haiSo(d.hour)}:${haiSo(d.minute)}';
+
+/// Giờ trong ngày lưu dạng Duration (07:30 = 7 giờ 30 phút) → "07:30"
+String gioCuaKhoang(Duration d) =>
+    '${haiSo(d.inHours)}:${haiSo(d.inMinutes % 60)}';
 
 /// "850 m" hoặc "1,2 km"
 String khoangCach(double km) {

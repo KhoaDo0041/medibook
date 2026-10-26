@@ -7,7 +7,9 @@ import '../../core/widgets/khung_cho_tai.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'chi_duong.dart';
 import 'dich_vu_dat_lich.dart';
-import 'dinh_dang.dart';
+import '../../core/dinh_dang.dart';
+import '../../core/widgets/trang_thai.dart';
+import '../../core/widgets/tuong_tac.dart';
 import 'man_hinh_xac_nhan.dart';
 import 'mo_hinh.dart';
 
@@ -156,22 +158,13 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
               onRefresh: _taiDuLieu,
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                children: _loi != null ? [_loiWidget()] : _noiDung(context),
+                children: _loi != null
+                    ? [TheLoi(thongBao: _loi!, onThuLai: _taiDuLieu)]
+                    : _noiDung(context),
               ),
             ),
     );
   }
-
-  Widget _loiWidget() => TheTrang(
-    child: Column(
-      children: [
-        const Icon(Icons.wifi_off, size: 40, color: AppTheme.mauChuNhat),
-        const SizedBox(height: 8),
-        Text(_loi!, textAlign: TextAlign.center),
-        TextButton(onPressed: _taiDuLieu, child: const Text('Thử lại')),
-      ],
-    ),
-  );
 
   List<Widget> _noiDung(BuildContext context) {
     final chu = Theme.of(context).textTheme;
@@ -340,16 +333,19 @@ class _TheBenhVienDau extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppTheme.mauChinhNhat,
-                  borderRadius: BorderRadius.circular(AppTheme.boGoc),
-                ),
-                child: const Icon(
-                  Icons.local_hospital_outlined,
-                  color: AppTheme.mauChinh,
+              Hero(
+                tag: 'benh-vien-${benhVien.id}',
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppTheme.mauChinhNhat,
+                    borderRadius: BorderRadius.circular(AppTheme.boGoc),
+                  ),
+                  child: const Icon(
+                    Icons.local_hospital_outlined,
+                    color: AppTheme.mauChinh,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -442,22 +438,17 @@ class _ChipKhoa extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: Material(
-        color: chon ? AppTheme.mauChinh : Colors.white,
-        shape: StadiumBorder(
-          side: BorderSide(color: chon ? AppTheme.mauChinh : AppTheme.mauVien),
-        ),
-        child: InkWell(
-          customBorder: const StadiumBorder(),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-            child: Text(
-              text,
-              style: TextStyle(
-                color: chon ? Colors.white : AppTheme.mauChuDam,
-                fontWeight: FontWeight.w600,
-              ),
+      child: HopChon(
+        chon: chon,
+        onTap: onTap,
+        mauVien: AppTheme.mauVien,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: chon ? Colors.white : AppTheme.mauChuDam,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -488,50 +479,46 @@ class _ONgay extends StatelessWidget {
         : coCa
         ? AppTheme.mauChuDam
         : AppTheme.mauChuNhat.withValues(alpha: 0.5);
-    return Material(
-      color: chon
-          ? AppTheme.mauChinh
-          : (coCa ? Colors.white : const Color(0xFFF1F5F9)),
-      borderRadius: BorderRadius.circular(AppTheme.boGoc),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.boGoc),
-        onTap: onTap,
-        child: SizedBox(
-          width: 60,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                laHomNay ? 'Hôm nay' : thuNgan(ngay),
-                style: TextStyle(
-                  color: mauChu,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                ),
+    return HopChon(
+      chon: chon,
+      onTap: onTap,
+      mauNen: coCa ? Colors.white : const Color(0xFFF1F5F9),
+      boGoc: BorderRadius.circular(AppTheme.boGoc),
+      child: SizedBox(
+        width: 60,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              laHomNay ? 'Hôm nay' : thuNgan(ngay),
+              style: TextStyle(
+                color: mauChu,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 4),
-              Text(
-                haiSo(ngay.day),
-                style: TextStyle(
-                  color: mauChu,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              haiSo(ngay.day),
+              style: TextStyle(
+                color: mauChu,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
               ),
-              const SizedBox(height: 4),
-              if (coCa)
-                Container(
-                  width: 5,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: chon ? Colors.white : AppTheme.mauChinh,
-                    shape: BoxShape.circle,
-                  ),
-                )
-              else
-                Text('Nghỉ', style: TextStyle(color: mauChu, fontSize: 10)),
-            ],
-          ),
+            ),
+            const SizedBox(height: 4),
+            if (coCa)
+              Container(
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: chon ? Colors.white : AppTheme.mauChinh,
+                  shape: BoxShape.circle,
+                ),
+              )
+            else
+              Text('Nghỉ', style: TextStyle(color: mauChu, fontSize: 10)),
+          ],
         ),
       ),
     );

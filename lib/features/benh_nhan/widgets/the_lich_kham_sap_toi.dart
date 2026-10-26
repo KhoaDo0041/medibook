@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../core/app_theme.dart';
 import '../../../core/widgets/the_trang.dart';
+import '../../../core/dinh_dang.dart';
+import '../../../core/widgets/tuong_tac.dart';
 import '../mo_hinh.dart';
 
 /// Thẻ "Lịch khám sắp tới". Chưa có lịch thì hiện lời mời đặt lịch.
@@ -16,19 +18,6 @@ class TheLichKhamSapToi extends StatelessWidget {
     required this.onDatLich,
     required this.onChiDuong,
   });
-
-  static const _thu = [
-    'Thứ Hai',
-    'Thứ Ba',
-    'Thứ Tư',
-    'Thứ Năm',
-    'Thứ Sáu',
-    'Thứ Bảy',
-    'Chủ Nhật',
-  ];
-
-  String _ngay(DateTime d) =>
-      '${_thu[d.weekday - 1]}, ${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +135,7 @@ class TheLichKhamSapToi extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          _ngay(l.ngayKham),
+                          ngayThang(l.ngayKham),
                           style: chu.titleMedium?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -174,8 +163,8 @@ class TheLichKhamSapToi extends StatelessWidget {
                             letterSpacing: 0.5,
                           ),
                         ),
-                        Text(
-                          l.soThuTu.toString().padLeft(2, '0'),
+                        SoChay(
+                          so: l.soThuTu,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 30,
