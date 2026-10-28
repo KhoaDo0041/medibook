@@ -4,9 +4,8 @@ import 'package:flutter/services.dart';
 import '../../core/kiem_tra_nhap.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../../core/widgets/khung_xac_thuc.dart';
-import '../bac_si/trang_chu_bac_si.dart';
-import '../benh_nhan/trang_chu_benh_nhan.dart';
 import 'dich_vu_tai_khoan.dart';
+import 'dieu_huong.dart';
 import 'man_hinh_dang_ky.dart';
 import 'man_hinh_nhap_ma.dart';
 import 'man_hinh_quen_mat_khau.dart';
@@ -79,11 +78,7 @@ class _ManHinhDangNhapState extends State<ManHinhDangNhap> {
 
       // Vào trang chủ và xoá các màn hình trước đó khỏi nút Back
       Navigator.of(context).pushAndRemoveUntil(
-        trangMem(
-          hoSo.laBacSi
-              ? TrangChuBacSi(hoSo: hoSo)
-              : TrangChuBenhNhan(hoSo: hoSo),
-        ),
+        trangMem(trangChuTheoVaiTro(hoSo)),
         (route) => false,
       );
     } on LoiTaiKhoan catch (e) {

@@ -6,7 +6,7 @@ import '../../core/widgets/anh_dai_dien.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/widgets/hieu_ung.dart';
 import 'dich_vu_tai_khoan.dart';
-import 'man_hinh_chao_mung.dart';
+import 'dieu_huong.dart';
 import 'man_hinh_doi_mat_khau.dart';
 
 /// Tab "Hồ sơ" dùng chung cho bệnh nhân và bác sĩ: thông tin tài khoản + đăng xuất.
@@ -43,7 +43,7 @@ class TabHoSo extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.of(
       context,
-    ).pushAndRemoveUntil(trangMem(const ManHinhChaoMung()), (route) => false);
+    ).pushAndRemoveUntil(trangMem(manHinhChuaDangNhap()), (route) => false);
   }
 
   @override

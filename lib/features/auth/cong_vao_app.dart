@@ -1,12 +1,11 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/duong_nhip_tim.dart';
 import '../../core/widgets/logo_medibook.dart';
 import '../../core/widgets/nen_chuyen_dong.dart';
-import '../bac_si/trang_chu_bac_si.dart';
-import '../benh_nhan/trang_chu_benh_nhan.dart';
 import 'dich_vu_tai_khoan.dart';
-import 'man_hinh_chao_mung.dart';
+import 'dieu_huong.dart';
 
 /// Màn hình đầu tiên khi mở app: quyết định đi đâu.
 /// - Đã đăng nhập từ lần trước: vào thẳng trang chủ theo vai trò.
@@ -31,6 +30,11 @@ class _CongVaoAppState extends State<CongVaoApp> {
         await DichVuTaiKhoan.dangXuat();
         return null;
       }
+      // Bản web chỉ dành cho bác sĩ
+      if (hoSo != null && kIsWeb && !hoSo.laBacSi) {
+        await DichVuTaiKhoan.dangXuat();
+        return null;
+      }
       return hoSo;
     } catch (_) {
       return null; // mất mạng hoặc lỗi: coi như chưa đăng nhập
@@ -48,10 +52,8 @@ class _CongVaoAppState extends State<CongVaoApp> {
         } else {
           final hoSo = ketQua.data;
           manHinh = hoSo == null
-              ? const ManHinhChaoMung()
-              : hoSo.laBacSi
-              ? TrangChuBacSi(hoSo: hoSo)
-              : TrangChuBenhNhan(hoSo: hoSo);
+              ? manHinhChuaDangNhap()
+              : trangChuTheoVaiTro(hoSo);
         }
         // Mờ dần từ màn khởi động sang màn tiếp theo
         return AnimatedSwitcher(

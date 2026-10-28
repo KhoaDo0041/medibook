@@ -237,6 +237,27 @@ class DichVuBacSi {
   Future<void> tamHoan(int luotKhamId) =>
       _rpc('tam_hoan_kham', {'p_luot_kham_id': luotKhamId});
 
+  /// Nghe Supabase Realtime trên các ca của bác sĩ: có người đặt / huỷ lịch,
+  /// gọi số, hoàn tất… (trigger trong file SQL 11 cập nhật dòng ca_kham) → gọi [khiThayDoi].
+  RealtimeChannel theoDoiCacCa(void Function() khiThayDoi) {
+    return supabase
+        .channel('ca_bac_si_$_uid')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'ca_kham',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'bac_si_id',
+            value: _uid,
+          ),
+          callback: (_) => khiThayDoi(),
+        )
+        .subscribe();
+  }
+
+  Future<void> boTheoDoi(RealtimeChannel kenh) => supabase.removeChannel(kenh);
+
   // ---------- tiện ích ----------
 
   static LuotKhamTrongCa _docLuot(

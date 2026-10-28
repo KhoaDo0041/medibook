@@ -34,6 +34,144 @@ class KhungXacThuc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Màn hình rộng (web trên máy tính, máy tính bảng ngang): chia đôi trang
+    return LayoutBuilder(
+      builder: (context, k) =>
+          k.maxWidth >= 900 ? _manHinhRong(context) : _manHinhHep(context),
+    );
+  }
+
+  /// Bố cục máy tính: bên trái nền xanh giới thiệu, bên phải form gọn ở giữa.
+  Widget _manHinhRong(BuildContext context) {
+    final chu = Theme.of(context).textTheme;
+    final coTheQuayLai = Navigator.of(context).canPop();
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ----- Bên trái: thương hiệu -----
+          Expanded(
+            flex: 11,
+            child: NenChuyenDong(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(48),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const LogoMediBook(kichThuoc: 96),
+                        const SizedBox(height: 28),
+                        Text(
+                          'MediBook',
+                          textAlign: TextAlign.center,
+                          style: chu.displayMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Tư vấn AI  –  Đặt lịch  –  Chỉ đường',
+                          textAlign: TextAlign.center,
+                          style: chu.titleMedium?.copyWith(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        const SizedBox(
+                          width: 240,
+                          child: DuongNhipTim(cao: 34),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // ----- Bên phải: form -----
+          Expanded(
+            flex: 9,
+            child: Stack(
+              children: [
+                Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 48,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: _TheTruotLen(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (icon != null) ...[
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width: 56,
+                                  height: 56,
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.mauChinhNhat,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Icon(
+                                    icon,
+                                    color: AppTheme.mauChinh,
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                            Text(
+                              tieuDe,
+                              style: chu.headlineMedium?.copyWith(
+                                color: AppTheme.mauChuDam,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              moTa,
+                              style: chu.bodyLarge?.copyWith(
+                                color: AppTheme.mauChuNhat,
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            LacKhiLoi(lanLac: lanLac, child: child),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (coTheQuayLai)
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: IconButton(
+                      tooltip: 'Quay lại',
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Bố cục điện thoại (giữ nguyên như cũ).
+  Widget _manHinhHep(BuildContext context) {
     final chu = Theme.of(context).textTheme;
     // Khi bàn phím bật lên thì ẩn logo để chừa chỗ cho form
     final coBanPhim = MediaQuery.viewInsetsOf(context).bottom > 0;
@@ -47,14 +185,14 @@ class KhungXacThuc extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: IconButton(
+                child: Navigator.of(context).canPop() ? IconButton(
                   tooltip: 'Quay lại',
                   icon: const Icon(
                     Icons.arrow_back_rounded,
                     color: Colors.white,
                   ),
                   onPressed: () => Navigator.of(context).maybePop(),
-                ),
+                ) : const SizedBox(height: 48),
               ),
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
@@ -113,7 +251,12 @@ class KhungXacThuc extends StatelessWidget {
                         24,
                         24 + MediaQuery.paddingOf(context).bottom,
                       ),
-                      child: LacKhiLoi(lanLac: lanLac, child: child),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 440),
+                          child: LacKhiLoi(lanLac: lanLac, child: child),
+                        ),
+                      ),
                     ),
                   ),
                 ),

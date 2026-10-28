@@ -7,7 +7,7 @@ import '../../core/kiem_tra_nhap.dart';
 import '../../core/widgets/khung_xac_thuc.dart';
 import '../../core/widgets/hieu_ung.dart';
 import 'dich_vu_tai_khoan.dart';
-import 'man_hinh_chao_mung.dart';
+import 'dieu_huong.dart';
 
 /// Quên mật khẩu, bước 2: nhập mã nhận qua email và mật khẩu mới.
 class ManHinhDatLaiMatKhau extends StatefulWidget {
@@ -80,7 +80,7 @@ class _ManHinhDatLaiMatKhauState extends State<ManHinhDatLaiMatKhau> {
       final thongBao = ScaffoldMessenger.of(context);
       Navigator.of(
         context,
-      ).pushAndRemoveUntil(trangMem(const ManHinhChaoMung()), (route) => false);
+      ).pushAndRemoveUntil(trangMem(manHinhChuaDangNhap()), (route) => false);
       thongBao.showSnackBar(
         const SnackBar(
           content: Text('Đã đổi mật khẩu. Vui lòng đăng nhập lại.'),
