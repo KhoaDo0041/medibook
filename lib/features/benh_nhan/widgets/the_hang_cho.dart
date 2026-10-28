@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show RealtimeChannel;
 
 import '../../../core/app_theme.dart';
 import '../../../core/dinh_dang.dart';
+import '../../../core/giong_noi.dart';
 import '../../../core/widgets/the_trang.dart';
 import '../../../core/widgets/tuong_tac.dart';
 import '../../dat_lich/dich_vu_dat_lich.dart';
@@ -59,10 +60,11 @@ class _TheHangChoState extends State<TheHangCho> {
       final moi = await _dv.layHangCho(widget.luot.id);
       if (!mounted || moi == null) return;
       final cu = _hc;
-      // Vừa tới lượt: rung để bệnh nhân chú ý
+      // Vừa tới lượt: rung + đọc to để bệnh nhân chú ý
       if (moi.trangThai == TrangThaiLuot.dangKham &&
           cu?.trangThai != TrangThaiLuot.dangKham) {
         HapticFeedback.heavyImpact();
+        _docToiLuot();
       }
       setState(() {
         _hc = moi;
@@ -76,6 +78,14 @@ class _TheHangChoState extends State<TheHangCho> {
     } on LoiDatLich {
       if (mounted) setState(() => _loiMang = true);
     }
+  }
+
+  void _docToiLuot() {
+    final phong = widget.luot.ca.viTriPhong;
+    GiongNoi.doc(
+      'Tới lượt bạn rồi. Hãy vào phòng khám.'
+      '${phong == null ? '' : ' ${GiongNoi.docPhong(phong)}.'}',
+    );
   }
 
   @override
@@ -134,6 +144,11 @@ class _TheHangChoState extends State<TheHangCho> {
         noiDung: phong == null
             ? 'Mời bạn vào phòng khám.'
             : 'Mời bạn vào $phong.',
+        nutPhu: IconButton(
+          tooltip: 'Nghe lại',
+          onPressed: _docToiLuot,
+          icon: const Icon(Icons.volume_up_rounded, color: Color(0xFF16A34A)),
+        ),
       );
     }
     if (hc.trangThai == TrangThaiLuot.tamHoan) {
@@ -245,12 +260,14 @@ class _Bang extends StatelessWidget {
   final IconData icon;
   final String tieuDe;
   final String noiDung;
+  final Widget? nutPhu;
 
   const _Bang({
     required this.mau,
     required this.icon,
     required this.tieuDe,
     required this.noiDung,
+    this.nutPhu,
   });
 
   @override
@@ -285,6 +302,7 @@ class _Bang extends StatelessWidget {
               ],
             ),
           ),
+          ?nutPhu,
         ],
       ),
     );
