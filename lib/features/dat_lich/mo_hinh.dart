@@ -229,3 +229,25 @@ class LuotKhamCuaToi {
           (trangThai == TrangThaiLuot.choKham ||
               trangThai == TrangThaiLuot.tamHoan));
 }
+
+/// Tình hình hàng chờ của một lượt khám (hàm SQL hang_cho_cua_toi).
+class HangCho {
+  final TrangThaiLuot trangThai;
+  final int soThuTu;
+  final int? soDangKham; // null = chưa có ai trong phòng khám
+  final int soNguoiTruoc; // số người còn chờ có số nhỏ hơn mình
+
+  const HangCho({
+    required this.trangThai,
+    required this.soThuTu,
+    required this.soDangKham,
+    required this.soNguoiTruoc,
+  });
+
+  factory HangCho.tuJson(Map<String, dynamic> j) => HangCho(
+    trangThai: docTrangThai(j['trang_thai'] as String?),
+    soThuTu: j['so_thu_tu'] as int,
+    soDangKham: j['so_dang_kham'] as int?,
+    soNguoiTruoc: (j['so_nguoi_truoc'] as int?) ?? 0,
+  );
+}

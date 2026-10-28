@@ -17,6 +17,7 @@ import '../tro_ly_ai/tab_tro_ly_ai.dart';
 import 'mo_hinh.dart';
 import 'widgets/o_chuc_nang.dart';
 import 'widgets/the_bac_si_da_kham.dart';
+import 'widgets/the_hang_cho.dart';
 import 'widgets/the_lich_kham_sap_toi.dart';
 import 'widgets/the_tro_ly_ai.dart';
 
@@ -256,6 +257,16 @@ class _TabTrangChuState extends State<_TabTrangChu> {
             },
           ),
           const SizedBox(height: 16),
+
+          // 2b. Hàng chờ trực tiếp (chỉ trong ngày khám)
+          if (luot != null && TheHangCho.nenHien(luot)) ...[
+            TheHangCho(
+              key: ValueKey(luot.id),
+              luot: luot,
+              khiKetThuc: _taiLich,
+            ),
+            const SizedBox(height: 16),
+          ],
 
           // 3. Trợ lý AI
           TheTroLyAi(onTroChuyen: () => moTab(2), onChupAnh: widget.chupAnh),

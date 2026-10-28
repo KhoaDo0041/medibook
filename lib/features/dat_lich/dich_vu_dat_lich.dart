@@ -241,6 +241,46 @@ class DichVuDatLich {
 
   // ---------- tiện ích ----------
 
+  // ---------- Theo dõi hàng chờ theo thời gian thực ----------
+
+  /// Số đang khám và số người còn chờ trước lượt của mình.
+  Future<HangCho?> layHangCho(int luotKhamId) async {
+    try {
+      final kq = await supabase.rpc(
+        'hang_cho_cua_toi',
+        params: {'p_luot_kham_id': luotKhamId},
+      );
+      final ds = kq as List;
+      if (ds.isEmpty) return null;
+      return HangCho.tuJson(Map<String, dynamic>.from(ds.first as Map));
+    } on PostgrestException catch (e) {
+      throw LoiDatLich(_dichLoi(e));
+    } catch (_) {
+      throw const LoiDatLich('Không tải được hàng chờ. Kiểm tra kết nối mạng.');
+    }
+  }
+
+  /// Nghe Supabase Realtime: mỗi khi dòng ca khám đổi (bác sĩ gọi số, hoàn tất,
+  /// tạm hoãn, có người huỷ…) thì gọi [khiThayDoi].
+  RealtimeChannel theoDoiCaKham(int caKhamId, void Function() khiThayDoi) {
+    return supabase
+        .channel('hang_cho_$caKhamId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'ca_kham',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: caKhamId,
+          ),
+          callback: (_) => khiThayDoi(),
+        )
+        .subscribe();
+  }
+
+  Future<void> boTheoDoi(RealtimeChannel kenh) => supabase.removeChannel(kenh);
+
   Future<List<Map<String, dynamic>>> _chay(
     Future<List<Map<String, dynamic>>> Function() truyVan,
   ) async {
