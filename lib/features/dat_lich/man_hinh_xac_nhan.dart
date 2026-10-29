@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/widgets/the_phieu_tien_kham.dart';
 import '../../core/widgets/the_trang.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import 'dich_vu_dat_lich.dart';
@@ -15,6 +16,7 @@ class ManHinhXacNhan extends StatefulWidget {
   final BacSi bacSi;
   final CaKham ca;
   final String? trieuChungBanDau;
+  final Map<String, dynamic>? phieuTienKham;
 
   const ManHinhXacNhan({
     super.key,
@@ -23,6 +25,7 @@ class ManHinhXacNhan extends StatefulWidget {
     required this.bacSi,
     required this.ca,
     this.trieuChungBanDau,
+    this.phieuTienKham,
   });
 
   @override
@@ -44,6 +47,9 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
   );
   bool _dangGui = false;
   String? _loi;
+
+  /// Bệnh nhân đồng ý gửi phiếu tiền khám cho bác sĩ (mặc định bật).
+  bool _guiPhieu = true;
 
   @override
   void dispose() {
@@ -71,6 +77,7 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
       final kq = await DichVuDatLich().datLuotKham(
         widget.ca.id,
         trieuChung: _trieuChung.text,
+        phieuTienKham: _guiPhieu ? widget.phieuTienKham : null,
       );
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -245,12 +252,27 @@ class _ManHinhXacNhanState extends State<ManHinhXacNhan> {
                       ),
                   ],
                 ),
+                if (widget.phieuTienKham != null) ...[
+                  const SizedBox(height: 12),
+                  ThePhieuTienKham(phieu: widget.phieuTienKham!),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: _guiPhieu,
+                    onChanged: (v) => setState(() => _guiPhieu = v),
+                    title: const Text('Gửi phiếu này cho bác sĩ'),
+                    subtitle: const Text('Bác sĩ xem trước khi khám, bạn có thể tắt nếu không muốn chia sẻ.'),
+                  ),
+                  Text(
+                    'Ghi thêm cho bác sĩ (tuỳ chọn)',
+                    style: chu.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 TextField(
                   controller: _trieuChung,
                   minLines: 3,
-                  maxLines: 5,
-                  maxLength: 500,
+                  maxLines: 9,
+                  maxLength: 1000,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     hintText: 'VD: sốt 2 ngày, đau họng…',

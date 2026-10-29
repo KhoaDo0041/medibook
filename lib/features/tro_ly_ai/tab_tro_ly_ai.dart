@@ -6,10 +6,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/dinh_dang.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../dat_lich/man_hinh_chon_benh_vien.dart';
+import 'cau_hinh_ai.dart';
 import 'dich_vu_ai.dart';
+import 'lich_su_chat.dart';
 
 /// Tab "Trợ lý AI": trò chuyện về triệu chứng, chụp ảnh nhận định sơ bộ,
 /// nhận gợi ý chuyên khoa và đặt lịch ngay.
@@ -46,6 +49,15 @@ class _TabTroLyAiState extends State<TabTroLyAi> {
   final List<TinNhan> _tinNhan = [];
   Uint8List? _anhChoGui;
   bool _dangChoTraLoi = false;
+
+  /// id cuộc trò chuyện đang mở (null = cuộc mới, chưa lưu).
+  String? _idCuoc;
+
+  @override
+  void initState() {
+    super.initState();
+    DichVuAi.khoiDong(); // nạp sẵn model Qwen vào GPU laptop
+  }
 
   @override
   void didUpdateWidget(covariant TabTroLyAi cu) {
@@ -98,7 +110,44 @@ class _TabTroLyAiState extends State<TabTroLyAi> {
     } finally {
       if (mounted) setState(() => _dangChoTraLoi = false);
       _cuonXuong();
+      _luuCuoc();
     }
+  }
+
+  /// Lưu cuộc trò chuyện hiện tại vào lịch sử trên máy.
+  void _luuCuoc() {
+    if (_tinNhan.isEmpty) return;
+    _idCuoc ??= DateTime.now().millisecondsSinceEpoch.toString();
+    LichSuChat.luu(
+      CuocTroChuyen(
+        id: _idCuoc!,
+        capNhat: DateTime.now(),
+        tinNhan: List.of(_tinNhan),
+      ),
+    );
+  }
+
+  /// Mở danh sách cuộc trò chuyện đã lưu; chọn một cuộc để xem / hỏi tiếp.
+  Future<void> _moLichSu() async {
+    final chon = await showModalBottomSheet<CuocTroChuyen>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _BangLichSu(onMayChu: _moCaiDatMayChu),
+    );
+    if (chon == null || !mounted) return;
+    setState(() {
+      _idCuoc = chon.id;
+      _tinNhan
+        ..clear()
+        ..addAll(chon.tinNhan);
+      _anhChoGui = null;
+      _oNhap.clear();
+    });
+    _cuonXuong();
   }
 
   Future<void> _layAnh(ImageSource nguon) async {
@@ -158,15 +207,109 @@ class _TabTroLyAiState extends State<TabTroLyAi> {
     );
   }
 
+  /// Đổi địa chỉ máy chủ AI cục bộ (IP laptop chạy Ollama) khi đổi mạng wifi/hotspot.
+  Future<void> _moCaiDatMayChu() async {
+    final o = TextEditingController(text: CauHinhAi.mayChu);
+    String? thongBao;
+    bool? ok;
+    bool dangKiemTra = false;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, capNhat) {
+          Future<void> kiemTra() async {
+            capNhat(() => dangKiemTra = true);
+            final loi = await CauHinhAi.kiemTra(o.text);
+            capNhat(() {
+              dangKiemTra = false;
+              ok = loi == null;
+              thongBao = loi ?? 'Kết nối được, máy chủ đã có model ${CauHinhAi.model}';
+            });
+          }
+
+          return AlertDialog(
+            icon: const Icon(Icons.dns_outlined),
+            title: const Text('Máy chủ AI cục bộ'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Nhập IP của laptop đang chạy Ollama (cùng wifi/hotspot với điện thoại). '
+                  'Xem IP bằng lệnh ipconfig trên laptop.',
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: o,
+                  keyboardType: TextInputType.url,
+                  decoration: const InputDecoration(
+                    labelText: 'Địa chỉ',
+                    hintText: '192.168.1.5',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                if (thongBao != null) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    thongBao!,
+                    style: TextStyle(
+                      color: ok == true ? const Color(0xFF15803D) : Colors.red.shade700,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: dangKiemTra ? null : kiemTra,
+                child: Text(dangKiemTra ? 'Đang kiểm tra…' : 'Kiểm tra'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  await CauHinhAi.luu(o.text);
+                  if (ctx.mounted) Navigator.pop(ctx);
+                },
+                child: const Text('Lưu'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    // Không dispose ngay: hộp thoại còn đang chạy hiệu ứng đóng
+  }
+
   void _cuocMoi() {
     setState(() {
+      _idCuoc = null;
       _tinNhan.clear();
       _anhChoGui = null;
       _oNhap.clear();
     });
   }
 
-  /// Gộp những gì bệnh nhân đã kể để điền sẵn vào phần triệu chứng khi đặt lịch.
+  /// Phiếu tiền khám mới nhất (dạng JSON để lưu vào luot_kham.phieu_tien_kham).
+  Map<String, dynamic>? get _phieuGuiBacSi {
+    for (final t in _tinNhan.reversed) {
+      final kq = t.ketQua;
+      if (kq == null || !kq.phieu.coNoiDung) continue;
+      return {
+        for (final e in kq.phieu.toJson().entries)
+          if (e.value.isNotEmpty) e.key: e.value,
+        'muc_do': switch (kq.mucDo) {
+          MucDo.capCuu => 'cap_cuu',
+          MucDo.nenKhamSom => 'nen_kham_som',
+          MucDo.thongThuong => 'thong_thuong',
+        },
+        'khoa_goi_y': [for (final g in kq.goiYKhoa) g.ten],
+        'nguon': kq.duPhong ? 'Gợi ý từ khoá (dự phòng)' : 'Qwen3-VL cục bộ',
+        'thoi_diem': DateTime.now().toIso8601String(),
+      };
+    }
+    return null;
+  }
+
+  /// Không có phiếu (VD dùng gợi ý dự phòng) thì gộp lời bệnh nhân kể làm triệu chứng.
   String get _tomTatTrieuChung {
     final cau = _tinNhan
         .where((t) => t.laNguoiDung && t.noiDung.trim().isNotEmpty)
@@ -183,7 +326,8 @@ class _TabTroLyAiState extends State<TabTroLyAi> {
           hoSo: widget.hoSo,
           chuyenKhoaId: khoa.id,
           tenKhoa: khoa.ten,
-          trieuChung: _tomTatTrieuChung,
+          trieuChung: _phieuGuiBacSi == null ? _tomTatTrieuChung : null,
+          phieuTienKham: _phieuGuiBacSi,
         ),
       ),
     );
@@ -211,7 +355,10 @@ class _TabTroLyAiState extends State<TabTroLyAi> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _ThanhTieuDe(onCuocMoi: _tinNhan.isEmpty ? null : _cuocMoi),
+        _ThanhTieuDe(
+          onCuocMoi: _tinNhan.isEmpty ? null : _cuocMoi,
+          onLichSu: _moLichSu,
+        ),
         Expanded(
           child: DecoratedBox(
             decoration: const BoxDecoration(
@@ -392,10 +539,160 @@ class _AnhAiState extends State<_AnhAi> with SingleTickerProviderStateMixin {
   }
 }
 
+/// Bảng "Lịch sử trò chuyện": các cuộc đã lưu trên máy, vuốt sang trái để xoá.
+class _BangLichSu extends StatefulWidget {
+  final VoidCallback onMayChu;
+  const _BangLichSu({required this.onMayChu});
+
+  @override
+  State<_BangLichSu> createState() => _BangLichSuState();
+}
+
+class _BangLichSuState extends State<_BangLichSu> {
+  List<CuocTroChuyen>? _ds;
+
+  @override
+  void initState() {
+    super.initState();
+    LichSuChat.danhSach().then((ds) {
+      if (mounted) setState(() => _ds = ds);
+    });
+  }
+
+  String _moTa(CuocTroChuyen c) {
+    final kq = c.ketQuaCuoi;
+    final ket = kq == null
+        ? ''
+        : kq.mucDo == MucDo.capCuu
+        ? ' · Cấp cứu'
+        : kq.goiYKhoa.isNotEmpty
+        ? ' · ${kq.goiYKhoa.map((g) => 'Khoa ${g.ten}').join(', ')}'
+        : ' · Đang hỏi thêm';
+    return '${ngayThang(c.capNhat)} · ${gioPhut(c.capNhat)}$ket';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ds = _ds;
+    final chu = Theme.of(context).textTheme;
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.75,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 8, 4),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Lịch sử trò chuyện',
+                      style: chu.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  if (ds != null && ds.isNotEmpty)
+                    TextButton(
+                      onPressed: () async {
+                        await LichSuChat.xoaTatCa();
+                        if (mounted) setState(() => _ds = []);
+                      },
+                      child: const Text('Xoá tất cả'),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Lưu ngay trên điện thoại này, không gửi lên máy chủ.',
+                style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: ds == null
+                  ? const Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : ds.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text(
+                        'Chưa có cuộc trò chuyện nào',
+                        style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: ds.length,
+                      itemBuilder: (_, i) {
+                        final c = ds[i];
+                        return Dismissible(
+                          key: ValueKey(c.id),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 24),
+                            color: Colors.red.shade50,
+                            child: Icon(Icons.delete_outline, color: Colors.red.shade700),
+                          ),
+                          onDismissed: (_) {
+                            LichSuChat.xoa(c.id);
+                            setState(() => ds.removeAt(i));
+                          },
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: AppTheme.mauChinhNhat,
+                              child: Icon(
+                                c.coAnh ? Icons.image_outlined : Icons.chat_bubble_outline,
+                                color: AppTheme.mauChinh,
+                                size: 20,
+                              ),
+                            ),
+                            title: Text(
+                              c.tieuDe,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Text(
+                              _moTa(c),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => Navigator.pop(context, c),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.dns_outlined, color: AppTheme.mauChuNhat),
+              title: const Text('Máy chủ AI cục bộ'),
+              subtitle: Text(CauHinhAi.mayChu),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                widget.onMayChu();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ThanhTieuDe extends StatelessWidget {
   final VoidCallback? onCuocMoi;
+  final VoidCallback onLichSu;
 
-  const _ThanhTieuDe({required this.onCuocMoi});
+  const _ThanhTieuDe({required this.onCuocMoi, required this.onLichSu});
 
   @override
   Widget build(BuildContext context) {
@@ -443,11 +740,17 @@ class _ThanhTieuDe extends StatelessWidget {
                 ),
                 SizedBox(height: 1),
                 Text(
-                  'Đang hoạt động · tư vấn ban đầu',
+                  'Qwen3-VL chạy cục bộ · tư vấn ban đầu',
                   style: TextStyle(color: Color(0xFF16A34A), fontSize: 12),
                 ),
               ],
             ),
+          ),
+          IconButton(
+            tooltip: 'Lịch sử trò chuyện',
+            onPressed: onLichSu,
+            icon: const Icon(Icons.history_rounded),
+            color: AppTheme.mauChinh,
           ),
           IconButton(
             tooltip: 'Cuộc trò chuyện mới',
@@ -746,7 +1049,66 @@ class _TinNhanWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
+            if (kq.phieu.coNoiDung) _TomTatPhieu(phieu: kq.phieu),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Phiếu tiền khám AI đã tổng hợp, sẽ gửi kèm lịch hẹn cho bác sĩ.
+class _TomTatPhieu extends StatelessWidget {
+  final PhieuTienKham phieu;
+  const _TomTatPhieu({required this.phieu});
+
+  @override
+  Widget build(BuildContext context) {
+    final chu = Theme.of(context).textTheme;
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(AppTheme.boGoc),
+        border: Border.all(color: AppTheme.mauVien),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.assignment_outlined, size: 18, color: AppTheme.mauChinh),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Phiếu tiền khám · gửi kèm lịch hẹn',
+                  style: chu.labelLarge?.copyWith(
+                    color: AppTheme.mauChinh,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          for (final (nhan, giaTri) in phieu.cacDong)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '$nhan: ',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    TextSpan(text: giaTri),
+                  ],
+                ),
+                style: chu.bodySmall,
+              ),
+            ),
         ],
       ),
     );

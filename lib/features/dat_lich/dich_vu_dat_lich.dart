@@ -127,11 +127,19 @@ class DichVuDatLich {
   }
 
   /// Đặt lượt khám: database tự cấp số thứ tự (xem hàm dat_luot_kham).
-  Future<LuotKhamMoi> datLuotKham(int caKhamId, {String? trieuChung}) async {
+  Future<LuotKhamMoi> datLuotKham(
+    int caKhamId, {
+    String? trieuChung,
+    Map<String, dynamic>? phieuTienKham,
+  }) async {
     try {
       final kq = await supabase.rpc(
         'dat_luot_kham',
-        params: {'p_ca_kham_id': caKhamId, 'p_trieu_chung': trieuChung},
+        params: {
+          'p_ca_kham_id': caKhamId,
+          'p_trieu_chung': trieuChung,
+          'p_phieu': phieuTienKham,
+        },
       );
       return LuotKhamMoi.tuJson(Map<String, dynamic>.from(kq as Map));
     } on PostgrestException catch (e) {

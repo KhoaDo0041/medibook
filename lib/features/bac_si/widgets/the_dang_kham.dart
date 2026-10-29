@@ -104,7 +104,7 @@ class TheDangKham extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              l.trieuChung,
+              l.tomTatKhai,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(color: Colors.white.withValues(alpha: 0.85)),

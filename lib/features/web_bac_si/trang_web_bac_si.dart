@@ -7,6 +7,7 @@ import '../../core/app_theme.dart';
 import '../../core/dinh_dang.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../../core/widgets/logo_medibook.dart';
+import '../../core/widgets/the_phieu_tien_kham.dart';
 import '../auth/dich_vu_tai_khoan.dart';
 import '../auth/dieu_huong.dart';
 import '../bac_si/dich_vu_bac_si.dart';
@@ -604,7 +605,12 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
             ],
           ),
           const SizedBox(height: 16),
-          _Muc('Triệu chứng bệnh nhân khai'),
+          if (dk.phieuTienKham != null) ...[
+            ThePhieuTienKham(phieu: dk.phieuTienKham!),
+            const SizedBox(height: 12),
+            _Muc('Bệnh nhân ghi thêm'),
+          ] else
+            _Muc('Triệu chứng bệnh nhân khai'),
           Text(dk.trieuChung.isEmpty ? '(Không ghi)' : dk.trieuChung),
           const SizedBox(height: 16),
           _Muc('Lịch sử khám với bạn'),
@@ -698,8 +704,23 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
                         ),
                       ),
                     ),
-                    title: Text(l.tenBenhNhan),
-                    subtitle: Text(_tenTrangThai(l.trangThai)),
+                    title: Row(
+                      children: [
+                        Flexible(child: Text(l.tenBenhNhan)),
+                        if (l.nenKhamSom) ...[
+                          const SizedBox(width: 6),
+                          const Tooltip(
+                            message: 'AI đánh giá: nên khám sớm',
+                            child: Icon(Icons.circle, size: 10, color: AppTheme.mauCam),
+                          ),
+                        ],
+                      ],
+                    ),
+                    subtitle: Text(
+                      [_tenTrangThai(l.trangThai), if (l.tomTatKhai.isNotEmpty) l.tomTatKhai].join(' · '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     trailing: coTheMoi &&
                             (l.trangThai == TrangThaiLuotKham.choKham ||
                                 l.trangThai == TrangThaiLuotKham.tamHoan)

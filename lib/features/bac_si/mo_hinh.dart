@@ -27,6 +27,9 @@ class LuotKhamTrongCa {
   final DateTime? ngayDat;
   final TrangThaiLuotKham trangThai;
 
+  /// Phiếu tiền khám AI tổng hợp (null nếu bệnh nhân không gửi).
+  final Map<String, dynamic>? phieuTienKham;
+
   const LuotKhamTrongCa({
     required this.id,
     required this.soThuTu,
@@ -39,7 +42,22 @@ class LuotKhamTrongCa {
     this.chanDoan,
     this.loiDan,
     this.ngayDat,
+    this.phieuTienKham,
   });
+
+  /// AI đánh giá nên khám sớm (hoặc có dấu hiệu nguy hiểm).
+  bool get nenKhamSom {
+    final m = phieuTienKham?['muc_do'];
+    return m == 'nen_kham_som' || m == 'cap_cuu';
+  }
+
+  /// Một dòng mô tả cho danh sách: ưu tiên phiếu tiền khám, không có thì lời bệnh nhân ghi.
+  String get tomTatKhai {
+    final tc = (phieuTienKham?['trieu_chung_chinh'] as String?)?.trim() ?? '';
+    final bd = (phieuTienKham?['bat_dau_tu'] as String?)?.trim() ?? '';
+    if (tc.isEmpty) return trieuChung;
+    return bd.isEmpty ? tc : '$tc · $bd';
+  }
 
   int? get tuoi {
     final ns = ngaySinh;

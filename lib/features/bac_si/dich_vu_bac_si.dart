@@ -55,7 +55,7 @@ class DichVuBacSi {
       () => supabase
           .from('luot_kham')
           .select(
-            'id, ca_kham_id, benh_nhan_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si, ngay_tao',
+            'id, ca_kham_id, benh_nhan_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si, ngay_tao, phieu_tien_kham',
           )
           .inFilter('ca_kham_id', caRows.map((c) => c['id']).toList()),
     );
@@ -281,6 +281,9 @@ class DichVuBacSi {
         ? null
         : DateTime.tryParse(l['ngay_tao'] as String)?.toLocal(),
     trangThai: docTrangThaiLuot(l['trang_thai'] as String?),
+    phieuTienKham: l['phieu_tien_kham'] is Map
+        ? Map<String, dynamic>.from(l['phieu_tien_kham'] as Map)
+        : null,
   );
 
   static Duration _docGio(String s) {

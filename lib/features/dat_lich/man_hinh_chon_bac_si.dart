@@ -27,6 +27,9 @@ class ManHinhChonBacSi extends StatefulWidget {
   /// Triệu chứng đã kể với Trợ lý AI, điền sẵn ở bước xác nhận.
   final String? trieuChung;
 
+  /// Phiếu tiền khám AI tổng hợp, chuyển tiếp tới bước xác nhận.
+  final Map<String, dynamic>? phieuTienKham;
+
   const ManHinhChonBacSi({
     super.key,
     required this.hoSo,
@@ -34,6 +37,7 @@ class ManHinhChonBacSi extends StatefulWidget {
     this.bacSiIdBanDau,
     this.chuyenKhoaBanDau,
     this.trieuChung,
+    this.phieuTienKham,
   });
 
   @override
@@ -137,6 +141,7 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
           bacSi: bacSi,
           ca: ca,
           trieuChungBanDau: widget.trieuChung,
+          phieuTienKham: widget.phieuTienKham,
         ),
       ),
     );

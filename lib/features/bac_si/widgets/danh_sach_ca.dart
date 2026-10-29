@@ -188,9 +188,9 @@ class _DongBenhNhan extends StatelessWidget {
                     luot.trangThai == TrangThaiLuotKham.daKham &&
                             (luot.chanDoan ?? '').isNotEmpty
                         ? 'Chẩn đoán: ${luot.chanDoan}'
-                        : luot.trieuChung.isEmpty
+                        : luot.tomTatKhai.isEmpty
                         ? 'Không khai triệu chứng'
-                        : luot.trieuChung,
+                        : '${luot.nenKhamSom ? '⚠ Nên khám sớm · ' : ''}${luot.tomTatKhai}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),

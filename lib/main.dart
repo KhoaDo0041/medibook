@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/app_theme.dart';
 import 'core/supabase_config.dart';
+import 'features/tro_ly_ai/cau_hinh_ai.dart';
 import 'features/auth/cong_vao_app.dart';
 
 Future<void> main() async {
@@ -13,6 +14,8 @@ Future<void> main() async {
     url: SupabaseConfig.url,
     publishableKey: SupabaseConfig.anonKey,
   );
+  // Địa chỉ máy chủ AI cục bộ (Ollama trên laptop) đã lưu
+  await CauHinhAi.tai();
 
   runApp(const MediBookApp());
 }

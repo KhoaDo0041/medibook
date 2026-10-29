@@ -18,6 +18,7 @@ nhiều lần mà không bị trùng dữ liệu. File sau có thể sửa lại
 | 10 | `09_bac_si_nghi_viec.sql` | Bác sĩ nghỉ việc: chặn đăng nhập, huỷ lịch tương lai (hàm quản trị chỉ chạy được trong SQL Editor) |
 | 11 | `10_ca_kham_thang_11.sql` | Thêm ca khám đến hết tháng 11 |
 | 12 | `11_hang_cho.sql` | Hàng chờ thời gian thực: cột `so_dang_kham`, trigger, hàm `hang_cho_cua_toi`, bật Realtime cho `ca_kham` |
+| 13 | `12_phieu_tien_kham.sql` | Phiếu tiền khám (AI tổng hợp) dạng jsonb trong `luot_kham`, hàm `dat_luot_kham` nhận thêm `p_phieu` |
 
 ## Bảng nghiệp vụ (7 bảng)
 

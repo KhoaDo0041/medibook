@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/widgets/the_phieu_tien_kham.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/dinh_dang.dart';
 import 'dich_vu_bac_si.dart';
@@ -155,10 +156,18 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
             _TheBenhNhan(luot: l, trangThai: _trangThai),
             const SizedBox(height: 16),
 
+            // Phiếu tiền khám do Trợ lý AI tổng hợp
+            if (l.phieuTienKham != null) ...[
+              ThePhieuTienKham(phieu: l.phieuTienKham!),
+              const SizedBox(height: 16),
+            ],
+
             // Triệu chứng
             _Khoi(
               icon: Icons.assignment_ind_outlined,
-              tieuDe: 'Triệu chứng bệnh nhân khai',
+              tieuDe: l.phieuTienKham != null
+                  ? 'Bệnh nhân ghi thêm'
+                  : 'Triệu chứng bệnh nhân khai',
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),

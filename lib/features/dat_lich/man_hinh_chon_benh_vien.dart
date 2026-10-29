@@ -22,12 +22,16 @@ class ManHinhChonBenhVien extends StatefulWidget {
   final String? tenKhoa;
   final String? trieuChung;
 
+  /// Phiếu tiền khám AI tổng hợp (gửi kèm lượt khám nếu bệnh nhân đồng ý).
+  final Map<String, dynamic>? phieuTienKham;
+
   const ManHinhChonBenhVien({
     super.key,
     required this.hoSo,
     this.chuyenKhoaId,
     this.tenKhoa,
     this.trieuChung,
+    this.phieuTienKham,
   });
 
   @override
@@ -114,6 +118,7 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
           benhVien: bv,
           chuyenKhoaBanDau: widget.chuyenKhoaId,
           trieuChung: widget.trieuChung,
+          phieuTienKham: widget.phieuTienKham,
         ),
       ),
     );
