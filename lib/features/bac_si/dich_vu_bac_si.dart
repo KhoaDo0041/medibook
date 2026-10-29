@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/supabase_client.dart';
 import '../../core/dinh_dang.dart';
+import '../../core/don_thuoc.dart';
 import 'mo_hinh.dart';
 
 class LoiBacSi implements Exception {
@@ -222,12 +223,20 @@ class DichVuBacSi {
     return (kq as Map)['id'] as int;
   }
 
-  Future<void> hoanTatKham(int luotKhamId, String chanDoan, String loiDan) =>
-      _rpc('hoan_tat_kham', {
-        'p_luot_kham_id': luotKhamId,
-        'p_chan_doan': chanDoan,
-        'p_loi_dan': loiDan,
-      });
+  /// Chốt kết quả khám, kèm đơn thuốc (thuốc mẫu) và ngày tái khám nếu có.
+  Future<void> hoanTatKham(
+    int luotKhamId,
+    String chanDoan,
+    String loiDan, {
+    List<DongDonThuoc> donThuoc = const [],
+    DateTime? ngayTaiKham,
+  }) => _rpc('hoan_tat_kham', {
+    'p_luot_kham_id': luotKhamId,
+    'p_chan_doan': chanDoan,
+    'p_loi_dan': loiDan,
+    'p_don': [for (final d in donThuoc) d.toJson()],
+    'p_ngay_tai_kham': ngayTaiKham == null ? null : ngayISO(ngayTaiKham),
+  });
 
   /// Mời một bệnh nhân cụ thể vào khám (người tạm hoãn vừa đến, hoặc gọi vượt số).
   Future<void> batDauKham(int luotKhamId) =>

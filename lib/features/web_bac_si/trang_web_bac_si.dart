@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' show RealtimeChannel;
 
 import '../../core/app_theme.dart';
 import '../../core/dinh_dang.dart';
+import '../../core/don_thuoc.dart';
 import '../../core/widgets/hieu_ung.dart';
 import '../../core/widgets/logo_medibook.dart';
 import '../../core/widgets/the_phieu_tien_kham.dart';
@@ -42,6 +43,8 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
   final _oChanDoan = TextEditingController();
   final _oLoiDan = TextEditingController();
   int? _luotCuaForm;
+  List<DongDonThuoc> _don = []; // đơn thuốc đang kê (thuốc mẫu)
+  DateTime? _ngayTaiKham;
   List<LanKhamTruoc> _lichSu = [];
   bool _dangTaiLichSu = false;
 
@@ -116,6 +119,8 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
     _oChanDoan.text = dk?.chanDoan ?? '';
     _oLoiDan.text = dk?.loiDan ?? '';
     setState(() {
+      _don = [];
+      _ngayTaiKham = null;
       _lichSu = [];
       _dangTaiLichSu = dk != null;
     });
@@ -183,7 +188,13 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
       return;
     }
     await _lam(
-      () => _dv.hoanTatKham(l.id, chanDoan, _oLoiDan.text.trim()),
+      () => _dv.hoanTatKham(
+        l.id,
+        chanDoan,
+        _oLoiDan.text.trim(),
+        donThuoc: _don,
+        ngayTaiKham: _ngayTaiKham,
+      ),
       thanhCong: 'Đã lưu kết quả khám số ${haiSo(l.soThuTu)}',
     );
   }
@@ -655,10 +666,12 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
             minLines: 2,
             maxLines: 4,
             decoration: const InputDecoration(
-              labelText: 'Lời dặn / đơn thuốc',
+              labelText: 'Lời dặn',
               border: OutlineInputBorder(),
             ),
           ),
+          const SizedBox(height: 16),
+          _phanKeDon(ca),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
@@ -674,6 +687,255 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
         ],
       ),
     );
+  }
+
+  // ---------------- kê đơn thuốc mẫu + ngày tái khám ----------------
+
+  Widget _phanKeDon(CaKhamTrongNgay ca) {
+    final chu = Theme.of(context).textTheme;
+    final ngayKham = ca.ngay;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(child: _Muc('Đơn thuốc (thuốc mẫu dùng cho demo)')),
+            TextButton.icon(
+              onPressed: _don.length >= 10 ? null : _moThemThuoc,
+              icon: const Icon(Icons.add),
+              label: const Text('Thêm thuốc'),
+            ),
+          ],
+        ),
+        if (_don.isEmpty)
+          Text(
+            'Chưa kê thuốc nào.',
+            style: chu.bodyMedium?.copyWith(color: AppTheme.mauChuNhat),
+          )
+        else
+          for (var i = 0; i < _don.length; i++)
+            Container(
+              margin: const EdgeInsets.only(bottom: 6),
+              padding: const EdgeInsets.fromLTRB(12, 6, 4, 6),
+              decoration: BoxDecoration(
+                color: AppTheme.mauNen,
+                borderRadius: BorderRadius.circular(AppTheme.boGoc),
+                border: Border.all(color: AppTheme.mauVien),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.medication_outlined, color: AppTheme.mauChinh, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _don[i].thuoc.ten,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        Text(_don[i].moTa, style: chu.bodySmall),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Xoá',
+                    onPressed: () => setState(() => _don.removeAt(i)),
+                    icon: const Icon(Icons.close, size: 18),
+                  ),
+                ],
+              ),
+            ),
+        const SizedBox(height: 12),
+        const _Muc('Ngày tái khám'),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (final soNgay in const [3, 7, 14, 30])
+              ChoiceChip(
+                label: Text('Sau $soNgay ngày'),
+                selected: _ngayTaiKham != null &&
+                    _ngayTaiKham!.difference(ngayKham).inDays == soNgay,
+                onSelected: (_) => setState(
+                  () => _ngayTaiKham = ngayKham.add(Duration(days: soNgay)),
+                ),
+              ),
+            ActionChip(
+              avatar: const Icon(Icons.calendar_month_outlined, size: 18),
+              label: const Text('Chọn ngày'),
+              onPressed: () async {
+                final chon = await showDatePicker(
+                  context: context,
+                  initialDate: _ngayTaiKham ?? ngayKham.add(const Duration(days: 7)),
+                  firstDate: ngayKham.add(const Duration(days: 1)),
+                  lastDate: ngayKham.add(const Duration(days: 180)),
+                );
+                if (chon != null) setState(() => _ngayTaiKham = chon);
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(
+              Icons.event_repeat_rounded,
+              size: 18,
+              color: _ngayTaiKham == null ? AppTheme.mauChuNhat : AppTheme.mauCam,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              _ngayTaiKham == null
+                  ? 'Không hẹn tái khám'
+                  : 'Tái khám: ${ngayDayDu(_ngayTaiKham!)}',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: _ngayTaiKham == null ? AppTheme.mauChuNhat : AppTheme.mauCam,
+              ),
+            ),
+            if (_ngayTaiKham != null)
+              TextButton(
+                onPressed: () => setState(() => _ngayTaiKham = null),
+                child: const Text('Bỏ hẹn'),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Future<void> _moThemThuoc() async {
+    List<ThuocMau> danhMuc;
+    try {
+      danhMuc = await DichVuDonThuoc.danhMuc();
+    } catch (_) {
+      _bao('Không tải được danh mục thuốc (đã chạy file SQL 13 chưa?)', loi: true);
+      return;
+    }
+    if (!mounted || danhMuc.isEmpty) return;
+
+    var thuoc = danhMuc.first;
+    var lieu = 1.0;
+    var soLan = 2;
+    var thoiDiem = ThoiDiemUong.sauAn;
+    var soNgay = 5;
+    const cacLieu = [0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0];
+    const cacSoNgay = [3, 5, 7, 10, 14, 30];
+
+    final dong = await showDialog<DongDonThuoc>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, capNhat) => AlertDialog(
+          title: const Text('Thêm thuốc vào đơn'),
+          content: SizedBox(
+            width: 420,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DropdownButtonFormField<ThuocMau>(
+                  initialValue: thuoc,
+                  decoration: const InputDecoration(
+                    labelText: 'Thuốc',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    for (final t in danhMuc)
+                      DropdownMenuItem(value: t, child: Text('${t.ten} (${t.donVi})')),
+                  ],
+                  onChanged: (t) => capNhat(() => thuoc = t ?? thuoc),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<double>(
+                        initialValue: lieu,
+                        decoration: InputDecoration(
+                          labelText: 'Mỗi lần (${thuoc.donVi})',
+                          border: const OutlineInputBorder(),
+                        ),
+                        items: [
+                          for (final l in cacLieu)
+                            DropdownMenuItem(
+                              value: l,
+                              child: Text(l == l.roundToDouble() ? '${l.toInt()}' : '$l'),
+                            ),
+                        ],
+                        onChanged: (v) => capNhat(() => lieu = v ?? lieu),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        initialValue: soNgay,
+                        decoration: const InputDecoration(
+                          labelText: 'Số ngày dùng',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: [
+                          for (final n in cacSoNgay)
+                            DropdownMenuItem(value: n, child: Text('$n ngày')),
+                        ],
+                        onChanged: (v) => capNhat(() => soNgay = v ?? soNgay),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Text('Số lần mỗi ngày'),
+                const SizedBox(height: 6),
+                SegmentedButton<int>(
+                  segments: [
+                    for (final n in const [1, 2, 3, 4])
+                      ButtonSegment(value: n, label: Text('$n lần')),
+                  ],
+                  selected: {soLan},
+                  showSelectedIcon: false,
+                  onSelectionChanged: (v) => capNhat(() => soLan = v.first),
+                ),
+                const SizedBox(height: 12),
+                const Text('Thời điểm uống'),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    for (final t in ThoiDiemUong.values)
+                      ChoiceChip(
+                        label: Text(t.nhan),
+                        selected: thoiDiem == t,
+                        onSelected: (_) => capNhat(() => thoiDiem = t),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Huỷ'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(
+                ctx,
+                DongDonThuoc(
+                  thuoc: thuoc,
+                  lieu: lieu,
+                  soLan: soLan,
+                  thoiDiem: thoiDiem,
+                  soNgay: soNgay,
+                ),
+              ),
+              child: const Text('Thêm'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (dong != null && mounted) setState(() => _don.add(dong));
   }
 
   Widget _danhSachCa(CaKhamTrongNgay ca) {

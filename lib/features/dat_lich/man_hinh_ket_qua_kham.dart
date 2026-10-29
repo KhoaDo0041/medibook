@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/widgets/the_phieu_tien_kham.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/dinh_dang.dart';
+import '../../core/don_thuoc.dart';
 import 'mo_hinh.dart';
 import 'the_trang_thai.dart';
 
@@ -112,16 +114,26 @@ class ManHinhKetQuaKham extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
+          // Phiếu tiền khám đã gửi bác sĩ (nếu có)
+          if (luot.phieuTienKham != null) ...[
+            ThePhieuTienKham(phieu: luot.phieuTienKham!),
+            const SizedBox(height: 20),
+          ],
+
           // Triệu chứng
           _TieuDe(
             icon: Icons.record_voice_over_outlined,
-            text: 'Triệu chứng bạn khai',
+            text: luot.phieuTienKham != null
+                ? 'Bạn ghi thêm cho bác sĩ'
+                : 'Triệu chứng bạn khai',
           ),
           TheTrang(
             padding: const EdgeInsets.all(16),
             child: Text(
               trieuChung.isEmpty
-                  ? 'Bạn không khai triệu chứng khi đặt lịch.'
+                  ? (luot.phieuTienKham != null
+                        ? 'Không ghi thêm.'
+                        : 'Bạn không khai triệu chứng khi đặt lịch.')
                   : '“$trieuChung”',
               style: TextStyle(
                 color: trieuChung.isEmpty
@@ -178,7 +190,17 @@ class ManHinhKetQuaKham extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+
+          // Đơn thuốc + tái khám
+          if (luot.trangThai == TrangThaiLuot.daKham) ...[
+            _TieuDe(icon: Icons.medication_outlined, text: 'Đơn thuốc'),
+            TheTrang(
+              padding: const EdgeInsets.all(16),
+              child: _PhanDonThuoc(luot: luot),
+            ),
+            const SizedBox(height: 16),
+          ],
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -212,6 +234,37 @@ class ManHinhKetQuaKham extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Tải đơn thuốc của lượt khám (một lần) rồi hiển thị.
+class _PhanDonThuoc extends StatefulWidget {
+  final LuotKhamCuaToi luot;
+  const _PhanDonThuoc({required this.luot});
+
+  @override
+  State<_PhanDonThuoc> createState() => _PhanDonThuocState();
+}
+
+class _PhanDonThuocState extends State<_PhanDonThuoc> {
+  late final Future<List<DongDonThuoc>> _don = DichVuDonThuoc.cuaLuotKham(
+    widget.luot.id,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<DongDonThuoc>>(
+      future: _don,
+      builder: (context, snap) {
+        if (snap.connectionState != ConnectionState.done) {
+          return const LinearProgressIndicator();
+        }
+        if (snap.hasError) {
+          return const Text('Không tải được đơn thuốc. Kéo xuống để thử lại.');
+        }
+        return TheDonThuoc(don: snap.data ?? [], ngayTaiKham: widget.luot.ngayTaiKham);
+      },
     );
   }
 }

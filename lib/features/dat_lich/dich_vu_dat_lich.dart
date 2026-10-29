@@ -171,7 +171,7 @@ class DichVuDatLich {
       () => supabase
           .from('luot_kham')
           .select(
-            'id, ca_kham_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si, ly_do_huy',
+            'id, ca_kham_id, so_thu_tu, trang_thai, trieu_chung, chan_doan, ghi_chu_bac_si, ly_do_huy, ngay_tai_kham, phieu_tien_kham',
           )
           .eq('benh_nhan_id', uid),
     );
@@ -240,6 +240,12 @@ class DichVuDatLich {
               : BenhVien.tuJson(bvRaw),
           tenKhoa: 'Khoa ${khoa?['chuyen_khoa']?['ten_khoa'] ?? ''}',
           tenBacSi: hv.isEmpty ? 'BS. $ten' : '$hv $ten',
+          ngayTaiKham: l['ngay_tai_kham'] == null
+              ? null
+              : DateTime.tryParse(l['ngay_tai_kham'] as String),
+          phieuTienKham: l['phieu_tien_kham'] is Map
+              ? Map<String, dynamic>.from(l['phieu_tien_kham'] as Map)
+              : null,
         ),
       );
     }

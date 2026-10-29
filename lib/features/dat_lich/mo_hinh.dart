@@ -195,6 +195,8 @@ class LuotKhamCuaToi {
   final BenhVien benhVien;
   final String tenKhoa;
   final String tenBacSi; // VD: "BS.CKII Lê Minh Châu"
+  final DateTime? ngayTaiKham; // bác sĩ hẹn tái khám
+  final Map<String, dynamic>? phieuTienKham; // phiếu AI tổng hợp đã gửi bác sĩ
 
   const LuotKhamCuaToi({
     required this.id,
@@ -208,6 +210,8 @@ class LuotKhamCuaToi {
     required this.benhVien,
     required this.tenKhoa,
     required this.tenBacSi,
+    this.ngayTaiKham,
+    this.phieuTienKham,
   });
 
   /// Còn hiệu lực: chưa huỷ, chưa khám xong, ca chưa kết thúc.
