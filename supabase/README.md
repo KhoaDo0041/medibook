@@ -27,8 +27,7 @@ nhiều lần mà không bị trùng dữ liệu. File sau có thể sửa lại
 · `danh_muc_thuoc` · `don_thuoc_chi_tiet`
 — tài khoản đăng nhập do Supabase Auth quản lý (`auth.users`).
 
-## Edge Function (bản cũ)
+## Trợ lý AI
 
-`functions/tro-ly-ai/index.ts` — trợ lý AI gọi Google Gemini, dùng ở bản cuối kỳ (tag `ban-gemini`).
-Từ bản AI cục bộ, app gọi thẳng Ollama trên máy trong mạng nội bộ nên **không cần** Edge Function này nữa
-(xem mục "Cài đặt máy chủ AI cục bộ" ở README gốc).
+Trợ lý AI chạy **cục bộ** (Ollama + Qwen3-VL trên máy trong mạng nội bộ), app gọi thẳng tới máy đó,
+không dùng Edge Function hay dịch vụ AI trên Internet. Xem mục "Cài đặt máy chủ AI cục bộ" ở README gốc.

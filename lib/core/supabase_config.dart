@@ -2,7 +2,7 @@
 ///
 /// Khoá "anon" được phép nằm trong app vì quyền truy cập dữ liệu
 /// do phân quyền (RLS) trên Supabase quyết định.
-/// KHÔNG đặt khoá bí mật khác (Gemini, MoMo, service_role) vào đây.
+/// KHÔNG đặt khoá bí mật khác (MoMo, service_role…) vào đây.
 class SupabaseConfig {
   static const String url = 'https://ckiddvvryeduwnmopgik.supabase.co';
   static const String anonKey =
