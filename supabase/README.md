@@ -21,13 +21,14 @@ nhiều lần mà không bị trùng dữ liệu. File sau có thể sửa lại
 | 13 | `12_phieu_tien_kham.sql` | Phiếu tiền khám (AI tổng hợp) dạng jsonb trong `luot_kham`, hàm `dat_luot_kham` nhận thêm `p_phieu` |
 | 14 | `13_don_thuoc_tai_kham.sql` | Danh mục thuốc mẫu (Thuốc A–E), bảng `don_thuoc_chi_tiet`, cột `ngay_tai_kham`; `hoan_tat_kham` nhận thêm đơn thuốc và ngày tái khám |
 
-## Bảng nghiệp vụ (7 bảng)
+## Bảng nghiệp vụ (9 bảng)
 
 `ho_so` · `benh_vien` · `chuyen_khoa` · `khoa_benh_vien` · `bac_si` · `ca_kham` · `luot_kham`
+· `danh_muc_thuoc` · `don_thuoc_chi_tiet`
 — tài khoản đăng nhập do Supabase Auth quản lý (`auth.users`).
 
-## Edge Function
+## Edge Function (bản cũ)
 
-`functions/tro-ly-ai/index.ts` — trợ lý AI gọi Google Gemini. API key nằm trong
-**Edge Functions → Secrets** (`GEMINI_API_KEY`, tuỳ chọn `GEMINI_MODEL`), không nằm trong code.
-Có cơ chế chịu lỗi: thử lại, tự đổi model, gợi ý dự phòng theo từ khoá.
+`functions/tro-ly-ai/index.ts` — trợ lý AI gọi Google Gemini, dùng ở bản cuối kỳ (tag `ban-gemini`).
+Từ bản AI cục bộ, app gọi thẳng Ollama trên máy trong mạng nội bộ nên **không cần** Edge Function này nữa
+(xem mục "Cài đặt máy chủ AI cục bộ" ở README gốc).
