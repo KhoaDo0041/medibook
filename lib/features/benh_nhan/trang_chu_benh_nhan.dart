@@ -18,6 +18,8 @@ import 'mo_hinh.dart';
 import 'widgets/o_chuc_nang.dart';
 import 'widgets/the_bac_si_da_kham.dart';
 import 'widgets/the_hang_cho.dart';
+import '../thuoc/nhac_nho.dart';
+import '../thuoc/the_thuoc_hom_nay.dart';
 import 'widgets/the_lich_kham_sap_toi.dart';
 import 'widgets/the_tro_ly_ai.dart';
 
@@ -138,6 +140,7 @@ class _TabTrangChuState extends State<_TabTrangChu> {
   void initState() {
     super.initState();
     _taiLich();
+    NhacNho.lamMoi(); // đặt tiếp nhắc uống thuốc cho các ngày sắp tới
   }
 
   Future<void> _taiLich() async {
@@ -267,6 +270,9 @@ class _TabTrangChuState extends State<_TabTrangChu> {
             ),
             const SizedBox(height: 16),
           ],
+
+          // 2c. Uống thuốc hôm nay (chỉ hiện khi có lịch)
+          const TheThuocHomNay(),
 
           // 3. Trợ lý AI
           TheTroLyAi(onTroChuyen: () => moTab(2), onChupAnh: widget.chupAnh),

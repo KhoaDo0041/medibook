@@ -8,6 +8,9 @@ import '../../core/widgets/hieu_ung.dart';
 import 'dich_vu_tai_khoan.dart';
 import 'dieu_huong.dart';
 import 'man_hinh_doi_mat_khau.dart';
+import '../thuoc/man_hinh_lich_uong_hom_nay.dart';
+import '../thuoc/man_hinh_thoi_quen.dart';
+import '../thuoc/thoi_quen.dart';
 
 /// Tab "Hồ sơ" dùng chung cho bệnh nhân và bác sĩ: thông tin tài khoản + đăng xuất.
 class TabHoSo extends StatelessWidget {
@@ -175,6 +178,40 @@ class TabHoSo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+
+        // Bệnh nhân: giờ sinh hoạt (dùng để xếp giờ uống thuốc) và lịch uống thuốc
+        if (!hoSo.laBacSi) ...[
+          TheTrang(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.schedule, color: AppTheme.mauChinh),
+                  title: const Text('Giờ sinh hoạt'),
+                  subtitle: const Text('Dùng để xếp giờ uống thuốc'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    final tq = await ThoiQuen.tai();
+                    if (!context.mounted) return;
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => ManHinhThoiQuen(banDau: tq)),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.medication_outlined, color: AppTheme.mauChinh),
+                  title: const Text('Lịch uống thuốc'),
+                  subtitle: const Text('Xem cữ uống hôm nay, bật/tắt nhắc'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ManHinhLichUongHomNay()),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
 
         // Bảo mật: đổi mật khẩu
         TheTrang(

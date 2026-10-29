@@ -5,6 +5,9 @@ import '../../core/widgets/the_phieu_tien_kham.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/dinh_dang.dart';
 import '../../core/don_thuoc.dart';
+import '../thuoc/lich_uong.dart';
+import '../thuoc/man_hinh_lap_lich_uong.dart';
+import '../thuoc/man_hinh_lich_uong_hom_nay.dart';
 import 'mo_hinh.dart';
 import 'the_trang_thai.dart';
 
@@ -251,6 +254,37 @@ class _PhanDonThuocState extends State<_PhanDonThuoc> {
   late final Future<List<DongDonThuoc>> _don = DichVuDonThuoc.cuaLuotKham(
     widget.luot.id,
   );
+  LichUong? _lich; // lịch uống thuốc đã lập (lưu trên máy)
+
+  @override
+  void initState() {
+    super.initState();
+    _taiLich();
+  }
+
+  Future<void> _taiLich() async {
+    final l = await KhoLichUong.cuaLuot(widget.luot.id);
+    if (mounted) setState(() => _lich = l);
+  }
+
+  Future<void> _lapLich(List<DongDonThuoc> don) async {
+    final l = widget.luot;
+    final chanDoan = l.chanDoan?.trim() ?? '';
+    await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ManHinhLapLichUong(
+          luotKhamId: l.id,
+          tieuDe: [if (chanDoan.isNotEmpty) chanDoan, l.tenBacSi].join(' · '),
+          don: don,
+          ngayKham: l.ca.ngay,
+          ngayTaiKham: l.ngayTaiKham,
+          noiKham: '${l.tenKhoa} · ${l.benhVien.ten}',
+        ),
+      ),
+    );
+    _taiLich();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +297,34 @@ class _PhanDonThuocState extends State<_PhanDonThuoc> {
         if (snap.hasError) {
           return const Text('Không tải được đơn thuốc. Kéo xuống để thử lại.');
         }
-        return TheDonThuoc(don: snap.data ?? [], ngayTaiKham: widget.luot.ngayTaiKham);
+        final don = snap.data ?? [];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TheDonThuoc(don: don, ngayTaiKham: widget.luot.ngayTaiKham),
+            if (don.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              if (_lich == null)
+                FilledButton.tonalIcon(
+                  onPressed: () => _lapLich(don),
+                  icon: const Icon(Icons.alarm_add_rounded),
+                  label: const Text('Lập lịch nhắc uống thuốc'),
+                )
+              else
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ManHinhLichUongHomNay()),
+                    );
+                    _taiLich();
+                  },
+                  icon: const Icon(Icons.event_note_outlined),
+                  label: const Text('Đã lập lịch · xem lịch uống thuốc'),
+                ),
+            ],
+          ],
+        );
       },
     );
   }
