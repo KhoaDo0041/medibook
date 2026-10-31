@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import '../../core/supabase_client.dart';
 import 'cau_hinh_ai.dart';
+import '../../core/api_client.dart';
 
 enum MucDo { thongThuong, nenKhamSom, capCuu }
 
@@ -275,10 +275,7 @@ class DichVuAi {
     final daCo = _boNhoKhoa;
     if (daCo != null) return daCo;
     try {
-      final rows = await supabase
-          .from('chuyen_khoa')
-          .select('id, ten_khoa')
-          .order('id');
+      final rows = await Api.get('/api/chuyen-khoa') as List;
       return _boNhoKhoa = [
         for (final r in rows)
           (id: r['id'] as int, ten: r['ten_khoa'] as String),

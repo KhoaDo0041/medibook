@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/supabase_client.dart';
+import '../../core/api_client.dart';
 
 /// Hai vai trò trong MediBook, khớp với cột `vai_tro` của bảng `ho_so`.
 class VaiTro {
@@ -87,7 +88,7 @@ class DichVuTaiKhoan {
 
   /// Bác sĩ đang đăng nhập còn làm việc không (trang_thai = 'da_duyet').
   static Future<bool> bacSiConHoatDong() async {
-    final kq = await supabase.rpc('bac_si_con_hoat_dong');
+    final kq = await Api.get('/api/tai-khoan/con-hoat-dong');
     return kq == true;
   }
 
@@ -260,12 +261,8 @@ class DichVuTaiKhoan {
     final nguoiDung = supabase.auth.currentUser;
     if (nguoiDung == null) return null;
 
-    final dong = await supabase
-        .from('ho_so')
-        .select('id, ho_ten, vai_tro')
-        .eq('id', nguoiDung.id)
-        .maybeSingle();
-    if (dong == null) return null;
+    final dong = await Api.get('/api/tai-khoan/ho-so');
+    if (dong is! Map) return null;
 
     return HoSo(
       id: dong['id'] as String,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
-import 'supabase_client.dart';
+import 'api_client.dart';
 
 /// Một loại thuốc trong danh mục THUỐC MẪU (bảng danh_muc_thuoc, dùng cho demo).
 class ThuocMau {
@@ -87,22 +87,18 @@ class DichVuDonThuoc {
   static Future<List<ThuocMau>> danhMuc() async {
     final daCo = _boNho;
     if (daCo != null) return daCo;
-    final rows = await supabase
-        .from('danh_muc_thuoc')
-        .select('id, ten, don_vi')
-        .order('id');
-    return _boNho = [for (final r in rows) ThuocMau.tuJson(r)];
+    final rows = await Api.get('/api/danh-muc-thuoc') as List;
+    return _boNho = [
+      for (final r in rows) ThuocMau.tuJson(Map<String, dynamic>.from(r as Map)),
+    ];
   }
 
   static Future<List<DongDonThuoc>> cuaLuotKham(int luotKhamId) async {
-    final rows = await supabase
-        .from('don_thuoc_chi_tiet')
-        .select(
-          'lieu_moi_lan, so_lan_ngay, thoi_diem, so_ngay, ghi_chu, danh_muc_thuoc(id, ten, don_vi)',
-        )
-        .eq('luot_kham_id', luotKhamId)
-        .order('id');
-    return [for (final r in rows) DongDonThuoc.tuJson(r)];
+    final rows = await Api.get('/api/luot-kham/$luotKhamId/don-thuoc') as List;
+    return [
+      for (final r in rows)
+        DongDonThuoc.tuJson(Map<String, dynamic>.from(r as Map)),
+    ];
   }
 }
 
