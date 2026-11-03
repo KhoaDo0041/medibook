@@ -520,7 +520,7 @@ class _AnhAiState extends State<_AnhAi> with SingleTickerProviderStateMixin {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF60A5FA), Color(0xFF1D4ED8), Color(0xFF7C3AED)],
+            colors: [Color(0xFF2DD4BF), Color(0xFF0EA5E9), Color(0xFF1D4ED8)],
           ),
           boxShadow: widget.sang
               ? [
@@ -533,7 +533,7 @@ class _AnhAiState extends State<_AnhAi> with SingleTickerProviderStateMixin {
                 ]
               : null,
         ),
-        child: Icon(Icons.auto_awesome, color: Colors.white, size: co * 0.5),
+        child: Icon(Icons.health_and_safety_rounded, color: Colors.white, size: co * 0.55),
       ),
     );
   }
