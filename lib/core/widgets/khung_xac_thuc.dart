@@ -423,7 +423,7 @@ class NutGradient extends StatelessWidget {
     final boGoc = BorderRadius.circular(tron ? 26 : AppTheme.boGoc);
     final mau = thanhCong
         ? const [Color(0xFF16A34A), Color(0xFF22C55E)]
-        : const [Color(0xFF1D4ED8), Color(0xFF3B82F6)];
+        : const [Color(0xFF0297DE), Color(0xFF0BA6EE)];
 
     final Widget noiDung;
     if (thanhCong) {

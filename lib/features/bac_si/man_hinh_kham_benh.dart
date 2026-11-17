@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/don_thuoc.dart';
+import '../../core/widgets/khung_ke_don.dart';
+import '../can_lam_sang/chon_chi_dinh.dart';
+import '../can_lam_sang/dich_vu_cls.dart';
+import '../can_lam_sang/mo_hinh_cls.dart';
 import '../../core/widgets/the_phieu_tien_kham.dart';
 import '../../core/widgets/the_trang.dart';
 import '../../core/dinh_dang.dart';
 import 'dich_vu_bac_si.dart';
 import 'mo_hinh.dart';
 
-/// Bác sĩ khám một bệnh nhân: xem triệu chứng, lịch sử, nhập chẩn đoán và lời dặn.
+/// Bác sĩ khám một bệnh nhân: xem triệu chứng, lịch sử, chỉ định cận lâm sàng,
+/// đọc kết quả, nhập chẩn đoán, lời dặn, kê đơn thuốc mẫu và hẹn tái khám.
 /// Trả về true nếu đã lưu thay đổi (để màn trước tải lại).
 class ManHinhKhamBenh extends StatefulWidget {
   final LuotKhamTrongCa luot;
@@ -42,10 +48,23 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
   bool _dangGui = false;
   String? _loiChanDoan;
 
+  // Đơn thuốc mẫu và ngày tái khám đang kê
+  List<DongDonThuoc> _don = [];
+  DateTime? _ngayTaiKham;
+
+  // Chỉ định cận lâm sàng (chỉ tải khi lượt khám đã có chỉ định)
+  late final Future<LoTrinhCls?> _cls = _taiCls();
+
+  Future<LoTrinhCls?> _taiCls() async {
+    if (!widget.luot.coChiDinhCls) return null;
+    return DichVuCls.loTrinh(widget.luot.id);
+  }
+
   bool get _dangKham => _trangThai == TrangThaiLuotKham.dangKham;
   bool get _choMoiVao =>
       (_trangThai == TrangThaiLuotKham.choKham ||
-          _trangThai == TrangThaiLuotKham.tamHoan) &&
+          _trangThai == TrangThaiLuotKham.tamHoan ||
+          _trangThai == TrangThaiLuotKham.choDocKq) &&
       widget.ca.dangDienRa;
 
   @override
@@ -68,9 +87,38 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
       return;
     }
     await _thucHien(
-      () => _dichVu.hoanTatKham(widget.luot.id, _chanDoan.text, _loiDan.text),
+      () => _dichVu.hoanTatKham(
+        widget.luot.id,
+        _chanDoan.text,
+        _loiDan.text,
+        donThuoc: _don,
+        ngayTaiKham: _ngayTaiKham,
+      ),
       'Đã lưu kết quả khám số ${haiSo(widget.luot.soThuTu)}',
     );
+  }
+
+  /// Chọn dịch vụ cận lâm sàng rồi gửi. Bệnh nhân rời phòng đi làm, bác sĩ gọi người tiếp theo.
+  Future<void> _guiChiDinh() async {
+    final ids = await chonChiDinhCls(context);
+    if (ids == null || ids.isEmpty || !mounted) return;
+    setState(() => _dangGui = true);
+    final thongBao = ScaffoldMessenger.of(context);
+    try {
+      await DichVuCls.guiChiDinh(widget.luot.id, ids);
+      thongBao.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Đã gửi ${ids.length} chỉ định cho số ${haiSo(widget.luot.soThuTu)}. '
+            'Bạn có thể gọi người tiếp theo.',
+          ),
+        ),
+      );
+      if (mounted) Navigator.pop(context, true);
+    } on LoiCls catch (e) {
+      thongBao.showSnackBar(SnackBar(content: Text(e.thongBao)));
+      if (mounted) setState(() => _dangGui = false);
+    }
   }
 
   Future<void> _tamHoan() => _thucHien(
@@ -275,6 +323,13 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
             ),
             const SizedBox(height: 16),
 
+            // Cận lâm sàng: chỉ định + kết quả
+            FutureBuilder<LoTrinhCls?>(
+              future: _cls,
+              builder: (_, snap) => _khoiCls(snap),
+            ),
+            const SizedBox(height: 16),
+
             // Kết quả khám
             _Khoi(
               icon: Icons.medical_services_outlined,
@@ -348,6 +403,14 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
                           ),
                         ),
                         if (_dangKham) ...[
+                          const SizedBox(height: 18),
+                          KhungKeDon(
+                            don: _don,
+                            ngayKham: widget.ca.ngay,
+                            ngayTaiKham: _ngayTaiKham,
+                            onDoiDon: (d) => setState(() => _don = d),
+                            onDoiNgay: (n) => setState(() => _ngayTaiKham = n),
+                          ),
                           const SizedBox(height: 10),
                           Text(
                             'CHÈN NHANH',
@@ -403,8 +466,8 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
             icon: const Icon(Icons.pause_circle_outline),
             label: const Text('Tạm hoãn'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFFC2410C),
-              side: const BorderSide(color: Color(0xFFFED7AA)),
+              foregroundColor: const Color(0xFFB8287A),
+              side: const BorderSide(color: Color(0xFFF4C6E0)),
             ),
           ),
         ),
@@ -427,6 +490,8 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
             label: Text(
               _trangThai == TrangThaiLuotKham.tamHoan
                   ? 'Bệnh nhân đã đến – Mời vào khám'
+                  : _trangThai == TrangThaiLuotKham.choDocKq
+                  ? 'Mời vào đọc kết quả'
                   : 'Mời vào khám',
             ),
           ),
@@ -439,6 +504,120 @@ class _ManHinhKhamBenhState extends State<ManHinhKhamBenh> {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
         child: Row(children: nut),
+      ),
+    );
+  }
+
+  /// Khối cận lâm sàng: nút chỉ định (khi đang khám, chưa có chỉ định) hoặc kết quả.
+  Widget _khoiCls(AsyncSnapshot<LoTrinhCls?> snap) {
+    final chu = Theme.of(context).textTheme;
+    final lt = snap.data;
+
+    if (snap.hasError) {
+      return _Khoi(
+        icon: Icons.biotech_outlined,
+        tieuDe: 'Kết quả cận lâm sàng',
+        child: Text(
+          'Không tải được kết quả cận lâm sàng: ${snap.error}',
+          style: const TextStyle(color: AppTheme.mauChuNhat),
+        ),
+      );
+    }
+    if (lt == null || !lt.coChiDinh) {
+      if (snap.connectionState == ConnectionState.waiting) {
+        return const SizedBox.shrink();
+      }
+      if (!_dangKham) return const SizedBox.shrink();
+      return _Khoi(
+        icon: Icons.biotech_outlined,
+        tieuDe: 'Cận lâm sàng',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Cần chụp chiếu, xét nghiệm trước khi kết luận? Bệnh nhân sẽ đi theo '
+              'lộ trình trong app rồi quay lại, được ưu tiên gọi vào.',
+              style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _dangGui ? null : _guiChiDinh,
+              icon: const Icon(Icons.add_task_rounded),
+              label: const Text('Chỉ định cận lâm sàng'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return _Khoi(
+      icon: Icons.biotech_outlined,
+      tieuDe: 'Kết quả cận lâm sàng',
+      phai: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: ShapeDecoration(
+          color: lt.xongHet ? const Color(0xFFDCFCE7) : AppTheme.mauNhanNhat,
+          shape: const StadiumBorder(),
+        ),
+        child: Text(
+          '${lt.soXong}/${lt.chiDinh.length} xong',
+          style: TextStyle(
+            color: lt.xongHet ? const Color(0xFF15803D) : AppTheme.mauNhan,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          if (_trangThai == TrangThaiLuotKham.lamCls)
+            const _GhiChu(
+              icon: Icons.directions_walk_rounded,
+              text: 'Bệnh nhân đang đi làm cận lâm sàng. Khi quay lại sẽ được ưu tiên gọi vào.',
+            ),
+          for (final c in lt.chiDinh)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.mauNen,
+                borderRadius: BorderRadius.circular(AppTheme.boGoc),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          c.dichVu.ten,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      Icon(
+                        c.xong ? Icons.check_circle_rounded : Icons.schedule_rounded,
+                        size: 18,
+                        color: c.xong ? const Color(0xFF16A34A) : AppTheme.mauChuNhat,
+                      ),
+                    ],
+                  ),
+                  Text(
+                    c.dichVu.tenKhu,
+                    style: chu.bodySmall?.copyWith(color: AppTheme.mauChuNhat),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    c.xong ? (c.ketQua ?? '') : 'Chưa có kết quả',
+                    style: TextStyle(
+                      color: c.xong ? AppTheme.mauChuDam : AppTheme.mauChuNhat,
+                      fontStyle: c.xong ? FontStyle.normal : FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -493,8 +672,18 @@ class _TheBenhNhan extends StatelessWidget {
       ),
       TrangThaiLuotKham.tamHoan => (
         'Tạm hoãn',
-        const Color(0xFFC2410C),
-        const Color(0xFFFFEDD5),
+        const Color(0xFFB8287A),
+        const Color(0xFFFCEAF4),
+      ),
+      TrangThaiLuotKham.lamCls => (
+        'Đang làm cận lâm sàng',
+        AppTheme.mauNhan,
+        AppTheme.mauNhanNhat,
+      ),
+      TrangThaiLuotKham.choDocKq => (
+        'Có kết quả CLS',
+        const Color(0xFF15803D),
+        const Color(0xFFDCFCE7),
       ),
       TrangThaiLuotKham.daKham => (
         'Đã khám',

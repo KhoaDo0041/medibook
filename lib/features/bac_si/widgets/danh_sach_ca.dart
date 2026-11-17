@@ -27,7 +27,7 @@ class DanhSachCa extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: ca.laCaSang
-                    ? const Color(0xFFFFF7ED)
+                    ? const Color(0xFFFDF2F8)
                     : AppTheme.mauChinhNhat,
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -188,6 +188,10 @@ class _DongBenhNhan extends StatelessWidget {
                     luot.trangThai == TrangThaiLuotKham.daKham &&
                             (luot.chanDoan ?? '').isNotEmpty
                         ? 'Chẩn đoán: ${luot.chanDoan}'
+                        : luot.trangThai == TrangThaiLuotKham.lamCls
+                        ? 'Đang làm cận lâm sàng: ${luot.soClsXong}/${luot.soCls} xong'
+                        : luot.trangThai == TrangThaiLuotKham.choDocKq
+                        ? 'Đã quay lại với kết quả, được ưu tiên gọi vào'
                         : luot.tomTatKhai.isEmpty
                         ? 'Không khai triệu chứng'
                         : '${luot.nenKhamSom ? '⚠ Nên khám sớm · ' : ''}${luot.tomTatKhai}',
@@ -224,7 +228,7 @@ class _KieuTrangThai {
       case TrangThaiLuotKham.dangKham:
         return const _KieuTrangThai(
           'Đang khám',
-          Color(0xFFDBEAFE),
+          Color(0xFFD6EEFB),
           AppTheme.mauChinh,
           AppTheme.mauChinh,
           Colors.white,
@@ -248,10 +252,26 @@ class _KieuTrangThai {
       case TrangThaiLuotKham.tamHoan:
         return const _KieuTrangThai(
           'Tạm hoãn',
-          Color(0xFFFFEDD5),
-          Color(0xFFC2410C),
-          Color(0xFFFFEDD5),
-          Color(0xFFC2410C),
+          Color(0xFFFCEAF4),
+          Color(0xFFB8287A),
+          Color(0xFFFCEAF4),
+          Color(0xFFB8287A),
+        );
+      case TrangThaiLuotKham.lamCls:
+        return const _KieuTrangThai(
+          'Đang làm CLS',
+          AppTheme.mauNhanNhat,
+          AppTheme.mauNhan,
+          AppTheme.mauNhanNhat,
+          AppTheme.mauNhan,
+        );
+      case TrangThaiLuotKham.choDocKq:
+        return const _KieuTrangThai(
+          'Có kết quả CLS',
+          Color(0xFFDCFCE7),
+          Color(0xFF15803D),
+          AppTheme.mauNhan,
+          Colors.white,
         );
       case TrangThaiLuotKham.vangMat:
         return const _KieuTrangThai(

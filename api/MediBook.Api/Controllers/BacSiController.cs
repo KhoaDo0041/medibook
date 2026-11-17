@@ -37,6 +37,8 @@ public class BacSiController(CoSoDuLieu db) : CoSoController(db)
                                  'trang_thai', l.trang_thai, 'trieu_chung', l.trieu_chung, 'chan_doan', l.chan_doan,
                                  'ghi_chu_bac_si', l.ghi_chu_bac_si, 'ngay_tao', l.ngay_tao,
                                  'phieu_tien_kham', l.phieu_tien_kham,
+                                 'so_cls', (select count(*) from chi_dinh_cls x where x.luot_kham_id = l.id),
+                                 'so_cls_xong', (select count(*) from chi_dinh_cls x where x.luot_kham_id = l.id and x.trang_thai = 'xong'),
                                  'ho_ten', h.ho_ten, 'gioi_tinh', h.gioi_tinh, 'ngay_sinh', h.ngay_sinh)
                                order by l.so_thu_tu), '[]')
                         from luot_kham l left join ho_so h on h.id = l.benh_nhan_id

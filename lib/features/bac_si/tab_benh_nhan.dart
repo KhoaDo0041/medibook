@@ -290,13 +290,13 @@ class _TheBenhNhan extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: const ShapeDecoration(
-                              color: Color(0xFFFFEDD5),
+                              color: Color(0xFFFCEAF4),
                               shape: StadiumBorder(),
                             ),
                             child: const Text(
                               'Mới',
                               style: TextStyle(
-                                color: Color(0xFFC2410C),
+                                color: Color(0xFFB8287A),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w800,
                               ),

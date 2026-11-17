@@ -20,11 +20,12 @@ nhiều lần mà không bị trùng dữ liệu. File sau có thể sửa lại
 | 12 | `11_hang_cho.sql` | Hàng chờ thời gian thực: cột `so_dang_kham`, trigger, hàm `hang_cho_cua_toi`, bật Realtime cho `ca_kham` |
 | 13 | `12_phieu_tien_kham.sql` | Phiếu tiền khám (AI tổng hợp) dạng jsonb trong `luot_kham`, hàm `dat_luot_kham` nhận thêm `p_phieu` |
 | 14 | `13_don_thuoc_tai_kham.sql` | Danh mục thuốc mẫu (Thuốc A–E), bảng `don_thuoc_chi_tiet`, cột `ngay_tai_kham`; `hoan_tat_kham` nhận thêm đơn thuốc và ngày tái khám |
+| 15 | `14_can_lam_sang.sql` | Cận lâm sàng: danh mục dịch vụ (X-quang, xét nghiệm…), chỉ định của lượt khám, trạng thái `lam_cls` / `cho_doc_kq`, thanh toán mô phỏng; sơ đồ bệnh viện (`khu_vuc`, `loi_di`) để app chỉ đường trong viện bằng Dijkstra; gọi số ưu tiên người đã có kết quả |
 
-## Bảng nghiệp vụ (9 bảng)
+## Bảng nghiệp vụ (13 bảng)
 
 `ho_so` · `benh_vien` · `chuyen_khoa` · `khoa_benh_vien` · `bac_si` · `ca_kham` · `luot_kham`
-· `danh_muc_thuoc` · `don_thuoc_chi_tiet`
+· `danh_muc_thuoc` · `don_thuoc_chi_tiet` · `dich_vu_cls` · `chi_dinh_cls` · `khu_vuc` · `loi_di`
 — tài khoản đăng nhập do Supabase Auth quản lý (`auth.users`).
 
 ## Trợ lý AI

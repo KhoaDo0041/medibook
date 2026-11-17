@@ -171,11 +171,22 @@ class LuotKhamMoi {
   );
 }
 
-enum TrangThaiLuot { choKham, dangKham, tamHoan, daKham, daHuy, vangMat }
+enum TrangThaiLuot {
+  choKham,
+  dangKham,
+  tamHoan,
+  lamCls, // đang đi làm cận lâm sàng
+  choDocKq, // đã quay lại, chờ bác sĩ đọc kết quả
+  daKham,
+  daHuy,
+  vangMat,
+}
 
 TrangThaiLuot docTrangThai(String? s) => switch (s) {
   'dang_kham' => TrangThaiLuot.dangKham,
   'tam_hoan' => TrangThaiLuot.tamHoan,
+  'lam_cls' => TrangThaiLuot.lamCls,
+  'cho_doc_kq' => TrangThaiLuot.choDocKq,
   'da_kham' => TrangThaiLuot.daKham,
   'da_huy' => TrangThaiLuot.daHuy,
   'vang_mat' => TrangThaiLuot.vangMat,
@@ -215,11 +226,18 @@ class LuotKhamCuaToi {
   });
 
   /// Còn hiệu lực: chưa huỷ, chưa khám xong, ca chưa kết thúc.
-  bool get sapToi =>
-      (trangThai == TrangThaiLuot.choKham ||
-          trangThai == TrangThaiLuot.dangKham ||
-          trangThai == TrangThaiLuot.tamHoan) &&
-      !ca.daKetThuc;
+  /// (Đang làm cận lâm sàng thì vẫn tính đến hết ngày khám, kể cả khi quá giờ ca.)
+  bool get sapToi {
+    if (dangLamCls) return cungNgay(ca.ngay, DateTime.now());
+    return (trangThai == TrangThaiLuot.choKham ||
+            trangThai == TrangThaiLuot.dangKham ||
+            trangThai == TrangThaiLuot.tamHoan) &&
+        !ca.daKetThuc;
+  }
+
+  /// Đang trong vòng cận lâm sàng: đi làm hoặc đã quay lại chờ đọc kết quả.
+  bool get dangLamCls =>
+      trangThai == TrangThaiLuot.lamCls || trangThai == TrangThaiLuot.choDocKq;
 
   /// Chỉ huỷ được khi đang chờ và ca chưa bắt đầu (giống luật trong database).
   bool get huyDuoc =>

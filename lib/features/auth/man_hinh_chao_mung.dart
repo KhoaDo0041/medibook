@@ -170,7 +170,7 @@ class _TheVaiTroState extends State<_TheVaiTro> {
             borderRadius: BorderRadius.circular(AppTheme.boGocThe),
             gradient: noiBat
                 ? const LinearGradient(
-                    colors: [Color(0xFF1D4ED8), Color(0xFF3B82F6)],
+                    colors: [Color(0xFF0297DE), Color(0xFF0BA6EE)],
                   )
                 : null,
             color: noiBat ? null : Colors.white,

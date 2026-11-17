@@ -149,7 +149,7 @@ class TheLichKhamSapToi extends StatelessWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.mauChinh,
+                      color: AppTheme.mauNhan,
                       borderRadius: BorderRadius.circular(AppTheme.boGoc),
                     ),
                     child: Column(

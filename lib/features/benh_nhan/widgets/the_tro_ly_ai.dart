@@ -19,7 +19,7 @@ class TheTroLyAi extends StatelessWidget {
     final chu = Theme.of(context).textTheme;
 
     return TheTrang(
-      mauNen: const Color(0xFFF5F7FF),
+      mauNen: const Color(0xFFF1F8FD),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

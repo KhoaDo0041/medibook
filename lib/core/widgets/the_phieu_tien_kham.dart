@@ -48,7 +48,7 @@ class ThePhieuTienKham extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F8FF),
+        color: const Color(0xFFF1F8FD),
         borderRadius: BorderRadius.circular(AppTheme.boGoc),
         border: Border.all(color: AppTheme.mauChinh.withValues(alpha: 0.25)),
       ),
@@ -72,13 +72,13 @@ class ThePhieuTienKham extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: const ShapeDecoration(
-                    color: Color(0xFFFFEDD5),
+                    color: Color(0xFFFCEAF4),
                     shape: StadiumBorder(),
                   ),
                   child: const Text(
                     'Nên khám sớm',
                     style: TextStyle(
-                      color: Color(0xFFC2410C),
+                      color: Color(0xFFB8287A),
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),

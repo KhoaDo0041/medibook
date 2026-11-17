@@ -65,7 +65,7 @@ class _TheThuocHomNayState extends State<TheThuocHomNay> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFFFFEDD5),
+                color: const Color(0xFFFCEAF4),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: const Icon(Icons.medication_rounded, color: AppTheme.mauCam),

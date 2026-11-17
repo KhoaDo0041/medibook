@@ -365,7 +365,7 @@ class _TabTroLyAiState extends State<TabTroLyAi> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFEFF4FF), AppTheme.mauNen],
+                colors: [Color(0xFFF1F8FD), AppTheme.mauNen],
               ),
             ),
             child: ListView(
@@ -520,12 +520,12 @@ class _AnhAiState extends State<_AnhAi> with SingleTickerProviderStateMixin {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF2DD4BF), Color(0xFF0EA5E9), Color(0xFF1D4ED8)],
+            colors: [Color(0xFF0BA6EE), Color(0xFF0297DE), Color(0xFFD83995)],
           ),
           boxShadow: widget.sang
               ? [
                   BoxShadow(
-                    color: const Color(0xFF3B82F6)
+                    color: const Color(0xFF0BA6EE)
                         .withValues(alpha: 0.25 + 0.3 * _ac.value),
                     blurRadius: co * (0.3 + 0.4 * _ac.value),
                     spreadRadius: co * 0.04 * _ac.value,
@@ -777,7 +777,7 @@ class _ManChaoAi extends StatelessWidget {
         const SizedBox(height: 18),
         ShaderMask(
           shaderCallback: (r) => const LinearGradient(
-            colors: [Color(0xFF1D4ED8), Color(0xFF7C3AED)],
+            colors: [Color(0xFF0297DE), Color(0xFFD83995)],
           ).createShader(r),
           child: const Text(
             'Xin chào! Mình có thể giúp gì?',
@@ -884,7 +884,7 @@ class _ChipGoiY extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      shape: const StadiumBorder(side: BorderSide(color: Color(0xFFC7D2FE))),
+      shape: const StadiumBorder(side: BorderSide(color: Color(0xFFBFE3F6))),
       child: InkWell(
         customBorder: const StadiumBorder(),
         onTap: onTap,
@@ -911,9 +911,9 @@ class _LuuY extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF7ED),
+        color: const Color(0xFFFDF2F8),
         borderRadius: BorderRadius.circular(AppTheme.boGoc),
-        border: Border.all(color: const Color(0xFFFED7AA)),
+        border: Border.all(color: const Color(0xFFF4C6E0)),
       ),
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -921,7 +921,7 @@ class _LuuY extends StatelessWidget {
           Icon(
             Icons.health_and_safety_outlined,
             size: 20,
-            color: Color(0xFFC2410C),
+            color: Color(0xFFB8287A),
           ),
           SizedBox(width: 8),
           Expanded(
@@ -929,7 +929,7 @@ class _LuuY extends StatelessWidget {
               'Trợ lý chỉ gợi ý chuyên khoa nên khám, không chẩn đoán hay kê thuốc. '
               'Khi khó thở, đau ngực dữ dội, co giật… hãy gọi 115 ngay.',
               style: TextStyle(
-                color: Color(0xFF9A3412),
+                color: Color(0xFF8E2160),
                 fontSize: 13,
                 height: 1.35,
               ),
@@ -961,7 +961,7 @@ class _BongBong extends StatelessWidget {
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                colors: [Color(0xFF0BA6EE), Color(0xFF0297DE)],
               )
             : null,
         borderRadius: BorderRadius.only(
@@ -1134,10 +1134,10 @@ class _TheGoiYKhoa extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFEFF6FF), Color(0xFFF5F3FF)],
+          colors: [Color(0xFFEEF7FD), Color(0xFFFBEFF6)],
         ),
         borderRadius: BorderRadius.circular(AppTheme.boGocThe),
-        border: Border.all(color: const Color(0xFFC7D2FE)),
+        border: Border.all(color: const Color(0xFFBFE3F6)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1189,13 +1189,13 @@ class _TheGoiYKhoa extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: const ShapeDecoration(
-                    color: Color(0xFFFFEDD5),
+                    color: Color(0xFFFCEAF4),
                     shape: StadiumBorder(),
                   ),
                   child: const Text(
                     'Nên khám sớm',
                     style: TextStyle(
-                      color: Color(0xFFC2410C),
+                      color: Color(0xFFB8287A),
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
@@ -1235,11 +1235,11 @@ class _NutDatLich extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: bo,
         gradient: const LinearGradient(
-          colors: [Color(0xFF1D4ED8), Color(0xFF3B82F6)],
+          colors: [Color(0xFFD83995), Color(0xFFE5508F)],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.mauChinh.withValues(alpha: 0.3),
+            color: AppTheme.mauNhan.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 5),
           ),
@@ -1411,7 +1411,7 @@ class _DangGoState extends State<_DangGo> with SingleTickerProviderStateMixin {
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [Color(0xFF3B82F6), Color(0xFF7C3AED)],
+                      colors: [Color(0xFF0BA6EE), Color(0xFFD83995)],
                     ),
                   ),
                 ),
@@ -1577,7 +1577,7 @@ class _ONhap extends StatelessWidget {
                         shape: BoxShape.circle,
                         gradient: bat
                             ? const LinearGradient(
-                                colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+                                colors: [Color(0xFF0BA6EE), Color(0xFF0297DE)],
                               )
                             : null,
                         color: bat ? null : const Color(0xFFCBD5E1),

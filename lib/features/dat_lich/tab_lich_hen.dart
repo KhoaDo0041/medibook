@@ -492,7 +492,7 @@ class _TheSapToi extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.mauChinhNhat,
+                    color: AppTheme.mauNhanNhat,
                     borderRadius: BorderRadius.circular(AppTheme.boGoc),
                   ),
                   child: Column(
@@ -508,7 +508,7 @@ class _TheSapToi extends StatelessWidget {
                       SoChay(
                         so: luot.soThuTu,
                         style: const TextStyle(
-                          color: AppTheme.mauChinh,
+                          color: AppTheme.mauNhan,
                           fontSize: 26,
                           fontWeight: FontWeight.w800,
                         ),
@@ -525,13 +525,13 @@ class _TheSapToi extends StatelessWidget {
               margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFEDD5),
+                color: const Color(0xFFFCEAF4),
                 borderRadius: BorderRadius.circular(AppTheme.boGoc),
               ),
               child: Text(
                 'Bác sĩ đã gọi số nhưng bạn chưa có mặt. Số của bạn vẫn được giữ — '
                 'hãy đến ${ca.viTriPhong ?? 'phòng khám'} trước ${gioPhut(ca.thoiDiemKetThuc)}.',
-                style: const TextStyle(color: Color(0xFF9A3412), fontSize: 13),
+                style: const TextStyle(color: Color(0xFF8E2160), fontSize: 13),
               ),
             ),
           // Chân thẻ
@@ -939,17 +939,17 @@ class _BangHuy extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF1EC),
+                color: const Color(0xFFFDF0F6),
                 borderRadius: BorderRadius.circular(AppTheme.boGoc),
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded, color: Color(0xFFC2410C)),
+                  Icon(Icons.warning_amber_rounded, color: Color(0xFFB8287A)),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Chỗ của bạn sẽ được trả lại cho người khác. Số thứ tự này không thể khôi phục.',
-                      style: TextStyle(color: Color(0xFF9A3412)),
+                      style: TextStyle(color: Color(0xFF8E2160)),
                     ),
                   ),
                 ],

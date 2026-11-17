@@ -2,11 +2,22 @@ import '../../core/dinh_dang.dart';
 
 // Dữ liệu hiển thị phía bác sĩ (lấy từ Supabase qua DichVuBacSi).
 
-enum TrangThaiLuotKham { choKham, dangKham, tamHoan, daKham, daHuy, vangMat }
+enum TrangThaiLuotKham {
+  choKham,
+  dangKham,
+  tamHoan,
+  lamCls, // đang đi làm cận lâm sàng (X-quang, xét nghiệm…)
+  choDocKq, // đã làm xong, quay lại phòng chờ bác sĩ đọc kết quả
+  daKham,
+  daHuy,
+  vangMat,
+}
 
 TrangThaiLuotKham docTrangThaiLuot(String? s) => switch (s) {
   'dang_kham' => TrangThaiLuotKham.dangKham,
   'tam_hoan' => TrangThaiLuotKham.tamHoan,
+  'lam_cls' => TrangThaiLuotKham.lamCls,
+  'cho_doc_kq' => TrangThaiLuotKham.choDocKq,
   'da_kham' => TrangThaiLuotKham.daKham,
   'da_huy' => TrangThaiLuotKham.daHuy,
   'vang_mat' => TrangThaiLuotKham.vangMat,
@@ -30,6 +41,10 @@ class LuotKhamTrongCa {
   /// Phiếu tiền khám AI tổng hợp (null nếu bệnh nhân không gửi).
   final Map<String, dynamic>? phieuTienKham;
 
+  /// Số chỉ định cận lâm sàng và số đã làm xong.
+  final int soCls;
+  final int soClsXong;
+
   const LuotKhamTrongCa({
     required this.id,
     required this.soThuTu,
@@ -43,7 +58,11 @@ class LuotKhamTrongCa {
     this.loiDan,
     this.ngayDat,
     this.phieuTienKham,
+    this.soCls = 0,
+    this.soClsXong = 0,
   });
+
+  bool get coChiDinhCls => soCls > 0;
 
   /// AI đánh giá nên khám sớm (hoặc có dấu hiệu nguy hiểm).
   bool get nenKhamSom {
@@ -109,9 +128,22 @@ class CaKhamTrongNgay {
   int get soDaDangKy =>
       danhSach.where((l) => l.trangThai != TrangThaiLuotKham.daHuy).length;
 
-  List<LuotKhamTrongCa> get dangCho =>
-      danhSach.where((l) => l.trangThai == TrangThaiLuotKham.choKham).toList()
-        ..sort((a, b) => a.soThuTu.compareTo(b.soThuTu));
+  /// Người đang chờ gọi: ai đã có kết quả cận lâm sàng quay lại được gọi trước,
+  /// sau đó theo số thứ tự (giống hàm goi_so_tiep_theo trong database).
+  List<LuotKhamTrongCa> get dangCho {
+    int hang(LuotKhamTrongCa l) => l.trangThai == TrangThaiLuotKham.choDocKq ? 0 : 1;
+    return danhSach
+        .where(
+          (l) =>
+              l.trangThai == TrangThaiLuotKham.choKham ||
+              l.trangThai == TrangThaiLuotKham.choDocKq,
+        )
+        .toList()
+      ..sort((a, b) {
+        final h = hang(a).compareTo(hang(b));
+        return h != 0 ? h : a.soThuTu.compareTo(b.soThuTu);
+      });
+  }
 
   LuotKhamTrongCa? get dangKham {
     for (final l in danhSach) {

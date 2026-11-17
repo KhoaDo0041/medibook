@@ -77,12 +77,12 @@ class ManHinhDatThanhCong extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFEDD5),
+                color: const Color(0xFFFCEAF4),
                 borderRadius: BorderRadius.circular(AppTheme.boGocThe),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.schedule, color: Color(0xFFC2410C)),
+                  const Icon(Icons.schedule, color: Color(0xFFB8287A)),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text.rich(
@@ -100,7 +100,7 @@ class ManHinhDatThanhCong extends StatelessWidget {
                           ),
                         ],
                       ),
-                      style: const TextStyle(color: Color(0xFF9A3412)),
+                      style: const TextStyle(color: Color(0xFF8E2160)),
                     ),
                   ),
                 ],
@@ -215,7 +215,7 @@ class _PhieuKham extends StatelessWidget {
                 SoChay(
                   so: luotKham.soThuTu,
                   style: const TextStyle(
-                    color: AppTheme.mauChinh,
+                    color: AppTheme.mauNhan,
                     fontSize: 64,
                     fontWeight: FontWeight.w800,
                     height: 1.1,

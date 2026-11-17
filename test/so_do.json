@@ -1,0 +1,793 @@
+{
+ "khu": [
+  {
+   "ma": "KHU_A",
+   "ten": "Khu A · Chẩn đoán hình ảnh",
+   "mo_ta": "Chụp X-quang, siêu âm",
+   "loai": "cls",
+   "tang": 1,
+   "x": 44,
+   "y": 26,
+   "hx": 4,
+   "hy": 8,
+   "hw": 40,
+   "hh": 36
+  },
+  {
+   "ma": "PK_1",
+   "ten": "Khu phòng khám tầng 1",
+   "mo_ta": "Phòng 101 – 120",
+   "loai": "phong_kham",
+   "tang": 1,
+   "x": 44,
+   "y": 71,
+   "hx": 4,
+   "hy": 50,
+   "hw": 40,
+   "hh": 42
+  },
+  {
+   "ma": "TIEP_DON",
+   "ten": "Tiếp đón · Lấy số",
+   "mo_ta": "Quầy hướng dẫn, quầy BHYT",
+   "loai": "tiep_don",
+   "tang": 1,
+   "x": 44,
+   "y": 110,
+   "hx": 4,
+   "hy": 98,
+   "hw": 40,
+   "hh": 24
+  },
+  {
+   "ma": "NHA_THUOC",
+   "ten": "Nhà thuốc",
+   "mo_ta": "Quầy 1 – 4",
+   "loai": "nha_thuoc",
+   "tang": 1,
+   "x": 56,
+   "y": 23,
+   "hx": 56,
+   "hy": 8,
+   "hw": 40,
+   "hh": 30
+  },
+  {
+   "ma": "TM_1",
+   "ten": "Thang máy",
+   "mo_ta": "Tầng 1",
+   "loai": "thang_may",
+   "tang": 1,
+   "x": 56,
+   "y": 54,
+   "hx": 56,
+   "hy": 44,
+   "hw": 22,
+   "hh": 20
+  },
+  {
+   "ma": "WC_1",
+   "ten": "Nhà vệ sinh",
+   "mo_ta": "",
+   "loai": "wc",
+   "tang": 1,
+   "x": 56,
+   "y": 78,
+   "hx": 56,
+   "hy": 70,
+   "hw": 22,
+   "hh": 16
+  },
+  {
+   "ma": "THU_NGAN",
+   "ten": "Thu ngân",
+   "mo_ta": "Đóng tiền viện phí, cận lâm sàng",
+   "loai": "thu_ngan",
+   "tang": 1,
+   "x": 56,
+   "y": 110,
+   "hx": 56,
+   "hy": 98,
+   "hw": 40,
+   "hh": 24
+  },
+  {
+   "ma": "CONG",
+   "ten": "Cổng chính",
+   "mo_ta": "",
+   "loai": "cong",
+   "tang": 1,
+   "x": 50,
+   "y": 128,
+   "hx": 36,
+   "hy": 128,
+   "hw": 28,
+   "hh": 10
+  },
+  {
+   "ma": "PK_2",
+   "ten": "Khu phòng khám tầng 2",
+   "mo_ta": "Phòng 201 – 220",
+   "loai": "phong_kham",
+   "tang": 2,
+   "x": 44,
+   "y": 50,
+   "hx": 4,
+   "hy": 8,
+   "hw": 40,
+   "hh": 84
+  },
+  {
+   "ma": "KHU_C",
+   "ten": "Khu C · Thăm dò chức năng",
+   "mo_ta": "Điện tim, đo chức năng hô hấp",
+   "loai": "cls",
+   "tang": 2,
+   "x": 56,
+   "y": 23,
+   "hx": 56,
+   "hy": 8,
+   "hw": 40,
+   "hh": 30
+  },
+  {
+   "ma": "TM_2",
+   "ten": "Thang máy",
+   "mo_ta": "Tầng 2",
+   "loai": "thang_may",
+   "tang": 2,
+   "x": 56,
+   "y": 54,
+   "hx": 56,
+   "hy": 44,
+   "hw": 22,
+   "hh": 20
+  },
+  {
+   "ma": "WC_2",
+   "ten": "Nhà vệ sinh",
+   "mo_ta": "",
+   "loai": "wc",
+   "tang": 2,
+   "x": 56,
+   "y": 78,
+   "hx": 56,
+   "hy": 70,
+   "hw": 22,
+   "hh": 16
+  },
+  {
+   "ma": "CHO_2",
+   "ten": "Sảnh chờ tầng 2",
+   "mo_ta": "",
+   "loai": "khac",
+   "tang": 2,
+   "x": 44,
+   "y": 110,
+   "hx": 4,
+   "hy": 98,
+   "hw": 40,
+   "hh": 24
+  },
+  {
+   "ma": "PK_3",
+   "ten": "Khu phòng khám tầng 3",
+   "mo_ta": "Phòng 301 – 320",
+   "loai": "phong_kham",
+   "tang": 3,
+   "x": 44,
+   "y": 50,
+   "hx": 4,
+   "hy": 8,
+   "hw": 40,
+   "hh": 84
+  },
+  {
+   "ma": "KHU_B",
+   "ten": "Khu B · Xét nghiệm",
+   "mo_ta": "Lấy máu, nước tiểu",
+   "loai": "cls",
+   "tang": 3,
+   "x": 56,
+   "y": 23,
+   "hx": 56,
+   "hy": 8,
+   "hw": 40,
+   "hh": 30
+  },
+  {
+   "ma": "TM_3",
+   "ten": "Thang máy",
+   "mo_ta": "Tầng 3",
+   "loai": "thang_may",
+   "tang": 3,
+   "x": 56,
+   "y": 54,
+   "hx": 56,
+   "hy": 44,
+   "hw": 22,
+   "hh": 20
+  },
+  {
+   "ma": "WC_3",
+   "ten": "Nhà vệ sinh",
+   "mo_ta": "",
+   "loai": "wc",
+   "tang": 3,
+   "x": 56,
+   "y": 78,
+   "hx": 56,
+   "hy": 70,
+   "hw": 22,
+   "hh": 16
+  },
+  {
+   "ma": "CHO_3",
+   "ten": "Sảnh chờ tầng 3",
+   "mo_ta": "",
+   "loai": "khac",
+   "tang": 3,
+   "x": 44,
+   "y": 110,
+   "hx": 4,
+   "hy": 98,
+   "hw": 40,
+   "hh": 24
+  },
+  {
+   "ma": "PK_4",
+   "ten": "Khu phòng khám tầng 4",
+   "mo_ta": "Phòng 401 – 420",
+   "loai": "phong_kham",
+   "tang": 4,
+   "x": 44,
+   "y": 50,
+   "hx": 4,
+   "hy": 8,
+   "hw": 40,
+   "hh": 84
+  },
+  {
+   "ma": "HANH_CHINH",
+   "ten": "Khu hành chính",
+   "mo_ta": "Phòng giám đốc, kế hoạch tổng hợp",
+   "loai": "khac",
+   "tang": 4,
+   "x": 56,
+   "y": 23,
+   "hx": 56,
+   "hy": 8,
+   "hw": 40,
+   "hh": 30
+  },
+  {
+   "ma": "TM_4",
+   "ten": "Thang máy",
+   "mo_ta": "Tầng 4",
+   "loai": "thang_may",
+   "tang": 4,
+   "x": 56,
+   "y": 54,
+   "hx": 56,
+   "hy": 44,
+   "hw": 22,
+   "hh": 20
+  },
+  {
+   "ma": "WC_4",
+   "ten": "Nhà vệ sinh",
+   "mo_ta": "",
+   "loai": "wc",
+   "tang": 4,
+   "x": 56,
+   "y": 78,
+   "hx": 56,
+   "hy": 70,
+   "hw": 22,
+   "hh": 16
+  },
+  {
+   "ma": "CHO_4",
+   "ten": "Sảnh chờ tầng 4",
+   "mo_ta": "",
+   "loai": "khac",
+   "tang": 4,
+   "x": 44,
+   "y": 110,
+   "hx": 4,
+   "hy": 98,
+   "hw": 40,
+   "hh": 24
+  },
+  {
+   "ma": "H1_23",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 1,
+   "x": 50,
+   "y": 23,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H1_26",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 1,
+   "x": 50,
+   "y": 26,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H1_54",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 1,
+   "x": 50,
+   "y": 54,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H1_71",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 1,
+   "x": 50,
+   "y": 71,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H1_78",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 1,
+   "x": 50,
+   "y": 78,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H1_110",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 1,
+   "x": 50,
+   "y": 110,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H2_23",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 2,
+   "x": 50,
+   "y": 23,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H2_50",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 2,
+   "x": 50,
+   "y": 50,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H2_54",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 2,
+   "x": 50,
+   "y": 54,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H2_78",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 2,
+   "x": 50,
+   "y": 78,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H2_110",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 2,
+   "x": 50,
+   "y": 110,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H3_23",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 3,
+   "x": 50,
+   "y": 23,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H3_50",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 3,
+   "x": 50,
+   "y": 50,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H3_54",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 3,
+   "x": 50,
+   "y": 54,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H3_78",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 3,
+   "x": 50,
+   "y": 78,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H3_110",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 3,
+   "x": 50,
+   "y": 110,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H4_23",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 4,
+   "x": 50,
+   "y": 23,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H4_50",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 4,
+   "x": 50,
+   "y": 50,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H4_54",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 4,
+   "x": 50,
+   "y": 54,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H4_78",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 4,
+   "x": 50,
+   "y": 78,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  },
+  {
+   "ma": "H4_110",
+   "ten": "Hành lang",
+   "mo_ta": "",
+   "loai": "hanh_lang",
+   "tang": 4,
+   "x": 50,
+   "y": 110,
+   "hx": null,
+   "hy": null,
+   "hw": null,
+   "hh": null
+  }
+ ],
+ "loi_di": [
+  {
+   "tu": "CHO_2",
+   "den": "H2_110",
+   "do_dai": 3
+  },
+  {
+   "tu": "CHO_3",
+   "den": "H3_110",
+   "do_dai": 3
+  },
+  {
+   "tu": "CHO_4",
+   "den": "H4_110",
+   "do_dai": 3
+  },
+  {
+   "tu": "CONG",
+   "den": "H1_110",
+   "do_dai": 9
+  },
+  {
+   "tu": "H1_110",
+   "den": "H1_78",
+   "do_dai": 16
+  },
+  {
+   "tu": "H1_110",
+   "den": "THU_NGAN",
+   "do_dai": 3
+  },
+  {
+   "tu": "H1_110",
+   "den": "TIEP_DON",
+   "do_dai": 3
+  },
+  {
+   "tu": "H1_23",
+   "den": "H1_26",
+   "do_dai": 1.5
+  },
+  {
+   "tu": "H1_23",
+   "den": "NHA_THUOC",
+   "do_dai": 3
+  },
+  {
+   "tu": "H1_26",
+   "den": "H1_54",
+   "do_dai": 14
+  },
+  {
+   "tu": "H1_26",
+   "den": "KHU_A",
+   "do_dai": 3
+  },
+  {
+   "tu": "H1_54",
+   "den": "H1_71",
+   "do_dai": 8.5
+  },
+  {
+   "tu": "H1_54",
+   "den": "TM_1",
+   "do_dai": 3
+  },
+  {
+   "tu": "H1_71",
+   "den": "H1_78",
+   "do_dai": 3.5
+  },
+  {
+   "tu": "H1_71",
+   "den": "PK_1",
+   "do_dai": 3
+  },
+  {
+   "tu": "H1_78",
+   "den": "WC_1",
+   "do_dai": 3
+  },
+  {
+   "tu": "H2_110",
+   "den": "H2_78",
+   "do_dai": 16
+  },
+  {
+   "tu": "H2_23",
+   "den": "H2_50",
+   "do_dai": 13.5
+  },
+  {
+   "tu": "H2_23",
+   "den": "KHU_C",
+   "do_dai": 3
+  },
+  {
+   "tu": "H2_50",
+   "den": "H2_54",
+   "do_dai": 2
+  },
+  {
+   "tu": "H2_50",
+   "den": "PK_2",
+   "do_dai": 3
+  },
+  {
+   "tu": "H2_54",
+   "den": "H2_78",
+   "do_dai": 12
+  },
+  {
+   "tu": "H2_54",
+   "den": "TM_2",
+   "do_dai": 3
+  },
+  {
+   "tu": "H2_78",
+   "den": "WC_2",
+   "do_dai": 3
+  },
+  {
+   "tu": "H3_110",
+   "den": "H3_78",
+   "do_dai": 16
+  },
+  {
+   "tu": "H3_23",
+   "den": "H3_50",
+   "do_dai": 13.5
+  },
+  {
+   "tu": "H3_23",
+   "den": "KHU_B",
+   "do_dai": 3
+  },
+  {
+   "tu": "H3_50",
+   "den": "H3_54",
+   "do_dai": 2
+  },
+  {
+   "tu": "H3_50",
+   "den": "PK_3",
+   "do_dai": 3
+  },
+  {
+   "tu": "H3_54",
+   "den": "H3_78",
+   "do_dai": 12
+  },
+  {
+   "tu": "H3_54",
+   "den": "TM_3",
+   "do_dai": 3
+  },
+  {
+   "tu": "H3_78",
+   "den": "WC_3",
+   "do_dai": 3
+  },
+  {
+   "tu": "H4_110",
+   "den": "H4_78",
+   "do_dai": 16
+  },
+  {
+   "tu": "H4_23",
+   "den": "H4_50",
+   "do_dai": 13.5
+  },
+  {
+   "tu": "H4_23",
+   "den": "HANH_CHINH",
+   "do_dai": 3
+  },
+  {
+   "tu": "H4_50",
+   "den": "H4_54",
+   "do_dai": 2
+  },
+  {
+   "tu": "H4_50",
+   "den": "PK_4",
+   "do_dai": 3
+  },
+  {
+   "tu": "H4_54",
+   "den": "H4_78",
+   "do_dai": 12
+  },
+  {
+   "tu": "H4_54",
+   "den": "TM_4",
+   "do_dai": 3
+  },
+  {
+   "tu": "H4_78",
+   "den": "WC_4",
+   "do_dai": 3
+  },
+  {
+   "tu": "TM_1",
+   "den": "TM_2",
+   "do_dai": 10
+  },
+  {
+   "tu": "TM_2",
+   "den": "TM_3",
+   "do_dai": 10
+  },
+  {
+   "tu": "TM_3",
+   "den": "TM_4",
+   "do_dai": 10
+  }
+ ]
+}

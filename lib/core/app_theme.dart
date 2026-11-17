@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Bộ nhận diện của MediBook: màu chủ đạo #1D4ED8, font Manrope, bo góc 12.
+/// Bộ nhận diện của MediBook: xanh #0297DE (chủ đạo) – trắng (nền) – hồng #D83995 (điểm nhấn),
+/// tỉ lệ khoảng 30 / 60 / 10. Font Manrope, bo góc 12.
 class AppTheme {
-  static const Color mauChinh = Color(0xFF1D4ED8);
+  static const Color mauChinh = Color(0xFF0297DE);
   static const Color mauChuDam = Color(0xFF0F172A);
   static const Color mauChuNhat = Color(0xFF64748B);
-  static const Color mauNen = Color(0xFFF8FAFC);
-  static const Color mauCam = Color(0xFFF97316);
+  static const Color mauNen = Color(0xFFF5F8FB);
+  /// Màu nhấn hồng: chỉ dùng cho thứ cần chú ý ngay (số thứ tự, nút chính, bước/liều hiện tại).
+  static const Color mauNhan = Color(0xFFD83995);
+  static const Color mauNhanNhat = Color(0xFFFCEAF4);
+  static const Color mauChinhDam = Color(0xFF0272B0); // cuối dải màu xanh
+  /// Tên cũ của màu nhấn (trước là cam), giữ lại để không phải sửa các màn hình.
+  static const Color mauCam = mauNhan;
   static const double boGoc = 12;
   static const double boGocThe = 16; // thẻ lớn trên dashboard
   static const Color mauChinhNhat = Color(
-    0xFFEEF2FF,
+    0xFFE8F5FC,
   ); // nền xanh rất nhạt cho ô biểu tượng
   static const Color mauVien = Color(0xFFE2E8F0);
 

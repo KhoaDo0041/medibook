@@ -206,6 +206,8 @@ class DichVuBacSi {
     phieuTienKham: l['phieu_tien_kham'] is Map
         ? Map<String, dynamic>.from(l['phieu_tien_kham'] as Map)
         : null,
+    soCls: (l['so_cls'] as num?)?.toInt() ?? 0,
+    soClsXong: (l['so_cls_xong'] as num?)?.toInt() ?? 0,
   );
 
   static Duration _docGio(String s) {

@@ -25,8 +25,18 @@ class NhanTrangThai extends StatelessWidget {
       ),
       TrangThaiLuot.tamHoan => (
         'Tạm hoãn',
-        const Color(0xFFC2410C),
-        const Color(0xFFFFEDD5),
+        const Color(0xFFB8287A),
+        const Color(0xFFFCEAF4),
+      ),
+      TrangThaiLuot.lamCls => (
+        'Làm cận lâm sàng',
+        AppTheme.mauNhan,
+        AppTheme.mauNhanNhat,
+      ),
+      TrangThaiLuot.choDocKq => (
+        'Chờ đọc kết quả',
+        AppTheme.mauChinh,
+        AppTheme.mauChinhNhat,
       ),
       TrangThaiLuot.daKham => (
         'Đã khám',

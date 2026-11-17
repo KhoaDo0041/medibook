@@ -396,7 +396,7 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.mauChinh, Color(0xFF1E3A8A)],
+          colors: [AppTheme.mauChinh, Color(0xFF0272B0)],
         ),
       ),
       child: Column(
@@ -486,7 +486,7 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
               nhan: 'TẠM HOÃN',
               cacSo: [for (final l in tamHoan) l.soThuTu],
               trong: '',
-              mau: const Color(0xFFFDBA74),
+              mau: const Color(0xFFEDA0CB),
             ),
           ],
           const SizedBox(height: 24),
@@ -501,8 +501,8 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
                 icon: const Icon(Icons.campaign_rounded),
                 label: const Text('Gọi số tiếp theo'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppTheme.mauChinh,
+                  backgroundColor: AppTheme.mauNhan,
+                  foregroundColor: Colors.white,
                   disabledBackgroundColor: Colors.white24,
                   disabledForegroundColor: Colors.white54,
                   padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
@@ -535,6 +535,8 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
           case TrangThaiLuotKham.choKham:
           case TrangThaiLuotKham.dangKham:
           case TrangThaiLuotKham.tamHoan:
+          case TrangThaiLuotKham.lamCls:
+          case TrangThaiLuotKham.choDocKq:
             dangCho++;
           case TrangThaiLuotKham.vangMat:
             vangMat++;
@@ -1001,6 +1003,8 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
     TrangThaiLuotKham.choKham => 'Đang chờ',
     TrangThaiLuotKham.dangKham => 'Đang khám',
     TrangThaiLuotKham.tamHoan => 'Tạm hoãn',
+    TrangThaiLuotKham.lamCls => 'Đang làm CLS',
+    TrangThaiLuotKham.choDocKq => 'Có kết quả CLS',
     TrangThaiLuotKham.daKham => 'Đã khám',
     TrangThaiLuotKham.daHuy => 'Đã huỷ',
     TrangThaiLuotKham.vangMat => 'Vắng mặt',
@@ -1010,6 +1014,8 @@ class _TrangWebBacSiState extends State<TrangWebBacSi> {
     TrangThaiLuotKham.choKham => AppTheme.mauChinh,
     TrangThaiLuotKham.dangKham => const Color(0xFF16A34A),
     TrangThaiLuotKham.tamHoan => AppTheme.mauCam,
+    TrangThaiLuotKham.lamCls => AppTheme.mauNhan,
+    TrangThaiLuotKham.choDocKq => const Color(0xFF15803D),
     TrangThaiLuotKham.daKham => const Color(0xFF16A34A),
     TrangThaiLuotKham.daHuy => AppTheme.mauChuNhat,
     TrangThaiLuotKham.vangMat => const Color(0xFFDC2626),

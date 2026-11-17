@@ -188,17 +188,17 @@ class _ManHinhChonBacSiState extends State<ManHinhChonBacSi> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFEDD5),
+            color: const Color(0xFFFCEAF4),
             borderRadius: BorderRadius.circular(AppTheme.boGoc),
           ),
           child: const Row(
             children: [
-              Icon(Icons.info_outline, color: Color(0xFFC2410C)),
+              Icon(Icons.info_outline, color: Color(0xFFB8287A)),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Bác sĩ bạn khám trước đây hiện không còn nhận lịch. Bạn có thể chọn bác sĩ khác.',
-                  style: TextStyle(color: Color(0xFF9A3412)),
+                  style: TextStyle(color: Color(0xFF8E2160)),
                 ),
               ),
             ],

@@ -72,7 +72,7 @@ class TabHoSo extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF1E3A8A), Color(0xFF1D4ED8), Color(0xFF0EA5E9)],
+              colors: [Color(0xFF0272B0), Color(0xFF0297DE), Color(0xFF38BDF8)],
             ),
             boxShadow: [
               BoxShadow(

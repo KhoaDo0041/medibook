@@ -187,7 +187,10 @@ class _TabLichKhamState extends State<_TabLichKham> {
         .length;
     final daKham = dem(TrangThaiLuotKham.daKham);
     final dangCho =
-        dem(TrangThaiLuotKham.choKham) + dem(TrangThaiLuotKham.tamHoan);
+        dem(TrangThaiLuotKham.choKham) +
+        dem(TrangThaiLuotKham.tamHoan) +
+        dem(TrangThaiLuotKham.lamCls) +
+        dem(TrangThaiLuotKham.choDocKq);
 
     final caHienTai = _caHienTai;
     final dangKham = caHienTai?.dangKham;

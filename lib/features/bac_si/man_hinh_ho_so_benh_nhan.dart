@@ -28,7 +28,7 @@ class ManHinhHoSoBenhNhan extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFF2563EB), AppTheme.mauChinh],
+                colors: [Color(0xFF0BA6EE), AppTheme.mauChinh],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

@@ -41,6 +41,13 @@ Flutter app ──HTTPS + Bearer token──▶ MediBook.Api (Render) ──SQL�
 | | `POST /api/bac-si/luot-kham/{id}/bat-dau` | Mời bệnh nhân vào khám |
 | | `POST /api/bac-si/luot-kham/{id}/tam-hoan` | Tạm hoãn (chưa có mặt) |
 | | `POST /api/bac-si/luot-kham/{id}/hoan-tat` | Hoàn tất khám: chẩn đoán, lời dặn, đơn thuốc, ngày tái khám |
+| | `POST /api/bac-si/luot-kham/{id}/chi-dinh` | Gửi chỉ định cận lâm sàng `{dichVuIds: [..]}` |
+| Cận lâm sàng | `GET /api/dich-vu-cls` | Danh mục X-quang, xét nghiệm… (khu, giá, cách chuẩn bị) |
+| | `GET /api/so-do` | Sơ đồ bệnh viện: các khu và lối đi (app tự chạy Dijkstra) |
+| | `GET /api/luot-kham/{id}/lo-trinh` | Lộ trình cận lâm sàng của lượt khám |
+| | `POST /api/luot-kham/{id}/thanh-toan-cls` | Thanh toán cận lâm sàng (mô phỏng) |
+| | `POST /api/chi-dinh/{id}/hoan-thanh` | Đã đến khu và làm xong một chỉ định (gắn kết quả mẫu) |
+| | `POST /api/luot-kham/{id}/quay-lai` | Làm xong, quay lại phòng khám (được ưu tiên gọi) |
 
 Lỗi nghiệp vụ trả về HTTP 400 dạng `{ "message": "Bạn đã đặt ca này rồi" }`.
 

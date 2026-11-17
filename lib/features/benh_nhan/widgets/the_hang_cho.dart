@@ -11,6 +11,8 @@ import '../../../core/widgets/the_trang.dart';
 import '../../../core/widgets/tuong_tac.dart';
 import '../../dat_lich/dich_vu_dat_lich.dart';
 import '../../dat_lich/mo_hinh.dart';
+import '../../can_lam_sang/man_hinh_lo_trinh.dart';
+import '../../can_lam_sang/man_hinh_so_do.dart';
 
 /// Thẻ "Hàng chờ trực tiếp": chỉ hiện trong ngày khám.
 /// Nghe Supabase Realtime trên dòng ca khám; mỗi lần bác sĩ gọi số / hoàn tất /
@@ -37,6 +39,7 @@ class _TheHangChoState extends State<TheHangCho> {
   bool _loiMang = false;
   RealtimeChannel? _kenh;
   Timer? _dongHoDuPhong;
+  bool _dangMoLoTrinh = false;
 
   @override
   void initState() {
@@ -70,14 +73,51 @@ class _TheHangChoState extends State<TheHangCho> {
         _hc = moi;
         _loiMang = false;
       });
+      // Bác sĩ vừa gửi chỉ định cận lâm sàng: rung và mở luôn lộ trình khám
+      if (moi.trangThai == TrangThaiLuot.lamCls &&
+          cu != null &&
+          cu.trangThai != TrangThaiLuot.lamCls) {
+        HapticFeedback.heavyImpact();
+        _moLoTrinh();
+      }
       if (moi.trangThai != TrangThaiLuot.choKham &&
           moi.trangThai != TrangThaiLuot.dangKham &&
-          moi.trangThai != TrangThaiLuot.tamHoan) {
+          moi.trangThai != TrangThaiLuot.tamHoan &&
+          moi.trangThai != TrangThaiLuot.lamCls &&
+          moi.trangThai != TrangThaiLuot.choDocKq) {
         widget.khiKetThuc();
       }
     } on LoiDatLich {
       if (mounted) setState(() => _loiMang = true);
     }
+  }
+
+  Future<void> _moLoTrinh() async {
+    if (_dangMoLoTrinh) return;
+    _dangMoLoTrinh = true;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ManHinhLoTrinh(luotKhamId: widget.luot.id),
+      ),
+    );
+    _dangMoLoTrinh = false;
+    _tai();
+  }
+
+  /// Sơ đồ bệnh viện: đường từ cổng chính tới khu phòng khám của ca.
+  void _moSoDoDenPhong() {
+    final ca = widget.luot.ca;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ManHinhSoDo(
+          maTu: 'CONG',
+          maDen: 'PK_${(ca.tang ?? 1).clamp(1, 4)}',
+          nhanDen: ca.soPhong == null ? null : 'Phòng ${ca.soPhong}',
+        ),
+      ),
+    );
   }
 
   void _docToiLuot() {
@@ -151,6 +191,42 @@ class _TheHangChoState extends State<TheHangCho> {
         ),
       );
     }
+    if (hc.trangThai == TrangThaiLuot.lamCls) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _Bang(
+            mau: AppTheme.mauNhan,
+            icon: Icons.biotech_outlined,
+            tieuDe: 'Bác sĩ chỉ định cận lâm sàng',
+            noiDung:
+                'Thanh toán trong app, đi chụp chiếu / xét nghiệm theo lộ trình '
+                'rồi quay lại phòng khám để bác sĩ đọc kết quả.',
+          ),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(backgroundColor: AppTheme.mauNhan),
+            onPressed: _moLoTrinh,
+            icon: const Icon(Icons.route_rounded),
+            label: const Text('Mở lộ trình khám'),
+          ),
+        ],
+      );
+    }
+    if (hc.trangThai == TrangThaiLuot.choDocKq) {
+      return _Bang(
+        mau: AppTheme.mauChinh,
+        icon: Icons.assignment_turned_in_outlined,
+        tieuDe: 'Đã có kết quả, chờ bác sĩ gọi',
+        noiDung:
+            'Bạn được ưu tiên gọi vào ${phong ?? 'phòng khám'} để bác sĩ đọc kết quả.',
+        nutPhu: IconButton(
+          tooltip: 'Xem lộ trình',
+          onPressed: _moLoTrinh,
+          icon: const Icon(Icons.route_rounded, color: AppTheme.mauChinh),
+        ),
+      );
+    }
     if (hc.trangThai == TrangThaiLuot.tamHoan) {
       return const _Bang(
         mau: AppTheme.mauCam,
@@ -188,8 +264,8 @@ class _TheHangChoState extends State<TheHangCho> {
               child: _OSo(
                 nhan: 'SỐ CỦA BẠN',
                 so: hc.soThuTu,
-                mauNen: AppTheme.mauChinh,
-                mauChu: Colors.white,
+                mauNen: AppTheme.mauNhanNhat,
+                mauChu: AppTheme.mauNhan,
               ),
             ),
           ],
@@ -203,6 +279,13 @@ class _TheHangChoState extends State<TheHangCho> {
             fontWeight: FontWeight.w600,
             color: hc.soNguoiTruoc <= 1 ? AppTheme.mauCam : AppTheme.mauChuDam,
           ),
+        ),
+        const SizedBox(height: 4),
+        TextButton.icon(
+          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+          onPressed: _moSoDoDenPhong,
+          icon: const Icon(Icons.map_outlined, size: 18),
+          label: Text('Đường đến ${phong ?? 'phòng khám'} trong bệnh viện'),
         ),
       ],
     );

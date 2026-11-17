@@ -29,7 +29,7 @@ class TheDangKham extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF2563EB), AppTheme.mauChinh],
+          colors: [Color(0xFF0BA6EE), AppTheme.mauChinh],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -129,8 +129,8 @@ class TheDangKham extends StatelessWidget {
                         : 'Gọi số tiếp theo (${haiSo(soTiepTheo!)})',
                   ),
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppTheme.mauChinh,
+                    backgroundColor: AppTheme.mauNhan,
+                    foregroundColor: Colors.white,
                     disabledBackgroundColor: Colors.white.withValues(
                       alpha: 0.3,
                     ),

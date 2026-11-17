@@ -153,7 +153,7 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFEDD5),
+                  color: const Color(0xFFFCEAF4),
                   borderRadius: BorderRadius.circular(AppTheme.boGoc),
                 ),
                 child: Row(
@@ -164,7 +164,7 @@ class _ManHinhChonBenhVienState extends State<ManHinhChonBenhVien> {
                       child: Text(
                         'Trợ lý AI gợi ý khám khoa ${widget.tenKhoa}. '
                         'Dưới đây là các bệnh viện có khoa này.',
-                        style: const TextStyle(color: Color(0xFF9A3412)),
+                        style: const TextStyle(color: Color(0xFF8E2160)),
                       ),
                     ),
                   ],
@@ -295,8 +295,8 @@ class _TheBenhVien extends StatelessWidget {
                   const _Nhan(
                     text: 'Gần nhất',
                     icon: Icons.bolt,
-                    mauChu: Color(0xFFC2410C),
-                    mauNen: Color(0xFFFFEDD5),
+                    mauChu: Color(0xFFB8287A),
+                    mauNen: Color(0xFFFCEAF4),
                   ),
                   const SizedBox(height: 6),
                 ],
